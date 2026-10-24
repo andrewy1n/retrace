@@ -2,7 +2,7 @@
 
 Harness improvement through replay. Trace features route work. Step-0 replay results are the evidence. Report an intervention under a stated setup, with counts, sample size, and an interval. A small or negative result is reported as such.
 
-Droid is the primary harness. Claude Code is an optional adapter. The hackathon pool is 20 to 40 tasks.
+Droid is the primary harness. Claude Code is an optional adapter. `splits/pool.json` holds the task pool.
 
 ## Owners
 
@@ -29,6 +29,7 @@ For agents:
 - Without a Google Docs connector, give the person that line instead, and do not claim the doc is updated.
 - A contract change stays under Open until it is merged. Then Contract stores the SHA and one line.
 - The doc may hold session ids, failure-type counts, instance ids in flight, and the SHA to pull. Schemas, transcripts, repository contents, and result tables stay in git.
+- When you find or rederive a fact that work depends on, such as an access path, a file layout, a tool on the machine, or a measured number, and this file lacks it or states it wrongly, fix this file in the same change. Keep secret values and addresses out of it.
 
 Do not add a `CLAUDE.md`. Claude Code reads this file when no `CLAUDE.md` is present. A proposal ships an `AGENTS.md` rule only as the last-ranked change.
 
@@ -48,7 +49,7 @@ Features, diagnoses, and labels belong to Kate. Andrew does not read them. He ge
 
 1. A schema change. The other person pulls that SHA.
 2. The first real trace.
-3. The chosen target (a failure group or a cost pattern), with `splits/` committed before anyone studies the held-out tasks. The hackathon pool is 20 to 40 tasks.
+3. The chosen target (a failure group or a cost pattern), with `splits/` committed before anyone studies the held-out tasks.
 4. The candidate directory frozen before held-out and regression runs. Those runs start fresh from step 0.
 
 If the biggest failure group is too small to split, widen the task pool before writing jobs. A group that stays at 3 to 5 sessions is labeled small and uses monitoring plus rollback.
@@ -78,6 +79,20 @@ analysis/proposals/<id>/AGENTS.md
 The proposal screen starts from the friction ticket and shows the `.factory/hooks.json` guardrail. The Changes tab shows a before-and-after of the target failure type against untargeted types, a shipped-changes table, and rollback. Those numbers are Tiger summaries. Mockup figures are examples.
 
 Snapshot commits stay in the task repo, pinned under `refs/retrace/`. The trace stores the commit id. Tool input and output stay in the Droid session.
+
+## Environment
+
+Values stay out of git. These facts were checked on 2026-10-24.
+
+- `.env` at the repo root is gitignored and holds `FACTORY_API_KEY` and `VULTR_API_KEY`. Load it with `set -a; . ./.env; set +a`. Never print or commit a value. The Tiger connection string is not on the dev machine. When it is added, name it `TIGER_DATABASE_URL`.
+- The Vultr API key accepts calls only from the IP addresses on its allowlist (Vultr console, Account, API, Access Control). From another address the API returns `Unauthorized IP address`. A new network means a new address. `vultr-cli` is not installed on the dev machine.
+- Keep the worker address in gitignored `retrace.local.json` as `vm_host`. Reach it with `ssh root@<vm_host>` and `~/.ssh/id_ed25519`. SSH does not depend on the API allowlist. `~/.ssh/known_hosts` is hashed, so it does not show the address.
+- The dev machine is arm64 (WSL2). The SWE-bench images are amd64 only, so run trials and grading on the x86 worker. The dev machine has Docker, the Droid CLI at `~/.local/bin/droid`, node 24, `gh`, `jq`, and Python with `jsonschema` and `numpy`. It has no `psql`.
+- `recorder/worker/scripts/retrace_job.py` reads schemas from `/opt/retrace/repo`. On the dev machine, run it with `RETRACE_REPO=$PWD RETRACE_ROOT=$PWD`.
+- Copies of worker trials are in `runs/private/sessions/<session-id>/`: `factory-sessions/-testbed/<droid-id>.jsonl` (the transcript), `<droid-id>.settings.json` (session token totals by type), `meta.json`, `droid.json`, `capture/`, `snapshots.bundle`, and `start_commit`. The transcript has a timestamp on every line and `is_error` on every tool result. It has no per-turn token counts.
+- Factory credits per token, from an exact fit over 80 baseline1 sessions on `claude-haiku-5-5`: 0.2 per output token (thinking included), 0.05 per cache-write token, 0.004 per cache-read token, and about 0.26 per uncached input token.
+- SWE-bench Verified has 500 tasks. The 1 to 4 hour band has 42, and 22 of them are django. `splits/draw_pool.py` and `analysis/labeler/fetch_tasks.py` read it from the Hugging Face datasets-server API.
+- One `read_doc` result for the project doc is about 540 KB, so the Google Docs connector saves it to a file. Use the Google Workspace skill's `docs_index.py` for positions, and send each edit with the latest `revisionId`. The doc has two tabs: the main tab `t.0` and Architecture `t.kt15rr8inhru`.
 
 ## Unverified
 
