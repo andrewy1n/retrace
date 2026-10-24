@@ -6,11 +6,16 @@ Each session gets its own toy task repo, and every tool call is snapshotted
 with recorder/capture/snapshot.sh, so snapshot_ref values are real commits
 under refs/retrace/. Output, under out-dir (a new temp dir by default):
 
-  repos/<session-id>/                                   task checkout
+  sessions/<session-id>/start_commit                    diff base, as in recorder/AGENTS.md
+  sessions/<session-id>/repo/                           task checkout with the snapshots
   traces/<session-id>.json                              matches contracts/trace.schema.json
   results/mock-baseline/<task-id>-step0-control-1.json  matches contracts/replay-result.schema.json
   tasks/<task-id>.json                                  base_commit, problem_statement, gold_files
   transcripts/<session-id>.json                         commands per tool call (mock format)
+
+A real session directory holds snapshots.bundle instead of repo/; the labeler
+fetches it into a clone of the upstream repo (recorder/AGENTS.md). As in a
+SWE-bench image, start_commit sits on base_commit and changes only file modes.
 
 expected.json next to this file is the answer key. Keep mocks out of runs/.
 
@@ -24,7 +29,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -215,15 +219,18 @@ def make_repo(repo):
         p = repo / path
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content, newline="\n")
+    env = {**os.environ, **BASE_ENV}
     git(repo, "add", "-A")
-    git(repo, "commit", "-q", "-m", "base", env={**os.environ, **BASE_ENV})
-    # snapshot.sh can miss a same-size edit made in the same second as the
-    # last index write. Backdate the base files so every mock edit is seen.
-    old = time.time() - 60
+    git(repo, "commit", "-q", "-m", "base", env=env)
+    base = git(repo, "rev-parse", "HEAD")
+    # Like a SWE-bench image: HEAD is a commit on top of base_commit that changes
+    # every file's mode and no content. Diffs must start from it, not base_commit.
     for path in BASE_FILES:
-        os.utime(repo / path, (old, old))
-    git(repo, "update-index", "-q", "--refresh")
-    return git(repo, "rev-parse", "HEAD")
+        if os.name != "nt":
+            os.chmod(repo / path, 0o755)
+        git(repo, "update-index", "--chmod=+x", path)
+    git(repo, "commit", "-q", "-m", "image file modes", env=env)
+    return base, git(repo, "rev-parse", "HEAD")
 
 
 def find_bash():
@@ -258,8 +265,10 @@ def build(out):
     for n, s in enumerate(SESSIONS, 1):
         sid = s["session_id"]
         task_id = f"mock__calc-{n}"
-        repo = out / "repos" / sid
-        base = make_repo(repo)
+        session_dir = out / "sessions" / sid
+        repo = session_dir / "repo"
+        base, start = make_repo(repo)
+        (session_dir / "start_commit").write_text(start + "\n", newline="\n")
 
         steps, commands = [], []
         for i, (tool, act, command) in enumerate(s["steps"], 1):
@@ -285,7 +294,6 @@ def build(out):
         dump(out / "transcripts" / f"{sid}.json", {"session_id": sid, "commands": commands})
         dump(out / "tasks" / f"{task_id}.json", {
             "instance_id": task_id,
-            "repo_dir": f"repos/{sid}",
             "base_commit": base,
             "problem_statement": s["problem"],
             "gold_files": s["gold_files"],

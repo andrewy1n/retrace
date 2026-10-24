@@ -10,12 +10,12 @@ Hard signals come first, computed from the trace and the snapshots. The trace is
 
 - `failing_tests`: the SWE-bench grader fails the session's final patch.
 - `reverted_diff`: a file changes at one step, and a later snapshot restores that file's earlier content. Deleting a file the session created counts.
-- `abandoned`: the session fails, and its final snapshot has no change at all against the task's base commit.
-- `code_survival`: under half of the lines the session added at any step are still in its final snapshot. The share is added lines in the final diff against the base commit, divided by added lines summed over the step diffs.
+- `abandoned`: the session fails, and its final snapshot has no change at all against the start commit.
+- `code_survival`: under half of the lines the session added at any step are still in its final snapshot. The share is added lines in the final diff against the start commit, divided by added lines summed over the step diffs.
 - `looping`: 5 or more steps in a row with the same `tool_name` and no change to the snapshot tree.
-- `wrong_files`: the final diff against the base commit changes at least one non-test file, and none of the files in the task's gold patch. The gold patch is used for labeling only and never reaches the agent.
+- `wrong_files`: the final diff against the start commit changes at least one non-test file, and none of the files in the task's gold patch. The gold patch is used for labeling only and never reaches the agent.
 
-A step diff compares a snapshot with the one before it. The first step compares with the base commit. Compare trees, not commit ids, since every snapshot is a new commit. A test file matches the pattern in `reports/preregistration.md`. The thresholds of half and 5 are starting values, to be checked against the baseline.
+The start commit is the task repo's HEAD when the session starts, saved as `start_commit` in the session's directory (see `recorder/AGENTS.md`). In a SWE-bench image it sits on top of the dataset `base_commit` and changes only file modes, so a diff against `base_commit` lists every file. A step diff compares a snapshot with the one before it. The first step compares with the start commit. Compare trees, not commit ids, since every snapshot is a new commit. A test file matches the pattern in `reports/preregistration.md`. The thresholds of half and 5 are starting values, to be checked against the baseline.
 
 Then a Signals-style detector assigns one failure type: `misread_requirement`, `wrong_assumption`, `skipped_verification`, `test_gaming`, `context_loss`, or `other`. Leave `other` as `other` until a human promotes it in the project doc.
 
