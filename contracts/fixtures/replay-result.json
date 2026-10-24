@@ -11,5 +11,6 @@
   "passed": false,
   "grader": "swebench",
   "evidence_role": "diagnosis",
-  "cost_credits": 0.4
+  "cost_credits": 0.4,
+  "timed_out": false
 }

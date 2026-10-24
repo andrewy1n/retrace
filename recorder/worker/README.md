@@ -73,7 +73,7 @@ What `run_job.sh` and `run_trial.sh` do:
 2. `run_trial.sh` reads `problem_statement` and `image` from the dataset. The prompt gets only the issue text, plus the hint for a `hint` arm.
 3. It starts the task image with the host `droid` binary mounted read-only. For a `candidate` arm it copies `.factory/` and `AGENTS.md` from `<repo>/<arm.path>` into `/testbed`. Both paths are excluded from the patch.
 4. It runs `droid exec --skip-permissions-unsafe --cwd /testbed -o json --model <job.model> -f /retrace/prompt.md`.
-5. It saves `git add -A && git diff --cached <HEAD at container start>` as `model_patch`, reads `usage.factory_credits` as the cost, and removes the container.
+5. It saves `git add -A && git diff --cached <HEAD at container start>` as `model_patch`, reads `usage.factory_credits` as the cost, and removes the container. When `DROID_TIMEOUT` (default 1800 s) kills the run, `droid.json` is empty, so the cost comes from `tokenUsage.factoryCredits` in the session's `settings.json`, and `meta.json` gets `timed_out: true`.
 
 `grade.sh` grades each trial number as its own evaluation, because the harness takes one prediction per instance:
 ```bash
@@ -121,7 +121,6 @@ If account limits block you, run the same scripts on any x86_64 Ubuntu host with
 - Recording on 24 Oct (2 tasks, `claude-haiku-5-5`): each trial writes `runs/traces/<job_id>-<task_id>-<trial>.json`, which validates against `contracts/trace.schema.json`. In a fresh task container, `git fetch` of the trial's `snapshots.bundle` and `restore.sh <last snapshot_ref>` reproduce the graded `patch.diff` byte for byte on both tasks.
 - Untested: a non-root user inside the task container, 8 trials at once, and the `candidate` and `hint` arms.
 - Whether Droid finds the `testbed` conda env from the prompt hint alone.
-- Whether `droid exec -o json` writes partial output when `DROID_TIMEOUT` (default 1800 s) kills it. Until then a killed trial records `cost_credits` 0, which undercounts the budget.
 - Whether `usage.factory_credits` in the `droid exec` JSON is the full cost of the trial, and matches `tokenUsage.factoryCredits` from the SDK.
 - Whether Droid uses the model passed with `--model`. The result records the job's `model`, not a value read back from Droid.
 - Wall time per task and the CPU load of 8 parallel runs.

@@ -9,6 +9,7 @@
   "passed": true,
   "grader": "swebench",
   "evidence_role": "final",
-  "cost_credits": 0,
-  "session_id": "baseline1-sympy__sympy-13091-3"
+  "cost_credits": 15659,
+  "session_id": "baseline1-sympy__sympy-13091-3",
+  "timed_out": true
 }

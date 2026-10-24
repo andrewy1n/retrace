@@ -112,8 +112,16 @@ else
   echo "[$IID#$TRIAL] no transcript or capture log, no trace" >&2
 fi
 
-# 7. Cost and metadata. A killed run prints no JSON, so its cost reads as 0.
-COST="$(jq -r '.usage.factory_credits // 0' "$OUT/droid.json" 2>/dev/null || true)"
-jq -n --arg v "$DROID_VERSION" --argjson cost "${COST:-0}" --argjson rc "$rc" \
+# 7. Cost and metadata. A killed run prints no JSON, so its cost comes from the session's settings.json.
+COST="$(jq -r '.usage.factory_credits // empty' "$OUT/droid.json" 2>/dev/null || true)"
+if [[ -z "$COST" ]]; then
+  SETTINGS="$(find "$OUT/factory-sessions" -name '*.settings.json' 2>/dev/null | head -n 1)"
+  if [[ -n "$SETTINGS" ]]; then
+    COST="$(jq -r '.tokenUsage.factoryCredits // empty' "$SETTINGS" 2>/dev/null || true)"
+  fi
+fi
+TIMED_OUT=false
+[[ "$rc" -ne 124 ]] || TIMED_OUT=true
+jq -n --arg v "$DROID_VERSION" --argjson cost "${COST:-0}" --argjson rc "$rc" --argjson timed_out "$TIMED_OUT" \
   --arg sid "$(jq -r '.session_id // ""' "$OUT/droid.json" 2>/dev/null || true)" \
-  '{droid_version: $v, cost_credits: $cost, droid_exit: $rc, droid_session_id: $sid}' > "$OUT/meta.json"
+  '{droid_version: $v, cost_credits: $cost, droid_exit: $rc, timed_out: $timed_out, droid_session_id: $sid}' > "$OUT/meta.json"

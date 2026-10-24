@@ -73,6 +73,8 @@ def collect(job_path, trial):
             "evidence_role": "final",
             "cost_credits": meta["cost_credits"],
         }
+        if "timed_out" in meta:
+            result["timed_out"] = meta["timed_out"]
         session_id = f"{job_id}-{task}-{trial}"
         if (REPO / "runs" / "traces" / f"{session_id}.json").exists():
             result["session_id"] = session_id

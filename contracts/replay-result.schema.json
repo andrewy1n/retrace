@@ -41,6 +41,10 @@
       "type": "number",
       "minimum": 0,
       "description": "tokenUsage.factoryCredits for this trial."
+    },
+    "timed_out": {
+      "type": "boolean",
+      "description": "True when DROID_TIMEOUT killed the run. cost_credits then comes from the session's settings.json and can miss the last turn."
     }
   },
   "allOf": [
