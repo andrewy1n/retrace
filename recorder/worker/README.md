@@ -5,6 +5,7 @@ One x86_64 VM runs `droid exec` inside the official SWE-bench Verified images an
 Files:
 - `cloud-init.yaml`: user data for the VM (generated, do not hand-edit)
 - `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `retrace_job.py`, `tiger_sink.py`: installed to `/opt/retrace/`
+- `../replay/run_checkpoint.sh`, `docker-droid.sh`, `restore.sh`, `fork.mjs`, `package.json`, `package-lock.json`: installed to `/opt/retrace/replay/`. They run `checkpoint` jobs.
 - `build_cloud_init.py`: regenerates `cloud-init.yaml` after you edit a script
 
 Target: plan `vc2-16c-64gb` (16 shared vCPU, 64 GB RAM, 1280 GB SSD, $0.438/hr), region `sjc` (Silicon Valley), OS id `2284` = Ubuntu 24.04 LTS x64. All three were checked against `api.vultr.com/v2` on 23 Oct 2026.
@@ -94,6 +95,42 @@ python -m swebench.harness.run_evaluation --dataset_name SWE-bench/SWE-bench_Ver
   --predictions_path gold --instance_ids django__django-11099 --max_workers 1 --run_id gold-check
 ```
 
+## 5b. Checkpoint jobs (fork a recorded session)
+A `checkpoint` job rewinds the recorded Droid session `session_id` to each `tool_call_ids` entry and continues it in a fresh container. The fork keeps the messages before the step's assistant message, so the step itself is replaced. The runner uses the recorded session in `/opt/retrace/sessions/<session_id>` (`factory-sessions/`, `snapshots.bundle`, `start_commit`) and the trace in `$RETRACE_REPO/runs/traces/<session_id>.json`.
+
+The node SDK runs on the host. `replay/docker-droid.sh` is its `execPath`, and it runs `droid` inside the task container through `docker exec -i`. The task image needs no node.
+
+An existing VM does not rerun cloud-init. Update it by hand:
+```bash
+cd /opt/retrace/repo && git pull
+mkdir -p /opt/retrace/replay && cd recorder/replay
+cp run_checkpoint.sh docker-droid.sh restore.sh fork.mjs package.json package-lock.json /opt/retrace/replay/
+cp ../worker/scripts/run_job.sh ../worker/scripts/grade.sh ../worker/scripts/retrace_job.py /opt/retrace/
+cd /opt/retrace/replay && npm ci --omit=dev
+```
+Then pull the image and run one fork:
+```bash
+prepull.sh django__django-11292
+cat > ~/fork1.json <<'JOB'
+{"job_id": "fork1", "start": "checkpoint", "session_id": "baseline1-django__django-11292-1",
+ "tool_call_ids": ["toolu_01Dq3aZjyjwEvyboFYqV1dGo"], "arm": {"kind": "control"},
+ "model": "claude-haiku-5-5", "reruns": 1, "stop_mode": "next_user_turn", "budget_credits": 20000}
+JOB
+export RETRACE_CONTINUATION='Continue.'    # test value; the control text is an open decision
+run_job.sh ~/fork1.json 1
+# → /opt/retrace/runs/fork1/django__django-11292/<tool_call_id>/1/{continuation.md,start_commit,fork.json,fork.stderr,patch.diff,pred.json,meta.json,capture/,factory-sessions/}
+grade.sh ~/fork1.json 1
+# → /opt/retrace/repo/runs/results/fork1/django__django-11292-<tool_call_id>-control-1.json
+```
+- A `hint` arm sends its `text` as the message. A `control` or `candidate` arm sends `RETRACE_CONTINUATION`, and `run_job.sh` stops when it is unset. A `candidate` arm copies `<repo>/<arm.path>/.factory` and `AGENTS.md` into `/testbed` before the session resumes.
+- `run_job.sh` runs `tool_call_ids` x `reruns` under the same budget rule as a `step0` job. `DROID_TIMEOUT` (default 1800 s) interrupts the turn, and `meta.json` gets `timed_out: true` with the credits of the interrupted turn.
+- A trial whose rewind or run fails gets `failed` in `meta.json`. `run_job.sh` runs it again on the next call. `grade.sh` writes no result for it and exits 1.
+- `grade.sh` grades each (tool_call_id, trial) as its own evaluation, up to `max_workers` at once. Results have `evidence_role: "diagnosis"` and `tool_call_id`. `model` is the model the fork reported.
+- `meta.json` and `fork.json` hold the successor session id, the continuation text, token counts, and `cost_credits` of the fork alone. The successor session sits in `factory-sessions/`.
+- No trace is written for a fork.
+
+Dev machines with another CPU cannot run the amd64 images with a Bun-built `droid`: it crashes under QEMU. For a local check, set `RETRACE_IMAGE` (for example `ghcr.io/epoch-research/swe-bench.eval.arm64.<instance_id>:latest`), `RETRACE_PLATFORM=linux/arm64`, and `RETRACE_DROID` to a Linux arm64 `droid` binary. Such a run does not grade.
+
 ## 6. Scale to about 8 in parallel
 ```bash
 prepull.sh -f ~/slice.txt
@@ -141,7 +178,8 @@ Each upsert replaces the row with the same key. A primitives session that gets f
 - Checked on a live VM on 24 Oct (`vc2-16c-64gb`, sjc): cloud-init finished in 225 s (Docker 29.9.2, Droid 0.249.0, swebench 5.0.2). The gold patch resolves `django__django-11099` in 38 s. A `run_job.sh` and `grade.sh` smoke run on that task, model `gpt-6-sol`, passed: 25 s of Droid time, 25,576 `factory_credits`, one result file that validates against the schema. The image takes 4.2 GB on disk.
 - Parallel run on 24 Oct: 4 tasks at once (`claude-haiku-5-5`, django and sympy) finished in 4 min 25 s with a load average of about 4.5 on 16 vCPU. 3 passed and 1 failed. The 4 trials used 21,201 factory_credits (4,277 to 7,588 each).
 - Recording on 24 Oct (2 tasks, `claude-haiku-5-5`): each trial writes `runs/traces/<job_id>-<task_id>-<trial>.json`, which validates against `contracts/trace.schema.json`. In a fresh task container, `git fetch` of the trial's `snapshots.bundle` and `restore.sh <last snapshot_ref>` reproduce the graded `patch.diff` byte for byte on both tasks.
-- Untested: a non-root user inside the task container, 8 trials at once, and the `candidate` and `hint` arms.
+- Untested: a non-root user inside the task container, and 8 trials at once.
+- Checkpoint forks ran on 24 Oct on a dev machine (arm64 image, Droid 0.249.0, `claude-haiku-5-5`): `control`, `hint`, and `candidate` arms, one timeout, and one rewind failure. They used about 11,600 credits. Untested on the x86 VM: the amd64 image with `docker-droid.sh`, `grade.sh` on a fork, and several forks at once.
 - Whether Droid finds the `testbed` conda env from the prompt hint alone.
 - Whether `usage.factory_credits` in the `droid exec` JSON is the full cost of the trial, and matches `tokenUsage.factoryCredits` from the SDK.
 - Whether Droid uses the model passed with `--model`. The result records the job's `model`, not a value read back from Droid.

@@ -1,0 +1,8 @@
+{
+  "name": "retrace-replay",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@factory/droid-sdk": "0.10.0"
+  }
+}

@@ -100,9 +100,9 @@ Values stay out of git. These facts were checked on 2026-10-24.
 
 These items change code. The rest are in the Unverified section of the project doc.
 
-- Whether the installed Droid CLI's rewind matches `@factory/droid-sdk` 0.10.0. The published SDK restores only the passed file snapshots. A live run is not required for that conclusion.
-- Whether a resumed session can leave its saved working directory. Until then, trials on that checkout run one at a time.
-- A fresh session seeded from the Droid transcript when rewind fails.
+- A fresh session seeded from the Droid transcript when rewind fails. Not implemented. Rewind worked on Droid 0.249.0 with `@factory/droid-sdk` 0.10.0 on 2026-10-24 (see `recorder/AGENTS.md`).
+- A checkpoint fork graded by the SWE-bench grader. The fork runs and writes a patch (arm64 test image, 2026-10-24). Grading needs the x86 worker.
+- Whether a candidate overlay's `AGENTS.md` reaches a resumed session. Its hooks do.
 - The session JSONL layout at `~/.factory/sessions/<cwd-slug>/<id>.jsonl`. It comes from third-party parsers.
 - Whether the snapshot hook causes Droid's "modified externally since it was last read" Edit errors. In baseline1, 9 of 12 follow a shell write by the agent to that file. 3 follow only test runs, in `django-13279` trial 3 and `sympy-23413` trial 1. `snapshot.sh` writes only a temporary index.
 - An official SWE-bench recipe for `droid exec`. The runner is our own glibc Docker image, graded with the SWE-bench runner.
