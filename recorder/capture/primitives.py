@@ -43,7 +43,11 @@ VALUE_OPTIONS = {
     "-k", "-m", "-p", "-n", "-c", "-o", "-W", "-t", "--tb", "--maxfail", "--timeout", "--rootdir", "--junitxml",
     "--durations", "--deselect", "--ignore", "--settings", "--pattern", "--top-level-directory", "--start-at",
     "--start-after", "--testrunner", "--bisect", "--pair", "--tag", "--exclude-tag", "--split", "--seed",
+    "-run", "-skip", "-tags", "-count", "-timeout", "-shuffle", "-parallel", "-cpu", "-bench", "-benchtime", "-mod",
+    "-covermode", "-coverprofile", "-coverpkg", "-ldflags", "-gcflags", "-vet", "-exec",
+    "--truncate", "--test", "--python", "--target-python", "--controller", "--target",
 }
+ANSIBLE_TEST_COMMANDS = {"units", "sanity", "integration", "network-integration", "windows-integration"}
 OPTIONAL_NUMBER_OPTIONS = {"-v", "--verbosity", "--parallel"}
 SYMPY_TEST_CALL = re.compile(r"\bsympy\.test\(([^)]*)\)")
 KEYWORD_ARG = re.compile(r"\b\w+\s*=")
@@ -179,6 +183,13 @@ def positionals(args):
     return out
 
 
+def runner_targets(runner, args):
+    targets = positionals(args)
+    if runner == "go_test":
+        return [t.removeprefix("./") for t in targets if t != "./..."]
+    return targets
+
+
 def python_invocation(args):
     """Return (kind, runner, rest) for the arguments of a python interpreter call."""
     i = 0
@@ -201,12 +212,21 @@ def python_invocation(args):
             i += 1
         elif not a.startswith("-") or a == "-":
             script = posixpath.basename(a)
+            if script == "ansible-test":
+                return ansible_test_invocation(args[i + 1:])
             if script == "runtests.py":
                 return "test", "django_runtests", args[i + 1:]
             if a == "bin/test" or a.endswith("/bin/test"):
                 return "test", "sympy_bin_test", args[i + 1:]
             return "run", None, []
         i += 1
+    return "run", None, []
+
+
+def ansible_test_invocation(args):
+    for i, a in enumerate(args):
+        if not a.startswith("-"):
+            return ("test", "ansible_test", args[i + 1:]) if a in ANSIBLE_TEST_COMMANDS else ("run", None, [])
     return "run", None, []
 
 
@@ -221,6 +241,10 @@ def classify_simple(command):
             cls, runner, rest = python_invocation(args)
         elif base in ("pytest", "py.test"):
             cls, runner, rest = "test", "pytest", args
+        elif base == "go" and args[:1] == ["test"]:
+            cls, runner, rest = "test", "go_test", args[1:]
+        elif base == "ansible-test":
+            cls, runner, rest = ansible_test_invocation(args)
         elif base == "runtests.py":
             cls, runner, rest = "test", "django_runtests", args
         elif prog == "bin/test" or prog.endswith("/bin/test"):
@@ -321,7 +345,7 @@ def build_call(position, use, results, hooks, seen, assistant_turns):
         background = background or bool(tool_input.get("fireAndForget")) or bool(output and "Status: Running in background" in output)
         if test:
             runner, args = test
-            targets = positionals(args)
+            targets = runner_targets(runner, args)
             path_args = len(targets)
             files = [repo_path(t) for t in targets if not re.search(r"[$`]", t)]
     else:

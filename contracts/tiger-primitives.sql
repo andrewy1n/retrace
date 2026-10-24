@@ -23,7 +23,7 @@ create table primitives_calls (
   turn              integer not null check (turn >= 0),
   tool_name         text    not null,
   command_class     text    not null check (command_class in ('test', 'run', 'read', 'search', 'edit', 'vcs', 'install', 'sleep_or_wait', 'other')),
-  test_runner       text    check (test_runner in ('pytest', 'django_runtests', 'sympy_bin_test', 'unittest')),
+  test_runner       text    check (test_runner in ('pytest', 'django_runtests', 'sympy_bin_test', 'unittest', 'go_test', 'ansible_test')),
   path_arg_count    integer check (path_arg_count >= 0),
   background        boolean not null,
   duration_s        numeric check (duration_s >= 0),

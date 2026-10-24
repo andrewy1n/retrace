@@ -58,23 +58,26 @@ write_files:
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
-      # Pre-pull SWE-bench Verified instance images (amd64) for a list of instance IDs.
+      # Pre-pull SWE-bench Verified or SWE-bench Pro instance images (amd64) for a list of instance IDs.
       #
       # Usage:
       #   /opt/retrace/prepull.sh django__django-11099 sympy__sympy-20590 ...
       #   /opt/retrace/prepull.sh -f ids.txt            # one instance_id per line, '#' comments ok
       #   PREPULL_JOBS=6 /opt/retrace/prepull.sh -f ids.txt
+      #   /opt/retrace/prepull.sh instance_NodeBB__NodeBB-<hash>-vnan
       #
       # Image name rule (matches swebench 5.x ImageSpec.name and the `image` column of
       # SWE-bench/SWE-bench_Verified): swebench/sweb.eval.x86_64.<id, "__" -> "_1776_", lowercased>:latest
       # Each instance image already contains its env layers, so no separate env image pull is needed.
+      # An id that starts with instance_ is a SWE-bench Pro id. Its image is ghcr.io/scaleapi/swe-bench_pro-v2:<id>
+      # with the case kept, as in the docker_image column. An argument with a colon is pulled as written.
       set -euo pipefail
 
       JOBS="${PREPULL_JOBS:-4}"
       TAG="${SWEBENCH_IMAGE_TAG:-latest}"
       LOG_DIR="${PREPULL_LOG_DIR:-/opt/retrace/logs/prepull}"
 
-      usage() { sed -n '2,10p' "$0"; exit 1; }
+      usage() { sed -n '2,14p' "$0"; exit 1; }
 
       ids=()
       while [[ $# -gt 0 ]]; do
@@ -94,6 +97,10 @@ write_files:
 
       image_for() {
         local id="$1"
+        case "$id" in
+          *:*) printf '%s\n' "$id"; return ;;
+          instance_*) printf '%s\n' "ghcr.io/scaleapi/swe-bench_pro-v2:$id"; return ;;
+        esac
         local key="swebench/sweb.eval.x86_64.${id//__/_1776_}:${TAG}"
         printf '%s\n' "${key,,}"
       }
@@ -117,18 +124,20 @@ write_files:
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
-      # Run one trial of a step0 job: Droid on one SWE-bench Verified task inside its official image.
+      # Run one trial of a step0 job: Droid on one SWE-bench task inside its official image.
+      # The job's dataset picks the task source: swebench_verified (default, repo at /testbed) or
+      # swebench_pro (SWE-bench Pro V2: prompt from the harness's instruction.md, repo at /app or /testbed).
       #
       # Usage: /opt/retrace/run_trial.sh <job.json> <task_id> <trial>
       # Needs: FACTORY_API_KEY in the environment. Optional: DROID_TIMEOUT (seconds, default 1800),
-      #        RETRACE_REPO (default /opt/retrace/repo).
+      #        RETRACE_REPO (default /opt/retrace/repo), PRO_TASKS (see pro_task.sh).
       # Output: /opt/retrace/runs/<job_id>/<task_id>/<trial>/{prompt.md,start_commit,droid.json,droid.stderr,patch.diff,pred.json,meta.json,
       #         capture/,factory-sessions/,snapshots.bundle}
       # Writes the trace to $RETRACE_REPO/runs/traces/<session_id>.json, where session_id is <job_id>-<task_id>-<trial>,
       # and links /opt/retrace/sessions/<session_id> to the output directory.
       set -euo pipefail
 
-      [[ $# -eq 3 ]] || { sed -n '2,7p' "$0"; exit 1; }
+      [[ $# -eq 3 ]] || { sed -n '2,9p' "$0"; exit 1; }
       JOB="$(realpath "$1")"; IID="$2"; TRIAL="$3"
       : "${FACTORY_API_KEY:?Set FACTORY_API_KEY first (export FACTORY_API_KEY=fk-...)}"
 
@@ -136,8 +145,11 @@ write_files:
       REPO="${RETRACE_REPO:-$ROOT/repo}"
       PY="$ROOT/venv/bin/python"
       DATASET="${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}"
+      # shellcheck source=pro_task.sh
+      source "$ROOT/pro_task.sh"
 
       JOB_ID="$(jq -r .job_id "$JOB")"
+      SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
       MODEL="$(jq -r .model "$JOB")"
       ARM="$(jq -r .arm.kind "$JOB")"
       HINT="$(jq -r '.arm.text // ""' "$JOB")"
@@ -155,7 +167,14 @@ write_files:
       fi
 
       # 1. Prompt: the problem statement, plus the hint for a hint arm. Never tests, patch, or dataset hints.
-      IMAGE="$("$PY" - "$DATASET" "$IID" "$OUT/prompt.md" "$HINT" <<'PY'
+      if [[ "$SUITE" == swebench_pro ]]; then
+        WORKDIR=""
+        IMAGE="$(pro_image "$IID")"
+        cp "$(pro_task_dir "$IID")/instruction.md" "$OUT/prompt.md"
+        [[ -z "$HINT" ]] || printf '\n<hint>\n%s\n</hint>\n' "$HINT" >> "$OUT/prompt.md"
+      else
+        WORKDIR=/testbed
+        IMAGE="$("$PY" - "$DATASET" "$IID" "$OUT/prompt.md" "$HINT" <<'PY'
       import sys
       from datasets import load_dataset
       name, iid, out, hint = sys.argv[1:5]
@@ -171,7 +190,8 @@ write_files:
       open(out, "w").write(text)
       print(row["image"])
       PY
-      )"
+        )"
+      fi
       echo "[$IID#$TRIAL] image $IMAGE"
 
       # shellcheck disable=SC2329  # invoked via trap
@@ -184,31 +204,33 @@ write_files:
         -v /usr/local/bin/droid:/usr/local/bin/droid:ro \
         -v "$OUT:/retrace" \
         -v "$ROOT/capture:/opt/retrace-capture:ro" \
-        -w /testbed "$IMAGE" sleep infinity >/dev/null
+        ${WORKDIR:+-w "$WORKDIR"} "$IMAGE" sleep infinity >/dev/null
+      [[ -n "$WORKDIR" ]] || WORKDIR="$(pro_workdir "$NAME")"
+      [[ -n "$WORKDIR" ]] || { echo "[$IID] no git repository in /app or /testbed" >&2; exit 1; }
 
       # 3. Record HEAD to diff against. Candidate arm: overlay .factory/ and AGENTS.md. Keep both out of the patch.
-      docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> /testbed/.git/info/exclude"
+      docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> $WORKDIR/.git/info/exclude"
       if [[ "$ARM" == candidate ]]; then
-        [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:/testbed/.factory"
-        [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:/testbed/AGENTS.md"
+        [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:$WORKDIR/.factory"
+        [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:$WORKDIR/AGENTS.md"
       fi
       docker exec -i "$NAME" bash -c 'mkdir -p /root/.factory && cat > /root/.factory/hooks.json' <<'JSON'
       {"PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "/opt/retrace-capture/hook.sh"}]}]}
       JSON
-      docker exec "$NAME" git -C /testbed rev-parse HEAD > "$OUT/start_commit"
+      docker exec "$NAME" git -C "$WORKDIR" rev-parse HEAD > "$OUT/start_commit"
       DROID_VERSION="$(docker exec "$NAME" droid --version | tail -n 1)"
 
       # 4. Headless Droid run. The container is disposable, so skip permission prompts.
       set +e
       timeout "${DROID_TIMEOUT:-1800}" docker exec -e FACTORY_API_KEY -e RETRACE_CAPTURE_DIR=/retrace/capture "$NAME" \
-        droid exec --skip-permissions-unsafe --cwd /testbed -o json --model "$MODEL" -f /retrace/prompt.md \
+        droid exec --skip-permissions-unsafe --cwd "$WORKDIR" -o json --model "$MODEL" -f /retrace/prompt.md \
         > "$OUT/droid.json" 2> "$OUT/droid.stderr"
       rc=$?
       set -e
       echo "[$IID#$TRIAL] droid exit $rc"
 
       # 5. Patch = everything changed since the container started, including new files.
-      docker exec "$NAME" bash -c "cd /testbed && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
+      docker exec "$NAME" bash -c "cd $WORKDIR && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
       echo "[$IID#$TRIAL] patch $(wc -l < "$OUT/patch.diff") lines"
 
       "$PY" - "$IID" "$JOB_ID-$ARM" "$OUT/patch.diff" "$OUT/pred.json" <<'PY'
@@ -219,7 +241,7 @@ write_files:
 
       # 6. Trace: keep the Droid session and the snapshot commits, then join them into runs/traces/.
       docker cp "$NAME:/root/.factory/sessions" "$OUT/factory-sessions" >/dev/null 2>&1 || true
-      docker exec "$NAME" bash -c 'cd /testbed && refs=$(git for-each-ref --format="%(refname)" refs/retrace) && [ -n "$refs" ] && git bundle create /retrace/snapshots.bundle $refs ^$(git rev-parse "$(cat /retrace/start_commit)^")' >/dev/null 2>&1 || true
+      docker exec -e WORKDIR "$NAME" bash -c 'cd "$WORKDIR" && refs=$(git for-each-ref --format="%(refname)" refs/retrace) && [ -n "$refs" ] && git bundle create /retrace/snapshots.bundle $refs ^$(git rev-parse "$(cat /retrace/start_commit)^")' >/dev/null 2>&1 || true
       mkdir -p "$ROOT/sessions" && ln -sfn "$OUT" "$ROOT/sessions/$JOB_ID-$IID-$TRIAL"
       TRANSCRIPT="$(find "$OUT/factory-sessions" -name '*.jsonl' 2>/dev/null | head -n 1)"
       CAPTURE="$(find "$OUT/capture" -name '*.jsonl' 2>/dev/null | head -n 1)"
@@ -310,7 +332,9 @@ write_files:
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
-      # Grade a step0 or checkpoint job with the official SWE-bench harness and write one result file per trial.
+      # Grade a step0 or checkpoint job and write one result file per trial. A swebench_verified job (default) goes
+      # through the official SWE-bench harness. A swebench_pro job goes through the task's own verifier from the
+      # SWE-bench Pro harness (grade_pro.sh), one fresh container per trial, <max_workers> at once.
       #
       # Usage: /opt/retrace/grade.sh <job.json> [max_workers=8] [trial]
       # Results: $RETRACE_REPO/runs/results/<job_id>/<task_id>-<step0 or tool_call_id>-<arm>-<trial>.json
@@ -318,13 +342,14 @@ write_files:
       # A checkpoint job grades each (tool_call_id, trial) as its own run, with max_workers=1, <max_workers> runs at once.
       set -euo pipefail
 
-      [[ $# -ge 1 ]] || { sed -n '2,6p' "$0"; exit 1; }
+      [[ $# -ge 1 ]] || { sed -n '2,8p' "$0"; exit 1; }
       JOB="$(realpath "$1")"; WORKERS="${2:-8}"; ONLY="${3:-}"
       ROOT="${RETRACE_ROOT:-/opt/retrace}"
       PY="$ROOT/venv/bin/python"
 
       "$PY" "$ROOT/retrace_job.py" validate "$JOB"
       JOB_ID="$(jq -r .job_id "$JOB")"
+      SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
       REPO="${RETRACE_REPO:-$ROOT/repo}"
       RUNS="$ROOT/runs/$JOB_ID"
       failed=0
@@ -334,6 +359,10 @@ write_files:
         grade_one() {
           local cp="$1" t="$2" art="$RUNS/$TASK/$1/$2" eval_dir="$RUNS/eval-$1-t$2"
           [[ -f "$art/meta.json" ]] && ! jq -e .failed "$art/meta.json" >/dev/null || return 0
+          if [[ "$SUITE" == swebench_pro ]]; then
+            "$ROOT/grade_pro.sh" "$TASK" "$art/patch.diff" "$eval_dir/$TASK"
+            return
+          fi
           mkdir -p "$eval_dir"; cd "$eval_dir"
           { cat "$art/pred.json"; echo; } > predictions.jsonl
           [[ -s "$art/patch.diff" ]] || return 0
@@ -343,7 +372,7 @@ write_files:
             --run_id "$cp-t$t-$(date +%Y%m%d%H%M%S)" --report_dir "$eval_dir"
         }
         export -f grade_one
-        export RUNS TASK PY SWEBENCH_DATASET
+        export RUNS TASK PY ROOT SUITE SWEBENCH_DATASET
         for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
           [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
           jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'grade_one "$@"' _ {} "$t" \
@@ -361,6 +390,16 @@ write_files:
         [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
         EVAL_DIR="$RUNS/eval-t$t"
         mkdir -p "$EVAL_DIR"
+        if [[ "$SUITE" == swebench_pro ]]; then
+          for task in $(jq -r '.task_ids[]' "$JOB"); do
+            [[ -f "$RUNS/$task/$t/meta.json" ]] && echo "$task"
+          done | xargs -r -P "$WORKERS" -I{} "$ROOT/grade_pro.sh" {} "$RUNS/{}/$t/patch.diff" "$EVAL_DIR/{}" || failed=1
+          "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
+          if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
+            "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
+          fi
+          continue
+        fi
         PRED="$EVAL_DIR/predictions.jsonl"
         : > "$PRED"
         for task in $(jq -r '.task_ids[]' "$JOB"); do
@@ -381,6 +420,84 @@ write_files:
         fi
       done
       [[ "$failed" -eq 0 ]] || { echo "some trials could not be collected, see above" >&2; exit 1; }
+  - path: /opt/retrace/grade_pro.sh
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env bash
+      # Grade one patch on one SWE-bench Pro V2 task with the task's own verifier from the official harness.
+      #
+      # Usage: /opt/retrace/grade_pro.sh <task_id> <patch.diff | gold | empty> <out_dir>
+      # Starts a fresh container from the task image, applies the patch as the harness's patch_replay agent does,
+      # mounts the task's tests/ at /tests and out_dir at /logs/verifier, and runs `bash /tests/test.sh`.
+      # The verifier writes reward.txt (1 passed, 0 failed). `gold` applies the task's reference patch and `empty` applies nothing.
+      # Output: <out_dir>/{apply.log,test.log,seconds,reward.txt,output.json,run-script-stdout.txt,run-script-stderr.txt}
+      # Exits 1 when the verifier left no reward.txt (image, apply, or timeout trouble). Needs PRO_TASKS (see pro_task.sh).
+      set -euo pipefail
+
+      [[ $# -eq 3 ]] || { sed -n '2,9p' "$0"; exit 1; }
+      IID="$1"; PATCH="$2"; OUT="$(realpath -m "$3")"
+      # shellcheck source=pro_task.sh
+      source "$(dirname "$(realpath "$0")")/pro_task.sh"
+
+      TASK="$(pro_task_dir "$IID")"
+      IMAGE="$(pro_image "$IID")"
+      case "$PATCH" in
+        gold) PATCH="$TASK/solution/gold_patch.diff" ;;
+        empty) PATCH="" ;;
+      esac
+
+      NAME="retrace-pro-grade-${IID//[^A-Za-z0-9_.-]/-}"
+      NAME="${NAME:0:100}-$$"
+      mkdir -p "$OUT"
+      rm -f "$OUT/reward.txt" "$OUT/output.json" "$OUT/apply.log" "$OUT/test.log" "$OUT/seconds"
+
+      # shellcheck disable=SC2329  # invoked via trap
+      cleanup() { docker rm -f "$NAME" >/dev/null 2>&1 || true; }
+      trap cleanup EXIT
+
+      start=$SECONDS
+      docker run -d --name "$NAME" --platform linux/amd64 \
+        -v "$TASK/tests:/tests:ro" -v "$OUT:/logs/verifier" "$IMAGE" sleep infinity >/dev/null
+
+      if [[ -s "$PATCH" ]]; then
+        docker cp "$PATCH" "$NAME:/tmp/replay.patch"
+        docker exec "$NAME" bash -c 'cd /app 2>/dev/null || cd /testbed
+          git apply --verbose /tmp/replay.patch || git apply --3way /tmp/replay.patch || patch --fuzz=3 -p1 -i /tmp/replay.patch' \
+          > "$OUT/apply.log" 2>&1 || echo "[$IID] patch did not apply, see $OUT/apply.log" >&2
+      fi
+
+      set +e
+      timeout "$(pro_verifier_timeout "$IID")" docker exec "$NAME" bash /tests/test.sh > "$OUT/test.log" 2>&1
+      rc=$?
+      set -e
+      echo $((SECONDS - start)) > "$OUT/seconds"
+      [[ -f "$OUT/reward.txt" ]] || { echo "[$IID] verifier exit $rc left no reward.txt" >&2; exit 1; }
+      echo "[$IID] reward $(<"$OUT/reward.txt") in $(<"$OUT/seconds") s"
+  - path: /opt/retrace/pro_task.sh
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env bash
+      # Sourced by the runners and graders. Reads one SWE-bench Pro V2 task from the official harness checkout.
+      # PRO_TASKS is <scaleapi/SWE-bench_Pro-os>/v2/tasks. cloud-init clones it at the pinned commit.
+
+      PRO_TASKS="${PRO_TASKS:-${RETRACE_ROOT:-/opt/retrace}/swe-bench-pro/v2/tasks}"
+
+      pro_task_dir() {
+        [[ -d "$PRO_TASKS/$1" ]] || { echo "no SWE-bench Pro task $1 under $PRO_TASKS" >&2; return 1; }
+        echo "$PRO_TASKS/$1"
+      }
+
+      pro_image() {
+        sed -n 's/^docker_image = "\(.*\)"$/\1/p' "$(pro_task_dir "$1")/task.toml"
+      }
+
+      pro_verifier_timeout() {
+        awk '/^\[verifier\]$/ {s = 1; next} /^\[/ {s = 0} s && /^timeout_sec/ {print int($3)}' "$(pro_task_dir "$1")/task.toml"
+      }
+
+      pro_workdir() {
+        docker exec "$1" bash -c 'for d in /app /testbed; do [ -d "$d/.git" ] && echo "$d" && break; done'
+      }
   - path: /opt/retrace/retrace_job.py
     permissions: '0755'
     content: |
@@ -446,6 +563,14 @@ write_files:
               yield task, cp, runs / task / cp / str(trial), runs / f"eval-{cp}-t{trial}"
 
 
+      def graded(job, eval_dir, task):
+          if job.get("dataset") == "swebench_pro":
+              reward = eval_dir / task / "reward.txt"
+              return reward.read_text().strip() == "1" if reward.exists() else None
+          reports = sorted(eval_dir.glob(f"logs/run_evaluation/*/{model_name(job)}/{task}/report.json"))
+          return bool(json.loads(reports[-1].read_text())[task]["resolved"]) if reports else None
+
+
       def collect(job_path, trial, only=None):
           job = load_job(job_path)
           job_id, kind = job["job_id"], job["arm"]["kind"]
@@ -460,12 +585,10 @@ write_files:
               if meta.get("failed"):
                   problems.append(f"{task} {cp}: trial failed: {meta['failed']}")
                   continue
-              reports = sorted(eval_dir.glob(f"logs/run_evaluation/*/{model_name(job)}/{task}/report.json"))
-              if reports:
-                  passed = bool(json.loads(reports[-1].read_text())[task]["resolved"])
-              elif not (art / "patch.diff").read_text().strip():
+              passed = graded(job, eval_dir, task)
+              if passed is None and not (art / "patch.diff").read_text().strip():
                   passed = False
-              else:
+              elif passed is None:
                   problems.append(f"{task} {cp}: no grader report")
                   continue
               result = {
@@ -477,7 +600,7 @@ write_files:
                   "stop_mode": job["stop_mode"],
                   "trial": trial,
                   "passed": passed,
-                  "grader": "swebench",
+                  "grader": "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench",
                   "evidence_role": "final" if cp == "step0" else "diagnosis",
                   "cost_credits": meta["cost_credits"],
               }
@@ -631,8 +754,11 @@ write_files:
       PY="$ROOT/venv/bin/python"
       DATASET="${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}"
       DROID_BIN="${RETRACE_DROID:-/usr/local/bin/droid}"
+      # shellcheck source=../worker/scripts/pro_task.sh
+      source "$ROOT/pro_task.sh"
 
       JOB_ID="$(jq -r .job_id "$JOB")"
+      SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
       MODEL="$(jq -r .model "$JOB")"
       ARM="$(jq -r .arm.kind "$JOB")"
       CANDIDATE="$(jq -r '.arm.path // ""' "$JOB")"
@@ -666,13 +792,19 @@ write_files:
       printf '%s' "$MESSAGE" > "$OUT/continuation.md"
       cp "$SESS/start_commit" "$OUT/start_commit"
 
-      IMAGE="${RETRACE_IMAGE:-$("$PY" - "$DATASET" "$IID" <<'PY'
+      if [[ "$SUITE" == swebench_pro ]]; then
+        WORKDIR=""
+        IMAGE="${RETRACE_IMAGE:-$(pro_image "$IID")}"
+      else
+        WORKDIR=/testbed
+        IMAGE="${RETRACE_IMAGE:-$("$PY" - "$DATASET" "$IID" <<'PY'
       import sys
       from datasets import load_dataset
       name, iid = sys.argv[1:3]
       print(next(r for r in load_dataset(name, split="test") if r["instance_id"] == iid)["image"])
       PY
-      )}"
+        )}"
+      fi
       echo "[$IID/$TCID#$TRIAL] image $IMAGE"
 
       # shellcheck disable=SC2329  # invoked via trap
@@ -685,12 +817,15 @@ write_files:
         -v "$OUT:/retrace" \
         -v "$ROOT/capture:/opt/retrace-capture:ro" \
         -v "$HERE/restore.sh:/opt/retrace-replay/restore.sh:ro" \
-        -w /testbed "$IMAGE" sleep infinity >/dev/null
+        ${WORKDIR:+-w "$WORKDIR"} "$IMAGE" sleep infinity >/dev/null
+      [[ -n "$WORKDIR" ]] || WORKDIR="$(pro_workdir "$NAME")"
+      [[ -n "$WORKDIR" ]] || { echo "[$IID] no git repository in /app or /testbed" >&2; exit 1; }
+      export RETRACE_WORKDIR="$WORKDIR"
 
-      docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> /testbed/.git/info/exclude"
+      docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> $WORKDIR/.git/info/exclude"
       if [[ "$ARM" == candidate ]]; then
-        [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:/testbed/.factory"
-        [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:/testbed/AGENTS.md"
+        [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:$WORKDIR/.factory"
+        [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:$WORKDIR/AGENTS.md"
       fi
       docker exec -i "$NAME" bash -c 'mkdir -p /root/.factory/sessions && cat > /root/.factory/hooks.json' <<'JSON'
       {"PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "/opt/retrace-capture/hook.sh"}]}]}
@@ -700,13 +835,13 @@ write_files:
       # Put the recorded session and its snapshot commits back where the capture run left them.
       docker cp "$SESS/factory-sessions/." "$NAME:/root/.factory/sessions/" >/dev/null
       docker cp "$SESS/snapshots.bundle" "$NAME:/tmp/snapshots.bundle"
-      docker exec "$NAME" git -C /testbed fetch -q /tmp/snapshots.bundle 'refs/retrace/*:refs/retrace/*'
-      docker exec "$NAME" git -C /testbed cat-file -e "$(<"$OUT/start_commit")^{commit}"
+      docker exec "$NAME" git -C "$WORKDIR" fetch -q /tmp/snapshots.bundle 'refs/retrace/*:refs/retrace/*'
+      docker exec "$NAME" git -C "$WORKDIR" cat-file -e "$(<"$OUT/start_commit")^{commit}"
 
       if [[ -n "$SNAPSHOT" ]]; then
-        RESTORE_CMD="docker exec -w /testbed $NAME /opt/retrace-replay/restore.sh $SNAPSHOT /testbed"
+        RESTORE_CMD="docker exec -w $WORKDIR $NAME /opt/retrace-replay/restore.sh $SNAPSHOT $WORKDIR"
       else
-        RESTORE_CMD="docker exec -w /testbed $NAME bash -c 'git reset -q --hard $(<"$OUT/start_commit") && git clean -fdq'"
+        RESTORE_CMD="docker exec -w $WORKDIR $NAME bash -c 'git reset -q --hard $(<"$OUT/start_commit") && git clean -fdq'"
       fi
 
       set +e
@@ -719,7 +854,7 @@ write_files:
       set -e
       echo "[$IID/$TCID#$TRIAL] fork exit $rc"
 
-      docker exec "$NAME" bash -c "cd /testbed && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
+      docker exec "$NAME" bash -c "cd $WORKDIR && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
       echo "[$IID/$TCID#$TRIAL] patch $(wc -l < "$OUT/patch.diff") lines"
 
       "$PY" - "$IID" "$JOB_ID-$ARM" "$OUT/patch.diff" "$OUT/pred.json" <<'PY'
@@ -750,8 +885,8 @@ write_files:
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
-      # Stands in for the droid binary as the SDK's execPath. Runs droid inside the container named by RETRACE_CONTAINER.
-      exec docker exec -i -w /testbed -e FACTORY_API_KEY -e FACTORY_UPSTREAM_CLIENT_TYPE -e FACTORY_UPSTREAM_SDK \
+      # Stands in for the droid binary as the SDK's execPath. Runs droid inside the container named by RETRACE_CONTAINER, in RETRACE_WORKDIR (default /testbed).
+      exec docker exec -i -w "${RETRACE_WORKDIR:-/testbed}" -e FACTORY_API_KEY -e FACTORY_UPSTREAM_CLIENT_TYPE -e FACTORY_UPSTREAM_SDK \
         -e RETRACE_CAPTURE_DIR=/retrace/capture "${RETRACE_CONTAINER:?}" droid "$@"
   - path: /opt/retrace/replay/restore.sh
     permissions: '0755'
@@ -2360,6 +2495,7 @@ runcmd:
   - [bash, -c, "export HOME=/root && curl -fsSL https://app.factory.ai/cli | sh && install -m 0755 /root/.local/bin/droid /usr/local/bin/droid"]
   - [bash, -c, "python3 -m venv /opt/retrace/venv && /opt/retrace/venv/bin/pip install --upgrade pip && /opt/retrace/venv/bin/pip install 'swebench==5.0.2' datasets jsonschema 'psycopg[binary]'"]
   - [bash, -c, "git clone https://github.com/andrewy1n/retrace.git /opt/retrace/repo"]
+  - [bash, -c, "git clone -q --filter=blob:none --no-checkout https://github.com/scaleapi/SWE-bench_Pro-os.git /opt/retrace/swe-bench-pro && cd /opt/retrace/swe-bench-pro && git sparse-checkout set v2/tasks v2/tooling && git checkout -q 66f92766bba642462d4bbe5479e83f91f9211862"]
   - [bash, -c, "git config --system --add safe.directory /opt/retrace/repo"]
   - [bash, -c, "mkdir -p /opt/retrace/runs /opt/retrace/logs && chown -R retrace:retrace /opt/retrace"]
   - [bash, -c, "docker --version; node --version; droid --version; /opt/retrace/venv/bin/python -c 'import swebench; print(\"swebench\", swebench.__version__)'"]
