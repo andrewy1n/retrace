@@ -11,4 +11,4 @@ Commit one file per failure group, `splits/<group>.json`, before anyone studies 
 
 Ids are SWE-bench instance ids. Held-out tasks come from different repos than the derivation tasks.
 
-`splits/pool.json` lists the dev and held-out tasks, drawn before any baseline run. Nobody runs or studies the held-out tasks until the change is frozen (Gate 4). The per-group files above pick from this pool.
+`splits/pool.json` lists the dev and held-out tasks. `splits/draw_pool.py` draws it from fixed quotas and a seed. The current pool keeps the baseline1 dev tasks and was drawn before any run on its new tasks. Nobody runs or studies the held-out tasks until the change is frozen (Gate 4). The per-group files above pick from this pool.
