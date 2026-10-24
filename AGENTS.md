@@ -38,6 +38,7 @@ Do not add a `CLAUDE.md`. Claude Code reads this file when no `CLAUDE.md` is pre
 
 - Trace. One session in `runs/traces/<session-id>.json`. Each step has `tool_call_id`, `message_id` (the Droid `messageId` that `session.rewind` takes), `tool_name`, and `snapshot_ref`. The step does not include tool input or output. The conversation stays in the Droid session. The session also has `harness_session_id` (the id `resumeSession` accepts) and `task_id`. The demo harness value is `droid`.
 - Friction ticket. `runs/tickets/<ticket-id>.json`. Fields are `ticket_id`, `friction_type`, `severity`, and `session_ids`. The shape matches a Signals ticket so a later Signals or Linear ticket can seed the same file. The stand-in detector is labeled Signals-style and credits Factory Signals for the ideas it borrows.
+- Primitives. One session in `runs/primitives/<session-id>.json`, written by `recorder/capture/primitives.py` from the Droid transcript and `settings.json`. Session fields are `session_id`, `task_id`, `job_id`, `trial`, `harness`, `assistant_turns`, `tool_calls`, `token_usage` (the `tokenUsage` totals, with `factory_credits`), `timed_out`, and `calls`. Each call has `tool_call_id` (matches the trace), `position`, `turn`, `tool_name`, `command_class`, `test_runner`, `path_arg_count` (0 is a whole-suite run), `background`, `duration_s`, `is_error`, `exit_code`, `files`, `output_chars`, `output_tokens_est`, `turns_after`, and `repeats_earlier`. A call has no command text and no tool output. Only classes, counts, and repo paths.
 - Replay job. `runs/jobs/<job-id>.json`. `start` is `checkpoint` or `step0`. A `checkpoint` job has `session_id` and `tool_call_ids`. A `step0` job has `task_ids` and runs each task fresh. Every job has an arm (`control`, hint text, or a proposal path), `model`, reruns, stop mode (`next_user_turn`, `reuse_reply`, `simulated_user`), and a Factory credit budget (`budget_credits`).
 - Replay result. One trial at `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Fields are `job_id`, `task_id`, `session_id` of the trial's trace when one was recorded, the arm kind, `model`, `droid_version`, the stop mode used, `trial`, `passed`, `grader`, `evidence_role`, and `cost_credits` from `tokenUsage.factoryCredits`. A `checkpoint` trial is `diagnosis`, has `tool_call_id`, and is not final evidence. A `step0` trial is `final` and has no `tool_call_id`.
 - Proposed change. `analysis/proposals/<id>/proposal.json`. Fields are `proposal_id`, `failure_type`, `change_type`, and `path`. The runner copies `.factory/` and `AGENTS.md` from that directory onto the task checkout and leaves `proposal.json` in this repo.
@@ -57,10 +58,11 @@ If the biggest failure group is too small to split, widen the task pool before w
 
 ## Layout
 
+- `runs/primitives/<session-id>.json`
 - `runs/labels/<session-id>.json`
 - `runs/tickets/<ticket-id>.json`
 - `runs/reviews/<proposal-id>.json`
-- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/jobs`, `runs/results`, `runs/labels`, `runs/tickets`, and `runs/reviews` are world-readable.
+- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/primitives`, `runs/jobs`, `runs/results`, `runs/labels`, `runs/tickets`, and `runs/reviews` are world-readable.
 - `runs/private/` is gitignored. Private sessions stay there and are not committed.
 - `splits/` holds derivation, held-out, and regression instance ids.
 - `reports/` holds a frozen comparison, including its count, interval, and Factory credits. `reports/preregistration.md` is committed before the first derivation run.
