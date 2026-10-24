@@ -1,0 +1,140 @@
+{
+  "session_id": "baseline1-django__django-13786-2",
+  "task_id": "django__django-13786",
+  "job_id": "baseline1",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 6,
+  "tool_calls": 6,
+  "token_usage": {
+    "input_tokens": 14,
+    "output_tokens": 2229,
+    "cache_creation_tokens": 7083,
+    "cache_read_tokens": 90926,
+    "thinking_tokens": 407,
+    "factory_credits": 1167
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01U9xbyPjZjN7GV6aq2w3GcT",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.048,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 3426,
+      "output_tokens_est": 856,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01SfJw48jJ6RJQzZQFKJnoJv",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.025,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "output_chars": 6949,
+      "output_tokens_est": 1737,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_015EqfBxKtVxg59H3N6hWDBR",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.027,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "output_chars": 1972,
+      "output_tokens_est": 493,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01XXcNh6BTUQYm7a5Nd3uYHe",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.034,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "output_chars": 2016,
+      "output_tokens_est": 504,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01NmuvX67sCPd2JbQBipMJ9K",
+      "position": 4,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 1.807,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "migrations",
+        "migrations2"
+      ],
+      "output_chars": 509,
+      "output_tokens_est": 127,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0191VBRQDzQrGQjCnxaDnuDh",
+      "position": 5,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 10.119,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "migrations",
+        "migrations2"
+      ],
+      "output_chars": 845,
+      "output_tokens_est": 211,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

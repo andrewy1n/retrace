@@ -1,0 +1,140 @@
+{
+  "session_id": "baseline1-django__django-14349-3",
+  "task_id": "django__django-14349",
+  "job_id": "baseline1",
+  "trial": 3,
+  "harness": "droid",
+  "assistant_turns": 7,
+  "tool_calls": 6,
+  "token_usage": {
+    "input_tokens": 16,
+    "output_tokens": 2511,
+    "cache_creation_tokens": 5931,
+    "cache_read_tokens": 112994,
+    "thinking_tokens": 746,
+    "factory_credits": 1255
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01XD3jvJpuAptK89cbkTgas5",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.072,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 1935,
+      "output_tokens_est": 483,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_017BKa9hnCG8dMudVgCdRVn8",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.015,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/validators.py"
+      ],
+      "output_chars": 5368,
+      "output_tokens_est": 1342,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0112Y9xhUdNhrvrjmoedP9MP",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.031,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 983,
+      "output_tokens_est": 245,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019so72HAcywukY1gCiX2KUn",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.033,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/validators.py"
+      ],
+      "output_chars": 2053,
+      "output_tokens_est": 513,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01XiWD8f5C47cLM299yy8U4M",
+      "position": 4,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 3,
+      "background": false,
+      "duration_s": 2.676,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "validators",
+        "forms_tests.field_tests.test_urlfield",
+        "model_forms"
+      ],
+      "output_chars": 750,
+      "output_tokens_est": 187,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RPTucprn98ZSXxzuhueNbn",
+      "position": 5,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 3,
+      "background": false,
+      "duration_s": 2.403,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "validators",
+        "forms_tests.field_tests.test_urlfield",
+        "model_forms"
+      ],
+      "output_chars": 86,
+      "output_tokens_est": 21,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

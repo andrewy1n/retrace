@@ -1,0 +1,198 @@
+{
+  "session_id": "baseline1-django__django-11532-1",
+  "task_id": "django__django-11532",
+  "job_id": "baseline1",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 7,
+  "tool_calls": 9,
+  "token_usage": {
+    "input_tokens": 16,
+    "output_tokens": 5727,
+    "cache_creation_tokens": 8124,
+    "cache_read_tokens": 111104,
+    "thinking_tokens": 2673,
+    "factory_credits": 1999
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01EaeD8MTEYkREeqmrnVKQZS",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.033,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/mail/utils.py"
+      ],
+      "output_chars": 452,
+      "output_tokens_est": 113,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Rk6MKMDrgRgeBZrawUAA7B",
+      "position": 1,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 1.067,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 812,
+      "output_tokens_est": 203,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0186GDnnCuRfPWpYswTBx5DH",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.021,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/mail/utils.py"
+      ],
+      "output_chars": 1832,
+      "output_tokens_est": 458,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_015BYZ4TAYzYsF61TrG2Wfk6",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 0.876,
+      "is_error": true,
+      "exit_code": 1,
+      "files": [
+        "mail"
+      ],
+      "output_chars": 221,
+      "output_tokens_est": 55,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01JghPkA11weFwuLcGo73Ni9",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 2.999,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "mail"
+      ],
+      "output_chars": 343,
+      "output_tokens_est": 85,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016kXLqMLCvaqg6bHzPCZZt4",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.012,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/mail/message.py"
+      ],
+      "output_chars": 258,
+      "output_tokens_est": 64,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01TgWA5Tz6UYPgYiQpim2T67",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.016,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/mail/message.py"
+      ],
+      "output_chars": 897,
+      "output_tokens_est": 224,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01HvKwaf6aPjQQm3ood4E6Lt",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.692,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/mail/message.py"
+      ],
+      "output_chars": 1093,
+      "output_tokens_est": 273,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RzencgQsYCzSUnnxdYUqkR",
+      "position": 8,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 3.019,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "mail"
+      ],
+      "output_chars": 293,
+      "output_tokens_est": 73,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}
