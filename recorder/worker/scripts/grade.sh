@@ -13,6 +13,7 @@ PY="$ROOT/venv/bin/python"
 
 "$PY" "$ROOT/retrace_job.py" validate "$JOB"
 JOB_ID="$(jq -r .job_id "$JOB")"
+REPO="${RETRACE_REPO:-$ROOT/repo}"
 RUNS="$ROOT/runs/$JOB_ID"
 failed=0
 
@@ -34,6 +35,9 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     --max_workers "$WORKERS" \
     --run_id "t$t-$(date +%Y%m%d%H%M%S)" \
     --report_dir "$EVAL_DIR"
-  "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
+  "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || { failed=1; continue; }
+  if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
+    "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
+  fi
 done
 [[ "$failed" -eq 0 ]] || { echo "some trials could not be collected, see above" >&2; exit 1; }
