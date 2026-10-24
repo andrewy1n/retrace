@@ -1,7 +1,7 @@
 {
   "drawn": "2026-10-24",
   "seed": 13,
-  "source": "ScaleAI/SWE-bench_Pro (default config, V2). Tasks from splits/pro-candidates.json that pass the gold patch and fail the empty patch (splits/pro-gold-check.json). Held-out repos come from a seeded shuffle within each language. Tasks an agent already ran are left out of held-out.",
+  "source": "ScaleAI/SWE-bench_Pro (default config, V2). Tasks from splits/pro-candidates.json that pass the gold patch and fail the empty patch (splits/pro-gold-check.json). Held-out repos come from a seeded shuffle within each language. Tasks an agent already ran are left out of held-out. Tasks whose image is Alpine are left out because the glibc Droid binary does not run there.",
   "held_out_repos": [
     "qutebrowser/qutebrowser",
     "navidrome/navidrome",
@@ -35,11 +35,8 @@
     "instance_gravitational__teleport-326fd1d7be87b03998dbc53bc706fdef90f5065c-v626ec2a48416b10a88641359a169d99e935ff037",
     "instance_gravitational__teleport-c335534e02de143508ebebc7341021d7f8656e8f",
     "instance_gravitational__teleport-c782838c3a174fdff80cafd8cd3b1aa4dae8beb2",
-    "instance_gravitational__teleport-32bcd71591c234f0d8b091ec01f1f5cbfdc0f13c-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
     "instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
-    "instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037",
-    "instance_gravitational__teleport-af5e2517de7d18406b614e413aca61c319312171-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
-    "instance_gravitational__teleport-b8fbb2d1e90ffcde88ed5fe9920015c1be075788-vee9b09fb20c43af7e520f57e9239bbcf46b7113d"
+    "instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037"
   ],
   "held_out": [
     "instance_qutebrowser__qutebrowser-99029144b5109bb1b2a53964a7c129e009980cd9-va0fd88aac89cde702ec1ba84877234da33adce8a",

@@ -18,6 +18,7 @@ LANGS = {
     "go": ["flipt-io/flipt", "gravitational/teleport", "future-architect/vuls", "navidrome/navidrome"],
 }
 HELD_OUT_REPOS = {"python": 1, "go": 2}
+ALPINE_IMAGE_SUFFIX = "-vee9b09fb20c43af7e520f57e9239bbcf46b7113d"
 
 
 def repo_of(instance_id):
@@ -27,7 +28,8 @@ def repo_of(instance_id):
 
 def main():
     checked = json.loads((ROOT / "splits" / "pro-gold-check.json").read_text())
-    ok = [c["instance_id"] for c in checked if c["gold_reward"] == 1 and c["empty_reward"] == 0]
+    ok = [c["instance_id"] for c in checked if c["gold_reward"] == 1 and c["empty_reward"] == 0
+          and not c["instance_id"].endswith(ALPINE_IMAGE_SUFFIX)]
     ran = {json.loads(p.read_text())["task_id"] for p in (ROOT / "runs" / "results").glob("*/*.json")}
 
     held_repos = []
@@ -46,7 +48,8 @@ def main():
         "seed": SEED,
         "source": "ScaleAI/SWE-bench_Pro (default config, V2). Tasks from splits/pro-candidates.json that pass "
                   "the gold patch and fail the empty patch (splits/pro-gold-check.json). Held-out repos come from "
-                  "a seeded shuffle within each language. Tasks an agent already ran are left out of held-out.",
+                  "a seeded shuffle within each language. Tasks an agent already ran are left out of held-out. Tasks whose "
+                  "image is Alpine are left out because the glibc Droid binary does not run there.",
         "held_out_repos": held_repos,
         "dev": dev,
         "held_out": held_out,
