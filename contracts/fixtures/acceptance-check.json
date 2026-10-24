@@ -1,0 +1,14 @@
+{
+  "task_id": "example__example-1",
+  "dataset": "swebench_pro",
+  "author": "example-model",
+  "inputs": [
+    "instruction",
+    "start_repo"
+  ],
+  "files": [
+    "tests/test_retrace_acceptance.py"
+  ],
+  "command": "python -m pytest -q tests/test_retrace_acceptance.py",
+  "frozen_at": "2026-10-24T00:00:00Z"
+}

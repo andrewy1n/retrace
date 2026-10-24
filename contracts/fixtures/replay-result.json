@@ -8,9 +8,25 @@
   "droid_version": "0.0.0",
   "stop_mode": "next_user_turn",
   "trial": 1,
-  "passed": false,
-  "grader": "swebench_pro",
   "evidence_role": "diagnosis",
   "cost_credits": 0.4,
-  "timed_out": false
+  "timed_out": false,
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "tests/test_example.py"
+      ],
+      "passing_at_start": 12,
+      "regressed": 0,
+      "newly_passing": 1,
+      "seconds": 41.5
+    },
+    "acceptance": {
+      "status": "pass",
+      "at_start": "fail",
+      "check_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "seconds": 18.0
+    }
+  }
 }
