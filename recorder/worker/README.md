@@ -113,16 +113,15 @@ Then pull the image and run one fork:
 prepull.sh django__django-11292
 cat > ~/fork1.json <<'JOB'
 {"job_id": "fork1", "start": "checkpoint", "session_id": "baseline1-django__django-11292-1",
- "tool_call_ids": ["toolu_01Dq3aZjyjwEvyboFYqV1dGo"], "arm": {"kind": "control"},
+ "tool_call_ids": ["toolu_01Dq3aZjyjwEvyboFYqV1dGo"], "arm": {"kind": "control"}, "continuation": "Continue.",
  "model": "claude-haiku-5-5", "reruns": 1, "stop_mode": "next_user_turn", "budget_credits": 20000}
 JOB
-export RETRACE_CONTINUATION='Continue.'    # test value; the control text is an open decision
 run_job.sh ~/fork1.json 1
 # → /opt/retrace/runs/fork1/django__django-11292/<tool_call_id>/1/{continuation.md,start_commit,fork.json,fork.stderr,patch.diff,pred.json,meta.json,capture/,factory-sessions/}
 grade.sh ~/fork1.json 1
 # → /opt/retrace/repo/runs/results/fork1/django__django-11292-<tool_call_id>-control-1.json
 ```
-- A `hint` arm sends its `text` as the message. A `control` or `candidate` arm sends `RETRACE_CONTINUATION`, and `run_job.sh` stops when it is unset. A `candidate` arm copies `<repo>/<arm.path>/.factory` and `AGENTS.md` into `/testbed` before the session resumes.
+- A `hint` arm sends its `text` as the message. A `control` or `candidate` arm sends the job's `continuation` text, which the schema requires. A `candidate` arm copies `<repo>/<arm.path>/.factory` and `AGENTS.md` into `/testbed` before the session resumes.
 - `run_job.sh` runs `tool_call_ids` x `reruns` under the same budget rule as a `step0` job. `DROID_TIMEOUT` (default 1800 s) interrupts the turn, and `meta.json` gets `timed_out: true` with the credits of the interrupted turn.
 - A trial whose rewind or run fails gets `failed` in `meta.json`. `run_job.sh` runs it again on the next call. `grade.sh` writes no result for it and exits 1.
 - `grade.sh` grades each (tool_call_id, trial) as its own evaluation, up to `max_workers` at once. Results have `evidence_role: "diagnosis"` and `tool_call_id`. `model` is the model the fork reported.
@@ -192,6 +191,7 @@ grade_pro.sh <instance_id> empty /tmp/gc/empty/<instance_id>    # reward 0
 | navidrome/navidrome | 4.5 / 5.0 / 5.2 | 76 / 78 | 13 / 19 |
 
 - Droid trials (`claude-haiku-5-5`, 1 rerun, control arm, run together). A qutebrowser task (4 gold files) passed: 185 s of Droid time, 17 turns, 35 tool calls, 8,726 credits. A navidrome task (3 gold files) passed: 88 s, 12 turns, 21 tool calls, 4,026 credits. Both traces validate. Grading took 32 s and 8 s.
+- Dev baseline `pro-baseline1` (32 dev tasks, 2 reruns, 8 parallel): it stopped at 50 of 64 trials after 701,253 credits against a 500,000 cap. All 50 trials passed. Mean cost 14,025 credits per trial. 3 flipt reruns were not started because of the cap. 11 teleport trials did not run: 6 because three images are Alpine (`-vee9b09fb…`, the Droid binary needs glibc), and 5 because of the cap.
 - A `checkpoint` fork of the navidrome trace (hint arm, one step) ran on the x86 worker with `docker-droid.sh` in `/app`, passed grading, and cost 1,574 credits.
 
 ## 6. Scale to about 8 in parallel
@@ -242,7 +242,7 @@ Each upsert replaces the row with the same key. A primitives session that gets f
 - Parallel run on 24 Oct: 4 tasks at once (`claude-haiku-5-5`, django and sympy) finished in 4 min 25 s with a load average of about 4.5 on 16 vCPU. 3 passed and 1 failed. The 4 trials used 21,201 factory_credits (4,277 to 7,588 each).
 - Recording on 24 Oct (2 tasks, `claude-haiku-5-5`): each trial writes `runs/traces/<job_id>-<task_id>-<trial>.json`, which validates against `contracts/trace.schema.json`. In a fresh task container, `git fetch` of the trial's `snapshots.bundle` and `restore.sh <last snapshot_ref>` reproduce the graded `patch.diff` byte for byte on both tasks.
 - Untested: a non-root user inside the task container, and 8 trials at once.
-- Checkpoint forks ran on 24 Oct on a dev machine (arm64 image, Droid 0.249.0, `claude-haiku-5-5`): `control`, `hint`, and `candidate` arms, one timeout, and one rewind failure. They used about 11,600 credits. Untested on the x86 VM: the amd64 image with `docker-droid.sh`, `grade.sh` on a fork, and several forks at once.
+- Checkpoint forks ran on 24 Oct on a dev machine (arm64 image, Droid 0.249.0, `claude-haiku-5-5`): `control`, `hint`, and `candidate` arms, one timeout, and one rewind failure. They used about 11,600 credits. On the x86 VM (24 Oct), `run_job.sh` and `grade.sh` ran a `control` fork on a Verified image (`fork1`, continuation `Continue.`, graded pass) and a `hint` fork on a Pro image (`pro-fork1`, graded pass). Then `remote.sh submit` ran three jobs at once (control, hint, candidate; 2 steps x 2 reruns each, 12 forks of one ansible session, 8 in flight at most). All 12 completed and graded, and the candidate overlay's hook fired in all 4 candidate forks (14 to 21 times each) with no `.factory` path in the patch. Untested on the x86 VM: a retry after a failed rewind.
 - Whether Droid finds the `testbed` conda env from the prompt hint alone.
 - Whether `usage.factory_credits` in the `droid exec` JSON is the full cost of the trial, and matches `tokenUsage.factoryCredits` from the SDK.
 - Whether Droid uses the model passed with `--model`. The result records the job's `model`, not a value read back from Droid.
