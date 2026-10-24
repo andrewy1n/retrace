@@ -1,0 +1,240 @@
+{
+  "session_id": "baseline2-psf__requests-2931-1",
+  "task_id": "psf__requests-2931",
+  "job_id": "baseline2",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 9,
+  "tool_calls": 11,
+  "token_usage": {
+    "input_tokens": 20,
+    "output_tokens": 4369,
+    "cache_creation_tokens": 8795,
+    "cache_read_tokens": 143108,
+    "thinking_tokens": 1682,
+    "factory_credits": 1891
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01Furai3Htfpm8AimyK6ftS9",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.037,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests"
+      ],
+      "output_chars": 3813,
+      "output_tokens_est": 953,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01XXPnELkkggKCbbKJSUPCUJ",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.021,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/models.py"
+      ],
+      "output_chars": 1548,
+      "output_tokens_est": 387,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01GsNiJq75sycbdm2VsMrvQp",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.016,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/utils.py"
+      ],
+      "output_chars": 694,
+      "output_tokens_est": 173,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01QuoaGZs1VQvHiEjh8L7USm",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.026,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/models.py"
+      ],
+      "output_chars": 833,
+      "output_tokens_est": 208,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012GNNjNbeo4BAt5PMXUL6uw",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 2.255,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test_requests.py"
+      ],
+      "output_chars": 1051,
+      "output_tokens_est": 262,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MTmgNRnV5PHFX4fTADFzZh",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 1.482,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test_requests.py"
+      ],
+      "output_chars": 715,
+      "output_tokens_est": 178,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01FkXhW3ZHxpYTrANyAL9SNi",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 0.959,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test_requests.py::TestRequests::test_params_bytes_are_encoded"
+      ],
+      "output_chars": 1502,
+      "output_tokens_est": 375,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013gnn7pJtiHhEUUHf2GNebQ",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.015,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/models.py"
+      ],
+      "output_chars": 257,
+      "output_tokens_est": 64,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PLHbbJmmDzKxPbhyTnyzc1",
+      "position": 8,
+      "turn": 6,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.01,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/models.py"
+      ],
+      "output_chars": 571,
+      "output_tokens_est": 142,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VJQVagDDTZuMLzWdmhY6Nn",
+      "position": 9,
+      "turn": 7,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.023,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "requests/models.py"
+      ],
+      "output_chars": 917,
+      "output_tokens_est": 229,
+      "turns_after": 1,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_014sNsmKMQnrtcaqYw8dKeJr",
+      "position": 10,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 1.594,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test_requests.py"
+      ],
+      "output_chars": 267,
+      "output_tokens_est": 66,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

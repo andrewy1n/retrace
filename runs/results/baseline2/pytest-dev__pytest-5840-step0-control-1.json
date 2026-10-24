@@ -1,0 +1,15 @@
+{
+  "job_id": "baseline2",
+  "task_id": "pytest-dev__pytest-5840",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": false,
+  "grader": "swebench",
+  "evidence_role": "final",
+  "cost_credits": 2818,
+  "timed_out": false,
+  "session_id": "baseline2-pytest-dev__pytest-5840-1"
+}

@@ -1,0 +1,38 @@
+{
+  "session_id": "baseline2-pytest-dev__pytest-5631-1",
+  "harness": "droid",
+  "task_id": "pytest-dev__pytest-5631",
+  "harness_session_id": "ff62d83c-d041-43be-8711-27a3f49db282",
+  "steps": [
+    {
+      "tool_call_id": "toolu_013DMWihsU1QnZAXVibQWVxg",
+      "message_id": "7b29ab3f-41a2-49d7-9e09-da4116fb7752",
+      "tool_name": "Grep",
+      "snapshot_ref": "a3234fa94088bda9ef2a3baa8b09ae3c41d95b3a"
+    },
+    {
+      "tool_call_id": "toolu_01AstXf5Y2GPz2edJU3TLYQn",
+      "message_id": "5d051ae8-f8f7-4505-82a0-ae8e4b224092",
+      "tool_name": "Edit",
+      "snapshot_ref": "3d73e91a8fe301960f8b7b699115211e9aa8c95a"
+    },
+    {
+      "tool_call_id": "toolu_013mn65FL8eA9xpCxjRsxZXK",
+      "message_id": "5d051ae8-f8f7-4505-82a0-ae8e4b224092",
+      "tool_name": "Execute",
+      "snapshot_ref": "a98ab3300a62617663ea815f10005dd4ac56bff9"
+    },
+    {
+      "tool_call_id": "toolu_01KF9Kkkps6Pd5dttvbdH3U1",
+      "message_id": "b81f4de7-750a-4197-804f-cf74ebd7530e",
+      "tool_name": "Execute",
+      "snapshot_ref": "22a861b9bc42f70a7433406f38d8e9f87548f95b"
+    },
+    {
+      "tool_call_id": "toolu_01FVHGXFR3wVRNQgHrMicimq",
+      "message_id": "62056d23-b43e-400e-a099-2e6ae6753a02",
+      "tool_name": "Execute",
+      "snapshot_ref": "40ea5bf609b5e70f3da94503b4deda31954097bf"
+    }
+  ]
+}

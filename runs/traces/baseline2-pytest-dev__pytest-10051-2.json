@@ -1,0 +1,56 @@
+{
+  "session_id": "baseline2-pytest-dev__pytest-10051-2",
+  "harness": "droid",
+  "task_id": "pytest-dev__pytest-10051",
+  "harness_session_id": "6405965e-d6fe-44a2-9707-f197e35fcd6b",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01TZMbmgmrZrih8D3w7mcSTe",
+      "message_id": "66e44b75-22a4-4923-85ca-b4768bedad81",
+      "tool_name": "Grep",
+      "snapshot_ref": "fefb51a86f01fb4d8ab952896b73afc86574ac56"
+    },
+    {
+      "tool_call_id": "toolu_01Ve34Lfxap2kabZqpE3JWS1",
+      "message_id": "ee5e0c50-b949-4265-9c09-5f0bdf61d7c5",
+      "tool_name": "Edit",
+      "snapshot_ref": "e7261bae5c0da73a7edebf57fb312fc65a333347"
+    },
+    {
+      "tool_call_id": "toolu_012sCBX52MupjVraP17hiVvg",
+      "message_id": "ee5e0c50-b949-4265-9c09-5f0bdf61d7c5",
+      "tool_name": "Execute",
+      "snapshot_ref": "9b0f4f4aedd3175e27f7a78611deb42f50164f0c"
+    },
+    {
+      "tool_call_id": "toolu_01SetPkc4chr4d39SWNhUhgF",
+      "message_id": "ae4788fd-3f84-4c0b-87f3-951b62065e97",
+      "tool_name": "Execute",
+      "snapshot_ref": "652daffdb443d295c2395590eb57b694754d23e3"
+    },
+    {
+      "tool_call_id": "toolu_01AucBFoDTdNxvrXaaXbnFq1",
+      "message_id": "c2db4e0b-2245-472a-bce1-5d5379b9a093",
+      "tool_name": "Read",
+      "snapshot_ref": "3ed1e4f671260fe8040eeb33860fba9fc0dbc31d"
+    },
+    {
+      "tool_call_id": "toolu_01D2rjZg2YGZRH5RxyeLVgXB",
+      "message_id": "7d9b1eb5-c8bf-45a4-a676-f38d357d486b",
+      "tool_name": "Edit",
+      "snapshot_ref": "2668ff289ed859402d156df9c0c940edcab1aca2"
+    },
+    {
+      "tool_call_id": "toolu_01KyDyKJvVNL859W2a4fkHxB",
+      "message_id": "7d9b1eb5-c8bf-45a4-a676-f38d357d486b",
+      "tool_name": "Edit",
+      "snapshot_ref": "cbd33b006e7089942ba1a3a4dcf33f506c95f8a7"
+    },
+    {
+      "tool_call_id": "toolu_01AemeSqxGK8YKgjRABDV9Yy",
+      "message_id": "7d9b1eb5-c8bf-45a4-a676-f38d357d486b",
+      "tool_name": "Execute",
+      "snapshot_ref": "453ec7f0f58de4005adb422073c9a75115102574"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "job_id": "baseline2",
+  "task_id": "pylint-dev__pylint-7080",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": true,
+  "grader": "swebench",
+  "evidence_role": "final",
+  "cost_credits": 8843,
+  "timed_out": false,
+  "session_id": "baseline2-pylint-dev__pylint-7080-1"
+}

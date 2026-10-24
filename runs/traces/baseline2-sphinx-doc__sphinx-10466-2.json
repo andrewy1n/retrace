@@ -1,0 +1,44 @@
+{
+  "session_id": "baseline2-sphinx-doc__sphinx-10466-2",
+  "harness": "droid",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "harness_session_id": "32b632c0-3728-4cd1-9b94-ed0b5d960fa8",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01CwrNwcqUqCk5dHRhjoXpDa",
+      "message_id": "310d1a16-da22-437f-b04e-30273ade9bd9",
+      "tool_name": "Grep",
+      "snapshot_ref": "5c376e624bcbfcd0be441e1b8559a3a2bb804ec6"
+    },
+    {
+      "tool_call_id": "toolu_01DkiVhmfxMSqUzDEikmw7Em",
+      "message_id": "dc158df8-1d62-4b87-ad04-38086d50bbc5",
+      "tool_name": "Read",
+      "snapshot_ref": "872d1ae5921fc8438cc2e5e2eb446f5d5e3acbe4"
+    },
+    {
+      "tool_call_id": "toolu_01AJMKtyZge7bK5ZQVtVd2y9",
+      "message_id": "22c01184-db0a-4013-ae44-f29521838559",
+      "tool_name": "Read",
+      "snapshot_ref": "a31399a8b08409b1ee382711ba721846d04d1316"
+    },
+    {
+      "tool_call_id": "toolu_01TACQAEejpW3KyikSwywK4X",
+      "message_id": "3bdad08a-95ee-477a-a772-28f5f3f1957d",
+      "tool_name": "Execute",
+      "snapshot_ref": "22f10e7aa74973c8108f0c2a3b4cdab6107fb264"
+    },
+    {
+      "tool_call_id": "toolu_01E38C6UEsMwaHiXN71XbUnP",
+      "message_id": "f5289a2a-d499-4bce-9e95-00a935d151e4",
+      "tool_name": "Edit",
+      "snapshot_ref": "f4f86d8a158d5a85f082d7a7d53e20a65a55d0ea"
+    },
+    {
+      "tool_call_id": "toolu_01RGi6jJvcai8YzVxKg5G6sM",
+      "message_id": "1fb59bf1-353c-45d0-b00e-3c396dd7bf3a",
+      "tool_name": "Execute",
+      "snapshot_ref": "de5fde00a70d9357dd1bf2c5d791aeb84403af17"
+    }
+  ]
+}
