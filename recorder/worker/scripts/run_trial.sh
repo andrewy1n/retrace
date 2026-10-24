@@ -118,8 +118,11 @@ PY
 docker cp "$NAME:/root/.factory/sessions" "$OUT/factory-sessions" >/dev/null 2>&1 || true
 docker exec -e WORKDIR "$NAME" bash -c 'cd "$WORKDIR" && refs=$(git for-each-ref --format="%(refname)" refs/retrace) && [ -n "$refs" ] && git bundle create /retrace/snapshots.bundle $refs ^$(git rev-parse "$(cat /retrace/start_commit)^")' >/dev/null 2>&1 || true
 mkdir -p "$ROOT/sessions" && ln -sfn "$OUT" "$ROOT/sessions/$JOB_ID-$IID-$TRIAL"
-TRANSCRIPT="$(find "$OUT/factory-sessions" -name '*.jsonl' 2>/dev/null | head -n 1)"
 CAPTURE="$(find "$OUT/capture" -name '*.jsonl' 2>/dev/null | head -n 1)"
+SID="$(jq -r '.session_id // empty' "$OUT/droid.json" 2>/dev/null || true)"
+[[ -n "$SID" || -z "$CAPTURE" ]] || SID="$(basename "$CAPTURE" .jsonl)"
+TRANSCRIPT=""
+[[ -z "$SID" ]] || TRANSCRIPT="$(find "$OUT/factory-sessions" -name "$SID.jsonl" 2>/dev/null | head -n 1)"
 if [[ -n "$TRANSCRIPT" && -n "$CAPTURE" ]]; then
   RETRACE_REPO="$REPO" "$PY" "$ROOT/capture/trace.py" --session-id "$JOB_ID-$IID-$TRIAL" --task-id "$IID" \
     --transcript "$TRANSCRIPT" --capture "$CAPTURE" || echo "[$IID#$TRIAL] trace failed" >&2
@@ -130,8 +133,8 @@ fi
 # 7. Cost and metadata. A killed run prints no JSON, so its cost comes from the session's settings.json.
 COST="$(jq -r '.usage.factory_credits // empty' "$OUT/droid.json" 2>/dev/null || true)"
 if [[ -z "$COST" ]]; then
-  SETTINGS="$(find "$OUT/factory-sessions" -name '*.settings.json' 2>/dev/null | head -n 1)"
-  if [[ -n "$SETTINGS" ]]; then
+  SETTINGS="${TRANSCRIPT%.jsonl}.settings.json"
+  if [[ -f "$SETTINGS" ]]; then
     COST="$(jq -r '.tokenUsage.factoryCredits // empty' "$SETTINGS" 2>/dev/null || true)"
   fi
 fi

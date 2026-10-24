@@ -12,7 +12,7 @@ The hook input has `session_id`, `transcript_path`, `cwd`, `tool_name` and `tool
 
 Store `harness_session_id` as the id `resumeSession` accepts. For a SWE-bench task, `task_id` is the instance id. The demo `harness` value is `droid`.
 
-Droid session files are JSONL at `~/.factory/sessions/<cwd-slug>/<id>.jsonl`. The `session_start`, `message` and `tool_use` shapes that `trace.py` reads were checked on Droid 0.248.0 and 0.249.0. Which message id `session.rewind` accepts for a step is unverified.
+Droid session files are JSONL at `~/.factory/sessions/<cwd-slug>/<id>.jsonl`. One trial's directory can hold a second, unrelated session (1 of 188 trials on 2026-10-24), so select the transcript and its `settings.json` by the Droid session id: `droid.json` `session_id`, or the capture log's name `<session_id>.jsonl` when a killed run left `droid.json` empty. The `session_start`, `message` and `tool_use` shapes that `trace.py` reads were checked on Droid 0.248.0 and 0.249.0. Which message id `session.rewind` accepts for a step is unverified.
 
 Several tool calls can share one `message_id`, since Droid puts parallel calls in one assistant message. In the django trace, two reads and one command share a message.
 

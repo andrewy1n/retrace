@@ -390,9 +390,10 @@ def session_primitives(session_dir):
     ids = SESSION_ID.match(session_dir.name)
     if not ids:
         sys.exit(f"{session_dir.name}: name is not <job-id>-<task-id>-<trial>")
-    transcript = next(session_dir.glob("factory-sessions/*/*.jsonl"))
-    settings = json.loads(transcript.with_suffix(".settings.json").read_text())["tokenUsage"]
     meta = json.loads((session_dir / "meta.json").read_text())
+    droid_id = meta.get("droid_session_id") or next(session_dir.glob("capture/*.jsonl")).stem
+    transcript = next(session_dir.glob(f"factory-sessions/*/{droid_id}.jsonl"))
+    settings = json.loads(transcript.with_suffix(".settings.json").read_text())["tokenUsage"]
     uses, assistant_turns, results, hooks = load_transcript(transcript)
     seen = set()
     calls = [build_call(i, use, results, hooks, seen, assistant_turns) for i, use in enumerate(uses)]

@@ -64,7 +64,9 @@ def session(tmp_path):
     (transcript_dir / "droid-1.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
     usage = {"inputTokens": 1, "outputTokens": 2, "cacheCreationTokens": 3, "cacheReadTokens": 4, "thinkingTokens": 1, "factoryCredits": 5}
     (transcript_dir / "droid-1.settings.json").write_text(json.dumps({"tokenUsage": usage}))
-    (root / "meta.json").write_text(json.dumps({"droid_exit": 0}))
+    (root / "meta.json").write_text(json.dumps({"droid_exit": 0, "droid_session_id": "droid-1"}))
+    (root / "capture").mkdir()
+    (root / "capture" / "droid-1.jsonl").write_text("")
     return root
 
 
@@ -218,3 +220,15 @@ def test_output_holds_no_command_or_output_text(session):
 def test_timed_out_follows_droid_exit_124(session):
     (session / "meta.json").write_text(json.dumps({"droid_exit": 124}))
     assert primitives.session_primitives(session)["timed_out"] is True
+
+
+def test_reads_the_transcript_named_by_the_droid_session_not_a_sibling(session):
+    other = session / "factory-sessions" / "-testbed" / "aaa-sibling.jsonl"
+    other.write_text(json.dumps({"type": "session_start", "id": "aaa-sibling"}) + "\n")
+    other.with_suffix(".settings.json").write_text(json.dumps({"tokenUsage": {"factoryCredits": 0}}))
+    assert primitives.session_primitives(session)["tool_calls"] == 7
+
+
+def test_falls_back_to_the_capture_log_name_when_droid_json_was_empty(session):
+    (session / "meta.json").write_text(json.dumps({"droid_exit": 124, "droid_session_id": ""}))
+    assert primitives.session_primitives(session)["tool_calls"] == 7
