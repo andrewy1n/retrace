@@ -19,8 +19,8 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 REPO = Path(os.environ.get("RETRACE_REPO", Path(__file__).resolve().parents[2]))
-CHECKOUT = "/testbed/"
-SESSION_ID = re.compile(r"^(?P<job>.+?)-(?P<task>[\w.-]+?__[\w.-]+?-\d+)-(?P<trial>\d+)$")
+CHECKOUTS = ("/testbed/", "/app/")
+SESSION_ID = re.compile(r"^(?P<job>.+?)-(?P<task>instance_[\w.-]+?__[\w.-]+|[\w.-]+?__[\w.-]+?-\d+)-(?P<trial>\d+)$")
 EXIT_LINE = re.compile(r"\[Process exited with code (-?\d+)\]\s*$")
 
 TOOL_CLASS = {
@@ -263,9 +263,12 @@ def classify_shell(command):
 
 
 def repo_path(path):
-    if path == CHECKOUT.rstrip("/"):
-        return "."
-    return path[len(CHECKOUT):] if path.startswith(CHECKOUT) else path
+    for checkout in CHECKOUTS:
+        if path == checkout.rstrip("/"):
+            return "."
+        if path.startswith(checkout):
+            return path[len(checkout):]
+    return path
 
 
 def normalized_input(name, tool_input):

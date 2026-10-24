@@ -8,6 +8,8 @@ SCRIPTS = [
     ("scripts/run_trial.sh", "run_trial.sh"),
     ("scripts/run_job.sh", "run_job.sh"),
     ("scripts/grade.sh", "grade.sh"),
+    ("scripts/grade_pro.sh", "grade_pro.sh"),
+    ("scripts/pro_task.sh", "pro_task.sh"),
     ("scripts/retrace_job.py", "retrace_job.py"),
     ("scripts/tiger_sink.py", "tiger_sink.py"),
     ("../replay/run_checkpoint.sh", "replay/run_checkpoint.sh"),
@@ -92,6 +94,7 @@ runcmd:
   - [bash, -c, "export HOME=/root && curl -fsSL https://app.factory.ai/cli | sh && install -m 0755 /root/.local/bin/droid /usr/local/bin/droid"]
   - [bash, -c, "python3 -m venv /opt/retrace/venv && /opt/retrace/venv/bin/pip install --upgrade pip && /opt/retrace/venv/bin/pip install 'swebench==5.0.2' datasets jsonschema 'psycopg[binary]'"]
   - [bash, -c, "git clone https://github.com/andrewy1n/retrace.git /opt/retrace/repo"]
+  - [bash, -c, "git clone -q --filter=blob:none --no-checkout https://github.com/scaleapi/SWE-bench_Pro-os.git /opt/retrace/swe-bench-pro && cd /opt/retrace/swe-bench-pro && git sparse-checkout set v2/tasks v2/tooling && git checkout -q 66f92766bba642462d4bbe5479e83f91f9211862"]
   - [bash, -c, "git config --system --add safe.directory /opt/retrace/repo"]
   - [bash, -c, "mkdir -p /opt/retrace/runs /opt/retrace/logs && chown -R retrace:retrace /opt/retrace"]
   - [bash, -c, "docker --version; node --version; droid --version; /opt/retrace/venv/bin/python -c 'import swebench; print(\\"swebench\\", swebench.__version__)'"]

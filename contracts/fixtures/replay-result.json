@@ -9,7 +9,7 @@
   "stop_mode": "next_user_turn",
   "trial": 1,
   "passed": false,
-  "grader": "swebench",
+  "grader": "swebench_pro",
   "evidence_role": "diagnosis",
   "cost_credits": 0.4,
   "timed_out": false

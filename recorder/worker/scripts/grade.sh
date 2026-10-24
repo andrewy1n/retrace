@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Grade a step0 or checkpoint job with the official SWE-bench harness and write one result file per trial.
+# Grade a step0 or checkpoint job and write one result file per trial. A swebench_verified job (default) goes
+# through the official SWE-bench harness. A swebench_pro job goes through the task's own verifier from the
+# SWE-bench Pro harness (grade_pro.sh), one fresh container per trial, <max_workers> at once.
 #
 # Usage: /opt/retrace/grade.sh <job.json> [max_workers=8] [trial]
 # Results: $RETRACE_REPO/runs/results/<job_id>/<task_id>-<step0 or tool_call_id>-<arm>-<trial>.json
@@ -7,13 +9,14 @@
 # A checkpoint job grades each (tool_call_id, trial) as its own run, with max_workers=1, <max_workers> runs at once.
 set -euo pipefail
 
-[[ $# -ge 1 ]] || { sed -n '2,6p' "$0"; exit 1; }
+[[ $# -ge 1 ]] || { sed -n '2,8p' "$0"; exit 1; }
 JOB="$(realpath "$1")"; WORKERS="${2:-8}"; ONLY="${3:-}"
 ROOT="${RETRACE_ROOT:-/opt/retrace}"
 PY="$ROOT/venv/bin/python"
 
 "$PY" "$ROOT/retrace_job.py" validate "$JOB"
 JOB_ID="$(jq -r .job_id "$JOB")"
+SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
 REPO="${RETRACE_REPO:-$ROOT/repo}"
 RUNS="$ROOT/runs/$JOB_ID"
 failed=0
@@ -23,6 +26,10 @@ if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
   grade_one() {
     local cp="$1" t="$2" art="$RUNS/$TASK/$1/$2" eval_dir="$RUNS/eval-$1-t$2"
     [[ -f "$art/meta.json" ]] && ! jq -e .failed "$art/meta.json" >/dev/null || return 0
+    if [[ "$SUITE" == swebench_pro ]]; then
+      "$ROOT/grade_pro.sh" "$TASK" "$art/patch.diff" "$eval_dir/$TASK"
+      return
+    fi
     mkdir -p "$eval_dir"; cd "$eval_dir"
     { cat "$art/pred.json"; echo; } > predictions.jsonl
     [[ -s "$art/patch.diff" ]] || return 0
@@ -32,7 +39,7 @@ if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
       --run_id "$cp-t$t-$(date +%Y%m%d%H%M%S)" --report_dir "$eval_dir"
   }
   export -f grade_one
-  export RUNS TASK PY SWEBENCH_DATASET
+  export RUNS TASK PY ROOT SUITE SWEBENCH_DATASET
   for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
     jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'grade_one "$@"' _ {} "$t" \
@@ -50,6 +57,16 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
   [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
   EVAL_DIR="$RUNS/eval-t$t"
   mkdir -p "$EVAL_DIR"
+  if [[ "$SUITE" == swebench_pro ]]; then
+    for task in $(jq -r '.task_ids[]' "$JOB"); do
+      [[ -f "$RUNS/$task/$t/meta.json" ]] && echo "$task"
+    done | xargs -r -P "$WORKERS" -I{} "$ROOT/grade_pro.sh" {} "$RUNS/{}/$t/patch.diff" "$EVAL_DIR/{}" || failed=1
+    "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
+    if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
+      "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
+    fi
+    continue
+  fi
   PRED="$EVAL_DIR/predictions.jsonl"
   : > "$PRED"
   for task in $(jq -r '.task_ids[]' "$JOB"); do
