@@ -1,0 +1,32 @@
+{
+  "session_id": "baseline1-django__django-16527-1",
+  "harness": "droid",
+  "task_id": "django__django-16527",
+  "harness_session_id": "a5f0650f-d33a-4de2-9aa9-62f2c99e44c7",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01BNyzmp2rZm3k7tPijjdCz2",
+      "message_id": "42870979-b9f7-4230-a722-d7edb52928d4",
+      "tool_name": "Read",
+      "snapshot_ref": "6c6a122458dfc98c24ec03b10e7d16c25dd2d8d9"
+    },
+    {
+      "tool_call_id": "toolu_01KeQ3VTHdDjkvB2MUzMmVQq",
+      "message_id": "00f8ac58-e77e-43bd-99ff-4152049174b7",
+      "tool_name": "Read",
+      "snapshot_ref": "09068a20d265e9c1ce9aa2e7bca4553b71e748c3"
+    },
+    {
+      "tool_call_id": "toolu_01AJBJGMQhFwwtie2eXj1XR2",
+      "message_id": "6c4c5ac9-1da7-4eaa-8298-187b12069d01",
+      "tool_name": "Edit",
+      "snapshot_ref": "5fcfb0537991f345ab9697e9404f569979dd3399"
+    },
+    {
+      "tool_call_id": "toolu_01Vx5KoA7A33JtdaehfGbWv4",
+      "message_id": "39f50205-02c8-4e06-91b6-1a93f5cf52bf",
+      "tool_name": "Execute",
+      "snapshot_ref": "0b3eaf8b872458a8eff36260f0772b63cba4fa52"
+    }
+  ]
+}

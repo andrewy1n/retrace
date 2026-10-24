@@ -1,0 +1,110 @@
+{
+  "session_id": "baseline1-django__django-14725-1",
+  "harness": "droid",
+  "task_id": "django__django-14725",
+  "harness_session_id": "6a0cff99-1304-4cfc-94ce-fa365ad89e9d",
+  "steps": [
+    {
+      "tool_call_id": "toolu_014JcD5jxXfavKmbNKiFXmoY",
+      "message_id": "f9e97ba6-0d08-41b2-a3d6-74bc44138040",
+      "tool_name": "Execute",
+      "snapshot_ref": "4b0a01435a61c02c12d4cd4da30b3746d5bd50a1"
+    },
+    {
+      "tool_call_id": "toolu_011vZLApQmycK2aRcY29TuYp",
+      "message_id": "c5aa5167-8579-4eb0-85d4-3e575e7a5faf",
+      "tool_name": "Execute",
+      "snapshot_ref": "0f864600e15a453f296e9fa10595c481fc938a67"
+    },
+    {
+      "tool_call_id": "toolu_01Fnpd6rdi8bgGXnY9n8v9Xv",
+      "message_id": "59881b34-886d-4764-97a8-c080796910e3",
+      "tool_name": "Execute",
+      "snapshot_ref": "d04635ab3a024ba07e85c2dc90a65bef15630f96"
+    },
+    {
+      "tool_call_id": "toolu_013PJNAygCzvs8XAwqwZFCva",
+      "message_id": "95c3aa15-89ea-4ec5-9f4d-d9859bb325dc",
+      "tool_name": "Edit",
+      "snapshot_ref": "c46d41436c00a71f7228d130a54ac2e0cea74a2f"
+    },
+    {
+      "tool_call_id": "toolu_011LnGAApGwUSG7B2HemUmRg",
+      "message_id": "a9df7ecb-e081-4f0a-a14a-e077df41eef4",
+      "tool_name": "Edit",
+      "snapshot_ref": "c5d2dfb50df8f1370ae747f6f8ac2f253ee02c94"
+    },
+    {
+      "tool_call_id": "toolu_017xRNpvTtgstw24BZYXJthn",
+      "message_id": "da1e748e-d09d-41f9-b6a8-2ce7d1e9b82f",
+      "tool_name": "Edit",
+      "snapshot_ref": "608356879bda78765be316cdfd35826567c29ddb"
+    },
+    {
+      "tool_call_id": "toolu_01BTszVpbPnnrpbwANHF11ra",
+      "message_id": "1ce10069-1787-4984-acbd-69ba125cecb9",
+      "tool_name": "Edit",
+      "snapshot_ref": "294380acc2fe7e415e923cde5ccae17e72e1b88d"
+    },
+    {
+      "tool_call_id": "toolu_01NGiu1AvRSoYiC2B7NBBdtA",
+      "message_id": "8826be41-ab17-4045-9a2b-15e8daf36754",
+      "tool_name": "Edit",
+      "snapshot_ref": "16681f58c97cf92a137c1937740fe666d2deb5e1"
+    },
+    {
+      "tool_call_id": "toolu_01RQR5LRBmWDNDskVQhsyYFQ",
+      "message_id": "970377ea-e0d4-48da-9b44-304ab6d57dfb",
+      "tool_name": "Execute",
+      "snapshot_ref": "49716ec12fa98d3aaf9f6bb121349da5b133742f"
+    },
+    {
+      "tool_call_id": "toolu_01NPWhBY67Wofcqdthi2qCbW",
+      "message_id": "bcdcff82-3360-4a81-890c-c5737c625a10",
+      "tool_name": "Execute",
+      "snapshot_ref": "f55c4b7bfa7d73b9a06b6704e20d4a1b014d1d99"
+    },
+    {
+      "tool_call_id": "toolu_01RVZHz8cKTCj6HP1ywJk6x6",
+      "message_id": "215625b7-bc75-40d9-934d-b9bf9490f748",
+      "tool_name": "Read",
+      "snapshot_ref": "14ce4105eb102203bfd09a4f6cba010c5abcb312"
+    },
+    {
+      "tool_call_id": "toolu_01EHu2EChJ86iaEPCPtsr3h2",
+      "message_id": "b7f2ef13-3d06-46d5-83f7-2c4330401cf9",
+      "tool_name": "Edit",
+      "snapshot_ref": "a5f4b0d53740985d91e0d78cc029345480ed9fc3"
+    },
+    {
+      "tool_call_id": "toolu_01TZLwXRX6cqHV5FVEk2XCKh",
+      "message_id": "675e6a76-49b1-4020-bff5-549cf736d3df",
+      "tool_name": "Execute",
+      "snapshot_ref": "af0a4df532b936b6cae97198fa3156e782e9a7f7"
+    },
+    {
+      "tool_call_id": "toolu_019vSfR97NG5ZXE4faAZ8jBH",
+      "message_id": "8fe47d2b-a874-4f8a-b746-dbd2c666226c",
+      "tool_name": "Execute",
+      "snapshot_ref": "4ddb092f7c923186a0ac06a9860d772338fb4517"
+    },
+    {
+      "tool_call_id": "toolu_01AcpcTGLnhRHH8R8w2o7rCt",
+      "message_id": "5b2c66b4-87ee-49ec-9674-3698b21b75ce",
+      "tool_name": "Execute",
+      "snapshot_ref": "182702a48bfcc722e1ccea0d897e273d8fbd5061"
+    },
+    {
+      "tool_call_id": "toolu_013wEU287z1vmCv5791AC1rN",
+      "message_id": "d88abfa5-977b-4ce3-9f6a-e4e58f2d3c5e",
+      "tool_name": "Execute",
+      "snapshot_ref": "8bda37d61a0c08859100ad442fc57b1422f039d0"
+    },
+    {
+      "tool_call_id": "toolu_01MXQ2fYdX2kr4jzQEsAWZXM",
+      "message_id": "4de80d7b-3d29-441f-81eb-11d16ebc54c6",
+      "tool_name": "Execute",
+      "snapshot_ref": "58c363b6b0eefcc4eea314282f5678535b422ff6"
+    }
+  ]
+}
