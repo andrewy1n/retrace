@@ -19,14 +19,27 @@ The start commit is the task repo's HEAD when the session starts, saved as `star
 
 Then a Signals-style detector assigns one failure type: `misread_requirement`, `wrong_assumption`, `skipped_verification`, `test_gaming`, `context_loss`, or `other`. Leave `other` as `other` until a human promotes it in the project doc.
 
+Two failure types have rules in `reports/preregistration.md`, and those rules win over the detector. Check them in this order, and take the first that holds:
+
+1. `test_gaming`: a step diff changes a test file, and the session fails. The suspected step is the first step whose diff changes a test file.
+2. `skipped_verification`: no test command runs after the last step whose diff changes a non-test file. The suspected step is that last source-editing step.
+3. Otherwise a failed session goes to the detector. Until the detector exists, it is `other` with no suspected step.
+4. Otherwise `failure_type` and `suspected_tool_call_id` are `null`.
+
+A step edits a file when its step diff changes that file, whatever its `tool_name`, since a shell command can edit too. A test command is an `Execute` call whose command runs `pytest`, `unittest`, `tox`, `manage.py test`, or a `runtests` script. That list is a starting point, to be checked against the baseline. The command comes from the Droid session, not the trace.
+
+A suspected step is a replay checkpoint. Several tool calls can share one `message_id`, so tell Andrew which step a job names.
+
 Label the detector Signals-style, and credit Factory Signals for the borrowed ideas: per-session facets, abstracted citations, a minimum step-count filter, severity and frequency thresholds for filing a ticket, and cross-checking friction against error logs. Use a cheap model.
 
 Write `runs/labels/<session-id>.json` with:
 
 - `session_id`
 - `hard_signals`, an array of the signal names above
-- `failure_type`
-- `suspected_tool_call_id`
+- `failure_type`, or `null`
+- `suspected_tool_call_id`, or `null`
+
+`analysis/labeler/mock/expected.json` holds the expected label for each mock session.
 
 Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severity`, and `session_ids`. The ticket matches `contracts/friction-ticket.schema.json`. A ticket is the input to replay.
 
