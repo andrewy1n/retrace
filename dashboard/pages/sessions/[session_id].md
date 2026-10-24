@@ -6,7 +6,7 @@ title: Session
 select * from tiger.sessions where session_id = '${params.session_id}'
 ```
 
-[Back to sessions](/)
+[Back to sessions](/sessions)
 
 <BigValue data={head} value=task_id title="Task" />
 <BigValue data={head} value=factory_credits fmt=num0 title="Credits" />
