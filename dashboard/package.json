@@ -1,0 +1,25 @@
+{
+  "name": "retrace-dashboard",
+  "version": "0.1.0",
+  "scripts": {
+    "sources": "evidence sources",
+    "dev": "evidence dev",
+    "build": "evidence build",
+    "preview": "evidence preview"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=18.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@evidence-dev/core-components": "5.4.2",
+    "@evidence-dev/evidence": "40.1.8",
+    "@evidence-dev/postgres": "1.0.10",
+    "diff2html": "3.4.56"
+  },
+  "private": true,
+  "devDependencies": {
+    "typescript": "5.4.2"
+  }
+}

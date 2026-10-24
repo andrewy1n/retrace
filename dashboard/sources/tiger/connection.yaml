@@ -1,0 +1,4 @@
+name: tiger
+type: postgres
+options:
+  ssl: true
