@@ -6,7 +6,18 @@ Kate owns this tree. Andrew owns capture, replay, and the dashboard.
 
 ## Labels
 
-Hard signals come first, computed from the trace and the snapshots. The trace is an index of ids and snapshot refs. Tool input and output stay in the Droid session on the machine that recorded it. The names are `failing_tests`, `reverted_diff`, `abandoned`, and `code_survival`. Then a Signals-style detector assigns one failure type: `misread_requirement`, `wrong_assumption`, `skipped_verification`, `test_gaming`, `context_loss`, or `other`. Leave `other` as `other` until a human promotes it in the project doc.
+Hard signals come first, computed from the trace and the snapshots. The trace is an index of ids and snapshot refs. Tool input and output stay in the Droid session on the machine that recorded it. A session gets a signal's name in `hard_signals` when its rule holds:
+
+- `failing_tests`: the SWE-bench grader fails the session's final patch.
+- `reverted_diff`: a file changes at one step, and a later snapshot restores that file's earlier content. Deleting a file the session created counts.
+- `abandoned`: the session fails, and its final snapshot has no change at all against the task's base commit.
+- `code_survival`: under half of the lines the session added at any step are still in its final snapshot. The share is added lines in the final diff against the base commit, divided by added lines summed over the step diffs.
+- `looping`: 5 or more steps in a row with the same `tool_name` and no change to the snapshot tree.
+- `wrong_files`: the final diff against the base commit changes at least one non-test file, and none of the files in the task's gold patch. The gold patch is used for labeling only and never reaches the agent.
+
+A step diff compares a snapshot with the one before it. The first step compares with the base commit. Compare trees, not commit ids, since every snapshot is a new commit. A test file matches the pattern in `reports/preregistration.md`. The thresholds of half and 5 are starting values, to be checked against the baseline.
+
+Then a Signals-style detector assigns one failure type: `misread_requirement`, `wrong_assumption`, `skipped_verification`, `test_gaming`, `context_loss`, or `other`. Leave `other` as `other` until a human promotes it in the project doc.
 
 Label the detector Signals-style, and credit Factory Signals for the borrowed ideas: per-session facets, abstracted citations, a minimum step-count filter, severity and frequency thresholds for filing a ticket, and cross-checking friction against error logs. Use a cheap model.
 

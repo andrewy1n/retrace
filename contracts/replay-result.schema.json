@@ -9,6 +9,11 @@
   "properties": {
     "job_id": { "type": "string", "minLength": 1 },
     "task_id": { "type": "string", "minLength": 1, "description": "SWE-bench instance id." },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "session_id of the trace recorded for this trial, when one was recorded. Links the result to runs/traces/<session-id>.json, since a task can run more than once."
+    },
     "tool_call_id": {
       "type": "string",
       "minLength": 1,

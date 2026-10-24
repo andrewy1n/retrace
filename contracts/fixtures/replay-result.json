@@ -1,6 +1,7 @@
 {
   "job_id": "job-example",
   "task_id": "example__example-1",
+  "session_id": "example-trial-session",
   "tool_call_id": "call_example",
   "arm": "hint",
   "model": "example-model",
