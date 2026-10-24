@@ -6,13 +6,15 @@ Andrew owns this tree and the dashboard. Kate owns labels, jobs, proposals, and 
 
 ## Capture
 
-After every tool call, a `.factory/hooks.json` PostToolUse hook runs `capture/snapshot.sh` and stores the printed commit id as `snapshot_ref`. The snapshot includes untracked files and omits ignored files. It uses a temporary index, so the working tree, the index, and the branch stay unchanged. It always prints a commit, even on a clean tree. Each commit is pinned under `refs/retrace/` so `git gc` keeps it. Keep the task repo's `.git` and `~/.factory` on volumes that outlive the container. The trace step also stores `tool_call_id`, `message_id`, and `tool_name`. It does not store tool input or output. The conversation stays in the Droid session.
+After every tool call, a PostToolUse hook runs `capture/hook.py`, which calls `capture/snapshot.sh` and logs the printed commit id as `snapshot_ref`. Install the hook in the user-level `~/.factory/hooks.json`, not the project one, so a candidate's `.factory/hooks.json` cannot replace it. Both levels run. The snapshot includes untracked files and omits ignored files. It uses a temporary index, so the working tree, the index, and the branch stay unchanged. It always prints a commit, even on a clean tree. Each commit is pinned under `refs/retrace/` so `git gc` keeps it. Keep the task repo's `.git` and `~/.factory` on volumes that outlive the container. The trace step also stores `tool_call_id`, `message_id`, and `tool_name`. It does not store tool input or output. The conversation stays in the Droid session.
 
-The hook sees the tree and may see `message_id`. The SDK stream has the tool-use id and the message id `session.rewind` takes. Capture both and join them onto the step. Tolerate schema drift. Write `runs/traces/<session-id>.json` so it validates against `contracts/trace.schema.json`. Skip sessions whose outcome depends on state outside the repo. Private sessions go in `runs/private/` and stay uncommitted.
+The hook input has `session_id`, `transcript_path`, `cwd`, `tool_name` and `tool_input`, but no `message_id` and no tool-use id (checked on Droid 0.248.0 and 0.249.0). Droid runs no PostToolUse hook for a failed tool call. `capture/trace.py` reads the Droid session JSONL, takes each `tool_use` block's `id` and its assistant message's `id` as `tool_call_id` and `message_id`, and joins the hook log by `tool_name` and `tool_input` in order. A failed call takes the previous step's `snapshot_ref`. Tolerate schema drift. Write `runs/traces/<session-id>.json` so it validates against `contracts/trace.schema.json`. Skip sessions whose outcome depends on state outside the repo. Private sessions go in `runs/private/` and stay uncommitted.
 
 Store `harness_session_id` as the id `resumeSession` accepts. For a SWE-bench task, `task_id` is the instance id. The demo `harness` value is `droid`.
 
-Droid session files are JSONL at `~/.factory/sessions/<cwd-slug>/<id>.jsonl`. That layout comes from third-party parsers and is unverified.
+Droid session files are JSONL at `~/.factory/sessions/<cwd-slug>/<id>.jsonl`. The `session_start`, `message` and `tool_use` shapes that `trace.py` reads were checked on Droid 0.248.0 and 0.249.0. Which message id `session.rewind` accepts for a step is unverified.
+
+In a SWE-bench image, `/testbed` HEAD is a commit on top of the dataset `base_commit` that changes the file mode of every file and no content. Diff a session against the parent of its first snapshot, which is that HEAD. A diff against `base_commit` lists every file as changed.
 
 ## Rewind
 
@@ -38,7 +40,7 @@ A `candidate` arm copies `analysis/proposals/<id>/.factory/` and, when present, 
 
 `droid exec --session-id` continues a session in place. `droid exec --fork` copies the whole session. Neither takes a message id. A `checkpoint` job uses the SDK calls above. A `step0` job uses `droid exec`.
 
-Score with the SWE-bench grader. `passed` is that grader's result. An official SWE-bench recipe for `droid exec` is unverified. Run headless `droid exec` in a glibc Docker image and grade with the SWE-bench runner. Write `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Build `model_patch` with `git add -A` and `git diff --cached <base_commit>`, so new files reach the grader.
+Score with the SWE-bench grader. `passed` is that grader's result. An official SWE-bench recipe for `droid exec` is unverified. Run headless `droid exec` in a glibc Docker image and grade with the SWE-bench runner. Write `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Build `model_patch` with `git add -A` and `git diff --cached <HEAD at container start>`, so new files reach the grader. The SWE-bench image's HEAD is a commit on top of `base_commit` that changes file modes, so a diff against `base_commit` lists thousands of files.
 
 Held-out and regression runs are `step0` jobs on this same runner, and run only after `splits/` is committed and the candidate directory is frozen.
 
