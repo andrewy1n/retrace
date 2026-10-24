@@ -39,7 +39,7 @@ Write `runs/labels/<session-id>.json` with:
 - `failure_type`, or `null`
 - `suspected_tool_call_id`, or `null`
 
-`analysis/labeler/mock/expected.json` holds the expected label for each mock session.
+`analysis/labeler/mock/expected.json` holds the expected label for each mock session. `python analysis/labeler/test_mocks.py` builds the mocks, labels them, and compares. `python analysis/labeler/label.py --sessions <dir> --tasks <dir>` prints labels, and writes them only with `--out`. Loading a real `snapshots.bundle` and gold files from the dataset `patch` is not built yet.
 
 Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severity`, and `session_ids`. The ticket matches `contracts/friction-ticket.schema.json`. A ticket is the input to replay.
 

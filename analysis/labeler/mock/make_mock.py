@@ -8,10 +8,10 @@ under refs/retrace/. Output, under out-dir (a new temp dir by default):
 
   sessions/<session-id>/start_commit                    diff base, as in recorder/AGENTS.md
   sessions/<session-id>/repo/                           task checkout with the snapshots
+  sessions/<session-id>/factory-sessions/-testbed/      Droid session JSONL, as trace.py reads it
   traces/<session-id>.json                              matches contracts/trace.schema.json
   results/mock-baseline/<task-id>-step0-control-1.json  matches contracts/replay-result.schema.json
   tasks/<task-id>.json                                  base_commit, problem_statement, gold_files
-  transcripts/<session-id>.json                         commands per tool call (mock format)
 
 A real session directory holds snapshots.bundle instead of repo/; the labeler
 fetches it into a clone of the upstream repo (recorder/AGENTS.md). As in a
@@ -261,6 +261,11 @@ def dump(path, data):
     path.write_text(json.dumps(data, indent=2) + "\n", newline="\n")
 
 
+def write_jsonl(path, rows):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows), newline="\n")
+
+
 def build(out):
     for n, s in enumerate(SESSIONS, 1):
         sid = s["session_id"]
@@ -270,28 +275,45 @@ def build(out):
         base, start = make_repo(repo)
         (session_dir / "start_commit").write_text(start + "\n", newline="\n")
 
-        steps, commands = [], []
+        harness_session_id = f"mock-sess-{sid}"
+        steps, messages = [], []
         for i, (tool, act, command) in enumerate(s["steps"], 1):
             if act:
                 act(repo)
-            call_id = f"mock-call-{sid}-{i}"
-            steps.append({
-                "tool_call_id": call_id,
+            step = {
+                "tool_call_id": f"mock-call-{sid}-{i}",
                 "message_id": f"mock-msg-{sid}-{i}",
                 "tool_name": tool,
                 "snapshot_ref": snapshot(repo),
+            }
+            steps.append(step)
+            tool_input = {"command": command} if command else {"step": i}
+            messages.append({
+                "type": "message",
+                "id": step["message_id"],
+                "message": {"role": "assistant", "content": [
+                    {"type": "tool_use", "id": step["tool_call_id"], "name": tool, "input": tool_input},
+                ]},
             })
-            if command:
-                commands.append({"tool_call_id": call_id, "command": command})
 
         dump(out / "traces" / f"{sid}.json", {
             "session_id": sid,
             "harness": "droid",
             "task_id": task_id,
-            "harness_session_id": f"mock-sess-{sid}",
+            "harness_session_id": harness_session_id,
             "steps": steps,
         })
-        dump(out / "transcripts" / f"{sid}.json", {"session_id": sid, "commands": commands})
+        # Real runs copy ~/.factory/sessions, which nests files by cwd and can
+        # hold other sessions. The decoy checks that the labeler matches by id.
+        factory = session_dir / "factory-sessions" / "-testbed"
+        write_jsonl(factory / f"{harness_session_id}.jsonl",
+                    [{"type": "session_start", "id": harness_session_id}] + messages)
+        write_jsonl(factory / "0-decoy.jsonl", [
+            {"type": "session_start", "id": "mock-sess-decoy"},
+            {"type": "message", "id": "mock-msg-decoy", "message": {"role": "assistant", "content": [
+                {"type": "tool_use", "id": "mock-call-decoy", "name": EXECUTE, "input": {"command": PYTEST}},
+            ]}},
+        ])
         dump(out / "tasks" / f"{task_id}.json", {
             "instance_id": task_id,
             "base_commit": base,
