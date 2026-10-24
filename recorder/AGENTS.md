@@ -36,7 +36,7 @@ A `checkpoint` job resumes the Droid session, rewinds to the step's `message_id`
 
 Call `resumeSession(harness_session_id)`, then `getRewindInfo({ messageId })`, then `session.rewind({ messageId, filesToRestore, filesToDelete, forkTitle })`. Continue on the successor. `resumeSession` pins the saved working directory, so trials on that checkout run one at a time until a directory change is verified.
 
-Read cost from each turn's `tokenUsage.factoryCredits` and sum those into `cost_credits`. The field is optional and covers one `stream()` call. `TokenUsageUpdate` is the session total and can include the prefix. Cap the job at `budget_credits`. Cal Hacks has posted no hacker spending allotment. The Factory track prize is $2,000 cash, Factory credits, and swag, with no credit quantity.
+Read cost from each turn's `tokenUsage.factoryCredits` and sum those into `cost_credits`. The field is optional and covers one `stream()` call. `TokenUsageUpdate` is the session total and can include the prefix. Cap the job at `budget_credits`. The session JSONL has no per-turn token counts. `<id>.settings.json` next to it holds the session's `tokenUsage` totals by token type, including `factoryCredits`, and it survives a `DROID_TIMEOUT` kill that leaves `droid.json` empty. Cal Hacks has posted no hacker spending allotment. The Factory track prize is $2,000 cash, Factory credits, and swag, with no credit quantity.
 
 Stop modes are `next_user_turn`, `reuse_reply`, and `simulated_user`. Record the mode actually used. The first two carry full evidence weight while the branch still matches. `simulated_user` is weaker and stays labeled as such. The text of the no-hint control is unset.
 
