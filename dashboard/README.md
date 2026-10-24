@@ -4,10 +4,14 @@ An [Evidence](https://evidence.dev) project. Each page is a Markdown file with S
 
 | Page | File | Data |
 |---|---|---|
-| Sessions | `pages/index.md` | Real: `primitives_sessions` joined to `replay_results`. Job filter, sortable table, one detail page per session (`pages/sessions/[session_id].md`). |
+| Proposals (home) | `pages/index.md` | Example: `sources/mock/proposals.csv`. Cards sorted with "in review" first. Each card has the held-out pass-rate and credit differences with intervals, the regression result, and a link to the pull request. |
+| Proposal | `pages/proposals/[proposal_id].md` | Example proposal row. Tabs: Overview (overlay files, diff, rollback), Evidence (intervals, and for a cost proposal two real `pro-baseline1` sessions), Replay, shown as "Pipeline check" for the example proposal (real step strip of one ansible session, typed-in results of 12 test forks of a passing session, so it shows that forks run, not that a change works). |
 | Results | `pages/results.md` | Real: pass rate with a Wilson 95% interval, credits, and timeouts per job and arm. |
-| Replay | `pages/replay.md` | The step strip is real (primitives of one session). The replay matrix holds typed-in results from the 12 test forks. The decisive step is an example. |
-| Proposal | `pages/proposal.md` | Example data, except the tool-call chart and the pass-rate intervals. It shows a code diff of a sample change. |
+| Sessions | `pages/sessions/index.md` | Real: `primitives_sessions` joined to `replay_results`. Job filter, sortable table, one detail page per session (`pages/sessions/[session_id].md`). |
+
+The top bar (`pages/+layout.svelte`) links Proposals, Results, and Sessions. Shared UI is in `components/`. `format.js` holds the status names, the verdict rule, and the interval chart.
+
+The mock columns follow `analysis/proposals/<id>/proposal.json` (`proposal_id`, `failure_type`, `change_type`, `pr_url`) plus the Tiger summary fields. A verdict reads "Beats control" only when the pass-rate interval excludes zero. Checkpoint forks show as "Diagnosis only", with no interval. The page never reads review decisions from `runs/reviews/` yet. The `review_decision` column is a mock until a source exists.
 
 Labeled "example data" on a page means a mockup until Kate's proposals and diagnoses exist.
 
@@ -31,4 +35,5 @@ npm install            # Node 18 or later; tested on Node 24
 - Evidence reads a fence it does not know, such as `diff`, as a SQL query. The diff view uses `diff2html` instead.
 - A change to `evidence.config.yaml` needs a restart.
 - The diff view ignores Evidence's dark theme, which is one reason the theme is light only.
-- The dev server shows a box for each query. A built site hides them.
+- The layout hides the query boxes on every load. Remove the `onMount` line in `pages/+layout.svelte` to show them in dev.
+- `@evidence-dev/csv` reads `sources/mock/`. It must stay in `evidence.config.yaml` under `datasources`.
