@@ -1,0 +1,102 @@
+{
+  "session_id": "baseline1-django__django-16527-1",
+  "task_id": "django__django-16527",
+  "job_id": "baseline1",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 5,
+  "tool_calls": 4,
+  "token_usage": {
+    "input_tokens": 12,
+    "output_tokens": 1119,
+    "cache_creation_tokens": 4976,
+    "cache_read_tokens": 62922,
+    "thinking_tokens": 178,
+    "factory_credits": 728
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01BNyzmp2rZm3k7tPijjdCz2",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.028,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/contrib/admin/templatetags/admin_modify.py"
+      ],
+      "output_chars": 1403,
+      "output_tokens_est": 350,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KeQ3VTHdDjkvB2MUzMmVQq",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.01,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/contrib/admin/templatetags/admin_modify.py"
+      ],
+      "output_chars": 1009,
+      "output_tokens_est": 252,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01AJBJGMQhFwwtie2eXj1XR2",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.03,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/contrib/admin/templatetags/admin_modify.py"
+      ],
+      "output_chars": 835,
+      "output_tokens_est": 208,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Vx5KoA7A33JtdaehfGbWv4",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 3,
+      "background": false,
+      "duration_s": 72.672,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "admin_views",
+        "admin_changelist",
+        "admin_docs"
+      ],
+      "output_chars": 1030,
+      "output_tokens_est": 257,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

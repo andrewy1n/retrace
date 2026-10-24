@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "primitives.schema.json",
+  "title": "Primitives",
+  "description": "Deterministic facts about the tool calls of one Droid session, written by recorder/capture/primitives.py. A call stores classes, counts, and repo paths. It never stores command text or tool output.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "task_id", "job_id", "trial", "harness", "assistant_turns", "tool_calls", "token_usage", "timed_out", "calls"],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Id of the recorded session. Matches session_id in runs/traces."
+    },
+    "task_id": { "type": "string", "minLength": 1, "description": "SWE-bench instance id." },
+    "job_id": { "type": "string", "minLength": 1 },
+    "trial": { "type": "integer", "minimum": 1 },
+    "harness": { "type": "string", "minLength": 1, "description": "The demo harness is droid." },
+    "assistant_turns": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of assistant messages in the Droid transcript. Each one is one model call."
+    },
+    "tool_calls": { "type": "integer", "minimum": 0, "description": "Length of calls." },
+    "token_usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_tokens", "output_tokens", "cache_creation_tokens", "cache_read_tokens", "thinking_tokens", "factory_credits"],
+      "description": "Session totals from the Droid settings.json tokenUsage. There is no per-turn usage. output_tokens includes thinking_tokens.",
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "cache_creation_tokens": { "type": "integer", "minimum": 0 },
+        "cache_read_tokens": { "type": "integer", "minimum": 0 },
+        "thinking_tokens": { "type": "integer", "minimum": 0 },
+        "factory_credits": { "type": "number", "minimum": 0 }
+      }
+    },
+    "timed_out": { "type": "boolean", "description": "True when the run was killed by the timeout (droid_exit 124 in meta.json)." },
+    "calls": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/call" }
+    }
+  },
+  "$defs": {
+    "call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_call_id", "position", "turn", "tool_name", "command_class", "test_runner", "path_arg_count", "background",
+        "duration_s", "is_error", "exit_code", "files", "output_chars", "output_tokens_est", "turns_after", "repeats_earlier"
+      ],
+      "properties": {
+        "tool_call_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The tool_use id. Matches tool_call_id in the trace. A trace drops a failed call that comes before the first snapshot, so a call can be missing from the trace."
+        },
+        "position": { "type": "integer", "minimum": 0, "description": "0-based order of the call in the session." },
+        "turn": { "type": "integer", "minimum": 0, "description": "0-based index of the assistant turn that issued the call. Parallel calls share a turn." },
+        "tool_name": { "type": "string", "minLength": 1 },
+        "command_class": {
+          "enum": ["test", "run", "read", "search", "edit", "vcs", "install", "sleep_or_wait", "other"],
+          "description": "File tools map by tool: Read is read, Grep and Glob are search, Edit and Create are edit. A shell command takes its highest-ranked part in this order: test, install, sleep_or_wait, run, vcs, edit, search, read. run is a script or inline interpreter call. edit covers sed -i, cp, mv, rm, patch, and a redirect into a file. other is anything else."
+        },
+        "test_runner": {
+          "enum": ["pytest", "django_runtests", "sympy_bin_test", "unittest", null],
+          "description": "Runner of the first test command in a shell call. A python -c call to sympy.test counts as sympy_bin_test. Null when the call runs no test."
+        },
+        "path_arg_count": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Test path, node-id, or dotted-label arguments of the first test command. 0 is a whole-suite run. Null when the call runs no test."
+        },
+        "background": {
+          "type": "boolean",
+          "description": "The command ends with &, uses nohup or setsid, sets fireAndForget, or the tool reports a background run."
+        },
+        "duration_s": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Seconds from the tool_use line to the start of the capture hook for the call, which is when the tool finishes. Without a hook record, to the tool_result line. Parallel calls can include the time of earlier siblings. Null when the call has no result."
+        },
+        "is_error": { "type": ["boolean", "null"], "description": "The is_error flag of the tool result. Null when the call has no result." },
+        "exit_code": {
+          "type": ["integer", "null"],
+          "description": "Exit code printed in the shell tool result. Null for other tools, for a background run, and when the call has no result."
+        },
+        "files": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Repo-relative paths from the tool input of a file tool, or the test path arguments of a shell test command, without arguments built by shell expansion. A path outside the checkout stays absolute. Never other command text."
+        },
+        "output_chars": { "type": ["integer", "null"], "minimum": 0, "description": "Length of the tool result text. Null when the call has no result." },
+        "output_tokens_est": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Estimate: output_chars divided by 4, rounded down. The transcript has no per-call token counts."
+        },
+        "turns_after": { "type": "integer", "minimum": 0, "description": "Assistant turns after the turn that issued the call." },
+        "repeats_earlier": {
+          "type": "boolean",
+          "description": "An earlier call has the same tool_name and the same input. A shell command compares with whitespace collapsed and ignores the summary and timeout fields."
+        }
+      }
+    }
+  }
+}

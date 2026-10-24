@@ -1,0 +1,56 @@
+{
+  "session_id": "example-job-example__example-1-1",
+  "task_id": "example__example-1",
+  "job_id": "example-job",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 3,
+  "tool_calls": 2,
+  "token_usage": {
+    "input_tokens": 12,
+    "output_tokens": 900,
+    "cache_creation_tokens": 4000,
+    "cache_read_tokens": 30000,
+    "thinking_tokens": 300,
+    "factory_credits": 500
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "call_example",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.04,
+      "is_error": false,
+      "exit_code": null,
+      "files": ["example/module.py"],
+      "output_chars": 2400,
+      "output_tokens_est": 600,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "call_example_test",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 3.2,
+      "is_error": true,
+      "exit_code": 1,
+      "files": ["tests/test_module.py"],
+      "output_chars": 800,
+      "output_tokens_est": 200,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

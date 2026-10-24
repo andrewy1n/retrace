@@ -1,0 +1,123 @@
+{
+  "session_id": "baseline1-django__django-14349-1",
+  "task_id": "django__django-14349",
+  "job_id": "baseline1",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 6,
+  "tool_calls": 5,
+  "token_usage": {
+    "input_tokens": 14,
+    "output_tokens": 2927,
+    "cache_creation_tokens": 9868,
+    "cache_read_tokens": 92930,
+    "thinking_tokens": 1311,
+    "factory_credits": 1455
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_017wv6jGiWvh3rmzLAAX2LR3",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.038,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/validators.py"
+      ],
+      "output_chars": 4231,
+      "output_tokens_est": 1057,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01L8ppnH98WUAzLHBSAfUiPe",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.012,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/validators.py"
+      ],
+      "output_chars": 3931,
+      "output_tokens_est": 982,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011YiqsTcuUpYitHXQPyLDE6",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.044,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/validators.py"
+      ],
+      "output_chars": 2139,
+      "output_tokens_est": 534,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_014hp8oCvpvG96EVatfqQXTM",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 3,
+      "background": false,
+      "duration_s": 2.021,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "validators",
+        "forms_tests.field_tests.test_urlfield",
+        "model_fields.test_urlfield"
+      ],
+      "output_chars": 669,
+      "output_tokens_est": 167,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01QbJhCSGeGRH9vYNeC2HVey",
+      "position": 4,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 1.61,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "validators",
+        "forms_tests.field_tests.test_urlfield"
+      ],
+      "output_chars": 189,
+      "output_tokens_est": 47,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

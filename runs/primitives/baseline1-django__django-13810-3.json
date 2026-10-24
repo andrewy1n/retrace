@@ -1,0 +1,102 @@
+{
+  "session_id": "baseline1-django__django-13810-3",
+  "task_id": "django__django-13810",
+  "job_id": "baseline1",
+  "trial": 3,
+  "harness": "droid",
+  "assistant_turns": 5,
+  "tool_calls": 4,
+  "token_usage": {
+    "input_tokens": 12,
+    "output_tokens": 3158,
+    "cache_creation_tokens": 3992,
+    "cache_read_tokens": 72172,
+    "thinking_tokens": 1051,
+    "factory_credits": 1123
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01M2du42uQmZR1fpbjyXWQxk",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.019,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/handlers/base.py"
+      ],
+      "output_chars": 3470,
+      "output_tokens_est": 867,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01AcpnEpoPFrvKxNRhDPiENp",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.035,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/core/handlers/base.py"
+      ],
+      "output_chars": 2633,
+      "output_tokens_est": 658,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Lx5aRtSbszbrDNvHAt6FCi",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 5,
+      "background": false,
+      "duration_s": 4.894,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "middleware_exceptions",
+        "handlers",
+        "middleware",
+        "asgi",
+        "async_checks"
+      ],
+      "output_chars": 669,
+      "output_tokens_est": 167,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011h9r398wFECXe5DLu82vnU",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "run",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.679,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 66,
+      "output_tokens_est": 16,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

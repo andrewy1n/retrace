@@ -1,0 +1,83 @@
+{
+  "session_id": "baseline1-django__django-13590-2",
+  "task_id": "django__django-13590",
+  "job_id": "baseline1",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 4,
+  "tool_calls": 3,
+  "token_usage": {
+    "input_tokens": 10,
+    "output_tokens": 1695,
+    "cache_creation_tokens": 2714,
+    "cache_read_tokens": 51336,
+    "thinking_tokens": 363,
+    "factory_credits": 682
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01Vg5a5Y6drhCa3NRr7Vm1vv",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.033,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/db/models/sql/query.py"
+      ],
+      "output_chars": 1352,
+      "output_tokens_est": 338,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016WeDhWGpRxf54uZsDzk31r",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.045,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "django/db/models/sql/query.py"
+      ],
+      "output_chars": 1651,
+      "output_tokens_est": 412,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MsmGTbvKhCxiTYNLQxAkyi",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "django_runtests",
+      "path_arg_count": 4,
+      "background": false,
+      "duration_s": 8.191,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "lookup",
+        "queries",
+        "expressions_case",
+        "filtered_relation"
+      ],
+      "output_chars": 254,
+      "output_tokens_est": 63,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}
