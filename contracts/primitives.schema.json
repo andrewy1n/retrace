@@ -64,13 +64,13 @@
           "description": "File tools map by tool: Read is read, Grep and Glob are search, Edit and Create are edit. A shell command takes its highest-ranked part in this order: test, install, sleep_or_wait, run, vcs, edit, search, read. run is a script or inline interpreter call. edit covers sed -i, cp, mv, rm, patch, and a redirect into a file. other is anything else."
         },
         "test_runner": {
-          "enum": ["pytest", "django_runtests", "sympy_bin_test", "unittest", null],
-          "description": "Runner of the first test command in a shell call. A python -c call to sympy.test counts as sympy_bin_test. Null when the call runs no test."
+          "enum": ["pytest", "django_runtests", "sympy_bin_test", "unittest", "go_test", "ansible_test", null],
+          "description": "Runner of the first test command in a shell call. A python -c call to sympy.test counts as sympy_bin_test. go test is go_test, and ansible-test units, sanity, or integration is ansible_test. Null when the call runs no test."
         },
         "path_arg_count": {
           "type": ["integer", "null"],
           "minimum": 0,
-          "description": "Test path, node-id, or dotted-label arguments of the first test command. 0 is a whole-suite run. Null when the call runs no test."
+          "description": "Test path, node-id, package, or dotted-label arguments of the first test command. 0 is a whole-suite run (go test ./... counts as 0). Null when the call runs no test."
         },
         "background": {
           "type": "boolean",

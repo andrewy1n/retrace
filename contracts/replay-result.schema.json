@@ -8,7 +8,7 @@
   "required": ["job_id", "task_id", "arm", "model", "droid_version", "stop_mode", "trial", "passed", "grader", "evidence_role", "cost_credits"],
   "properties": {
     "job_id": { "type": "string", "minLength": 1 },
-    "task_id": { "type": "string", "minLength": 1, "description": "SWE-bench instance id." },
+    "task_id": { "type": "string", "minLength": 1, "description": "Instance id of the job's dataset." },
     "session_id": {
       "type": "string",
       "minLength": 1,
@@ -32,7 +32,10 @@
     },
     "trial": { "type": "integer", "minimum": 1 },
     "passed": { "type": "boolean" },
-    "grader": { "const": "swebench" },
+    "grader": {
+      "enum": ["swebench", "swebench_pro"],
+      "description": "swebench is the SWE-bench harness (Verified). swebench_pro is the task's own verifier from the SWE-bench Pro harness."
+    },
     "evidence_role": {
       "enum": ["diagnosis", "final"],
       "description": "diagnosis comes from a checkpoint job, a mid-session fork. final comes from a step0 job: a step-0 replay or a fresh held-out or regression run."

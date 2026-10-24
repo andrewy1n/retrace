@@ -98,6 +98,9 @@ def test_turns_count_assistant_messages_and_calls_know_their_turn(session):
     ("python tests/runtests.py admin_views", "test"),
     ("python -m pytest -q tests/a.py", "test"),
     ("python bin/test sympy/core", "test"),
+    ("cd /app && go test ./server/... 2>&1 | tail -30", "test"),
+    ("python bin/ansible-test units --python 3.11 test/units/cli", "test"),
+    ("go build ./... && go vet ./...", "other"),
     ("python -c \"import sympy; sympy.test('sympy/core')\"", "test"),
     ("pip install -e .", "install"),
     ("sleep 30; tail -3 /tmp/log", "sleep_or_wait"),
@@ -136,6 +139,28 @@ def test_pytest_node_ids_and_options_are_counted_correctly():
     _, test, _ = primitives.classify_shell("pytest -q -k slow -p no:cacheprovider tests/a.py::T::test_x tests/b.py")
     assert test == ("pytest", ["-q", "-k", "slow", "-p", "no:cacheprovider", "tests/a.py::T::test_x", "tests/b.py"])
     assert primitives.positionals(test[1]) == ["tests/a.py::T::test_x", "tests/b.py"]
+
+
+@pytest.mark.parametrize("command, runner, args, paths", [
+    ("go test ./...", "go_test", ["./..."], []),
+    ("go test -v -count=1 -run 'TestA|TestB' ./internal/cache/redis ./internal/config", "go_test", None, ["internal/cache/redis", "internal/config"]),
+    ("go test -race -shuffle on -tags netgo -timeout 5m ./scanner", "go_test", None, ["scanner"]),
+    ("cd /app && go build ./... && go test ./server/subsonic/... 2>&1 | tail -60", "go_test", None, ["server/subsonic/..."]),
+    ("go vet ./... && go test", "go_test", [], []),
+    ("python bin/ansible-test units --color --truncate 0 --python 3.11 --requirements -v test/units/modules/test_x.py", "ansible_test", None, ["test/units/modules/test_x.py"]),
+    ("ansible-test units --python 3.11", "ansible_test", None, []),
+    ("ansible-test sanity --test import test/units/a.py", "ansible_test", None, ["test/units/a.py"]),
+    ("QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/unit/a.py::test_x -p no:cacheprovider", "pytest", None, ["tests/unit/a.py::test_x"]),
+])
+def test_go_ansible_and_pytest_runners_count_their_targets(command, runner, args, paths):
+    _, test, _ = primitives.classify_shell(command)
+    assert test[0] == runner
+    assert primitives.runner_targets(runner, test[1]) == paths
+
+
+@pytest.mark.parametrize("command", ["ansible-test --help", "python bin/ansible-test coverage combine", "go env", "go build ./..."])
+def test_other_go_and_ansible_commands_run_no_test(command):
+    assert primitives.classify_shell(command)[1] is None
 
 
 def test_nohup_and_trailing_ampersand_mark_a_call_as_background(calls):

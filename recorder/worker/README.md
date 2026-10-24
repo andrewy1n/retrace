@@ -1,10 +1,10 @@
 # Retrace on Vultr: replay/grading worker
 
-One x86_64 VM runs `droid exec` inside the official SWE-bench Verified images and grades the patches with the official harness. Laptops (Windows/WSL, Mac) can't do this well because the images are amd64 only.
+One x86_64 VM runs `droid exec` inside the official SWE-bench Verified or SWE-bench Pro images and grades the patches with the matching official harness. Laptops (Windows/WSL, Mac) can't do this well because the images are amd64 only.
 
 Files:
 - `cloud-init.yaml`: user data for the VM (generated, do not hand-edit)
-- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `retrace_job.py`, `tiger_sink.py`: installed to `/opt/retrace/`
+- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `grade_pro.sh`, `pro_task.sh`, `retrace_job.py`, `tiger_sink.py`: installed to `/opt/retrace/`
 - `../replay/run_checkpoint.sh`, `docker-droid.sh`, `restore.sh`, `fork.mjs`, `package.json`, `package-lock.json`: installed to `/opt/retrace/replay/`. They run `checkpoint` jobs.
 - `build_cloud_init.py`: regenerates `cloud-init.yaml` after you edit a script
 
@@ -130,6 +130,69 @@ grade.sh ~/fork1.json 1
 - No trace is written for a fork.
 
 Dev machines with another CPU cannot run the amd64 images with a Bun-built `droid`: it crashes under QEMU. For a local check, set `RETRACE_IMAGE` (for example `ghcr.io/epoch-research/swe-bench.eval.arm64.<instance_id>:latest`), `RETRACE_PLATFORM=linux/arm64`, and `RETRACE_DROID` to a Linux arm64 `droid` binary. Such a run does not grade.
+
+## SWE-bench Pro
+
+A job with `"dataset": "swebench_pro"` runs SWE-bench Pro V2 tasks (`ScaleAI/SWE-bench_Pro`, config `default`, 642 tasks). Without `dataset`, a job runs SWE-bench Verified as before. The same `run_job.sh` and `grade.sh` run both. Task ids are Pro instance ids, such as `instance_NodeBB__NodeBB-<hash>-vnan`. Scope for Retrace: the Python and Go repos (ansible, openlibrary, qutebrowser, flipt, teleport, vuls, navidrome).
+
+### Official method
+The Hugging Face dataset has no eval script. Scale ships V2 as Harbor tasks in https://github.com/scaleapi/SWE-bench_Pro-os under `v2/tasks/<instance_id>/`. Retrace uses commit `66f92766bba642462d4bbe5479e83f91f9211862` (2026-09-22, release v2.0.0). The older `swe_bench_pro_eval.py`, `run_scripts/`, `before_repo_set_cmd` and Docker Hub images are the v1 pipeline. V2 does not use them, so the runner never runs `before_repo_set_cmd`.
+
+- Image. `docker_image` in `task.toml`: `ghcr.io/scaleapi/swe-bench_pro-v2:<instance_id>`. It is public and amd64. The image runs as root and has git and python3. It holds the repo at its base commit, with a clean tree and its history up to that commit.
+- Prompt. `instruction.md`, verbatim: the PR description (problem statement), the requirements, the new interfaces, and a line that bans looking up existing solutions. It names `/app`. A `hint` arm appends `<hint>` text. The Verified prompt wording is not used.
+- Repo path. `/app` (a few tasks use `/testbed`). The runner takes the first of `/app` and `/testbed` that has a `.git`. Droid runs there with `--cwd`, so the session sits in `factory-sessions/-app/`.
+- Patch. `git add -A` and `git diff --cached <start commit>`, the same as Verified. The harness's own capture is `git diff --cached` in the agent sandbox.
+- Grading. `grade_pro.sh` follows the harness's `patch_replay` agent. It starts a fresh container from the image, applies the patch with `git apply --verbose || git apply --3way || patch --fuzz=3 -p1`, mounts the task's `tests/` at `/tests`, and runs `bash /tests/test.sh`. `test.sh` resets test-space files, applies `test_patch.patch`, runs `run_script.sh` on `selected_test_files_to_run`, parses the output with `parser.py`, and writes `1` to `/logs/verifier/reward.txt` only if every `fail_to_pass` and `pass_to_pass` test passed. `passed` is that reward. Result files record `grader: swebench_pro`. An empty patch runs the verifier too.
+- Time. `DROID_TIMEOUT` defaults to 1800 s. The harness gives 3000 s to the agent and 3000 s to the verifier. `grade_pro.sh` uses the verifier value from `task.toml`.
+
+### Differences from the locked protocol
+- The agent container has network access, because Droid must reach the Factory API. The official protocol runs the agent with `network_mode = "no-network"` and allows only the model host. A score from this runner is not comparable to the Scale leaderboard. Report it as a Retrace setup.
+- Containers have no CPU or memory cap. The tasks ask for 1 CPU and 4 GB.
+- Droid is not one of the harness's agents, so the run is a Retrace adapter and not a Scale-reviewed run.
+
+### Setup
+`cloud-init.yaml` clones the harness to `/opt/retrace/swe-bench-pro` (sparse, `v2/tasks` and `v2/tooling`) at the pinned commit. An existing VM needs the clone by hand:
+```bash
+git clone --filter=blob:none --no-checkout https://github.com/scaleapi/SWE-bench_Pro-os.git /opt/retrace/swe-bench-pro
+cd /opt/retrace/swe-bench-pro && git sparse-checkout set v2/tasks v2/tooling && git checkout 66f92766bba642462d4bbe5479e83f91f9211862
+```
+Set `PRO_TASKS` to use another checkout (default `$RETRACE_ROOT/swe-bench-pro/v2/tasks`). Copy the new scripts as for checkpoint jobs (section 5b), plus `grade_pro.sh` and `pro_task.sh`. The Pro scripts need no extra Python package.
+
+### Run a job
+```bash
+prepull.sh -f ids.txt            # Pro ids start with instance_; a full image reference also works
+cat > /opt/retrace/repo/runs/jobs/pro-smoke1.json <<'JOB'
+{"job_id": "pro-smoke1", "dataset": "swebench_pro", "start": "step0",
+ "task_ids": ["instance_navidrome__navidrome-0a650de357babdcc8ce910fe37fee84acf4ed2fe"],
+ "arm": {"kind": "control"}, "model": "claude-haiku-5-5", "reruns": 1,
+ "stop_mode": "next_user_turn", "budget_credits": 40000}
+JOB
+run_job.sh /opt/retrace/repo/runs/jobs/pro-smoke1.json 4
+grade.sh /opt/retrace/repo/runs/jobs/pro-smoke1.json 4
+```
+A `checkpoint` job takes the same `dataset` field and the same runners. Check a task without Droid:
+```bash
+grade_pro.sh <instance_id> gold  /tmp/gc/gold/<instance_id>     # reward 1
+grade_pro.sh <instance_id> empty /tmp/gc/empty/<instance_id>    # reward 0
+```
+
+### Measured on the x86 worker (24 Oct 2026)
+- Candidate set: `splits/pro-candidates.json`, drawn by `splits/pro_candidates.py` with seed 7. It holds 8 tasks from each of the 7 repos, each with a gold patch of 3 or more files.
+- Gold patch: 56 of 56 pass. Empty patch: 56 of 56 fail. Per-task rewards, times, and image sizes are in `splits/pro-gold-check.json`. All 56 images keep the repo in `/app`. The 112 verifier runs took 22 min, 4 at a time.
+- Images: 2.1 to 11.9 GB on disk each, 275 GB for the 56 (some layers are shared). The 56 pulls took 15 min with 4 at once.
+
+| repo | image GB (min / mean / max) | pull s (mean / max) | gold verifier s (mean / max) |
+|---|---|---|---|
+| ansible/ansible | 2.1 / 2.1 / 2.2 | 30 / 43 | 64 / 76 |
+| internetarchive/openlibrary | 2.8 / 4.1 / 4.8 | 61 / 72 | 9 / 12 |
+| qutebrowser/qutebrowser | 2.1 / 2.3 / 2.7 | 27 / 39 | 17 / 30 |
+| flipt-io/flipt | 2.2 / 6.4 / 8.2 | 98 / 124 | 50 / 95 |
+| gravitational/teleport | 7.1 / 8.4 / 11.9 | 72 / 131 | 72 / 110 |
+| future-architect/vuls | 5.4 / 6.1 / 7.0 | 81 / 117 | 108 / 187 |
+| navidrome/navidrome | 4.5 / 5.0 / 5.2 | 76 / 78 | 13 / 19 |
+
+- Droid trials (`claude-haiku-5-5`, 1 rerun, control arm, run together). A qutebrowser task (4 gold files) passed: 185 s of Droid time, 17 turns, 35 tool calls, 8,726 credits. A navidrome task (3 gold files) passed: 88 s, 12 turns, 21 tool calls, 4,026 credits. Both traces validate. Grading took 32 s and 8 s.
+- A `checkpoint` fork of the navidrome trace (hint arm, one step) ran on the x86 worker with `docker-droid.sh` in `/app`, passed grading, and cost 1,574 credits.
 
 ## 6. Scale to about 8 in parallel
 ```bash

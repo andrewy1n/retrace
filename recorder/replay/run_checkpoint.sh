@@ -22,8 +22,11 @@ REPO="${RETRACE_REPO:-$ROOT/repo}"
 PY="$ROOT/venv/bin/python"
 DATASET="${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}"
 DROID_BIN="${RETRACE_DROID:-/usr/local/bin/droid}"
+# shellcheck source=../worker/scripts/pro_task.sh
+source "$ROOT/pro_task.sh"
 
 JOB_ID="$(jq -r .job_id "$JOB")"
+SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
 MODEL="$(jq -r .model "$JOB")"
 ARM="$(jq -r .arm.kind "$JOB")"
 CANDIDATE="$(jq -r '.arm.path // ""' "$JOB")"
@@ -57,13 +60,19 @@ rm -rf "$OUT"; mkdir -p "$OUT/capture"
 printf '%s' "$MESSAGE" > "$OUT/continuation.md"
 cp "$SESS/start_commit" "$OUT/start_commit"
 
-IMAGE="${RETRACE_IMAGE:-$("$PY" - "$DATASET" "$IID" <<'PY'
+if [[ "$SUITE" == swebench_pro ]]; then
+  WORKDIR=""
+  IMAGE="${RETRACE_IMAGE:-$(pro_image "$IID")}"
+else
+  WORKDIR=/testbed
+  IMAGE="${RETRACE_IMAGE:-$("$PY" - "$DATASET" "$IID" <<'PY'
 import sys
 from datasets import load_dataset
 name, iid = sys.argv[1:3]
 print(next(r for r in load_dataset(name, split="test") if r["instance_id"] == iid)["image"])
 PY
-)}"
+  )}"
+fi
 echo "[$IID/$TCID#$TRIAL] image $IMAGE"
 
 # shellcheck disable=SC2329  # invoked via trap
@@ -76,12 +85,15 @@ docker run -d --name "$NAME" --platform "${RETRACE_PLATFORM:-linux/amd64}" \
   -v "$OUT:/retrace" \
   -v "$ROOT/capture:/opt/retrace-capture:ro" \
   -v "$HERE/restore.sh:/opt/retrace-replay/restore.sh:ro" \
-  -w /testbed "$IMAGE" sleep infinity >/dev/null
+  ${WORKDIR:+-w "$WORKDIR"} "$IMAGE" sleep infinity >/dev/null
+[[ -n "$WORKDIR" ]] || WORKDIR="$(pro_workdir "$NAME")"
+[[ -n "$WORKDIR" ]] || { echo "[$IID] no git repository in /app or /testbed" >&2; exit 1; }
+export RETRACE_WORKDIR="$WORKDIR"
 
-docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> /testbed/.git/info/exclude"
+docker exec "$NAME" bash -c "printf '/.factory/\n/AGENTS.md\n' >> $WORKDIR/.git/info/exclude"
 if [[ "$ARM" == candidate ]]; then
-  [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:/testbed/.factory"
-  [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:/testbed/AGENTS.md"
+  [[ -d "$REPO/$CANDIDATE/.factory" ]] && docker cp "$REPO/$CANDIDATE/.factory" "$NAME:$WORKDIR/.factory"
+  [[ -f "$REPO/$CANDIDATE/AGENTS.md" ]] && docker cp "$REPO/$CANDIDATE/AGENTS.md" "$NAME:$WORKDIR/AGENTS.md"
 fi
 docker exec -i "$NAME" bash -c 'mkdir -p /root/.factory/sessions && cat > /root/.factory/hooks.json' <<'JSON'
 {"PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "/opt/retrace-capture/hook.sh"}]}]}
@@ -91,13 +103,13 @@ DROID_VERSION="$(docker exec "$NAME" droid --version | tail -n 1)"
 # Put the recorded session and its snapshot commits back where the capture run left them.
 docker cp "$SESS/factory-sessions/." "$NAME:/root/.factory/sessions/" >/dev/null
 docker cp "$SESS/snapshots.bundle" "$NAME:/tmp/snapshots.bundle"
-docker exec "$NAME" git -C /testbed fetch -q /tmp/snapshots.bundle 'refs/retrace/*:refs/retrace/*'
-docker exec "$NAME" git -C /testbed cat-file -e "$(<"$OUT/start_commit")^{commit}"
+docker exec "$NAME" git -C "$WORKDIR" fetch -q /tmp/snapshots.bundle 'refs/retrace/*:refs/retrace/*'
+docker exec "$NAME" git -C "$WORKDIR" cat-file -e "$(<"$OUT/start_commit")^{commit}"
 
 if [[ -n "$SNAPSHOT" ]]; then
-  RESTORE_CMD="docker exec -w /testbed $NAME /opt/retrace-replay/restore.sh $SNAPSHOT /testbed"
+  RESTORE_CMD="docker exec -w $WORKDIR $NAME /opt/retrace-replay/restore.sh $SNAPSHOT $WORKDIR"
 else
-  RESTORE_CMD="docker exec -w /testbed $NAME bash -c 'git reset -q --hard $(<"$OUT/start_commit") && git clean -fdq'"
+  RESTORE_CMD="docker exec -w $WORKDIR $NAME bash -c 'git reset -q --hard $(<"$OUT/start_commit") && git clean -fdq'"
 fi
 
 set +e
@@ -110,7 +122,7 @@ rc=$?
 set -e
 echo "[$IID/$TCID#$TRIAL] fork exit $rc"
 
-docker exec "$NAME" bash -c "cd /testbed && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
+docker exec "$NAME" bash -c "cd $WORKDIR && git add -A && git -c core.fileMode=false diff --cached $(<"$OUT/start_commit")" > "$OUT/patch.diff"
 echo "[$IID/$TCID#$TRIAL] patch $(wc -l < "$OUT/patch.diff") lines"
 
 "$PY" - "$IID" "$JOB_ID-$ARM" "$OUT/patch.diff" "$OUT/pred.json" <<'PY'

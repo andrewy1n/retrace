@@ -60,6 +60,14 @@ def trials(job, trial, only):
         yield task, cp, runs / task / cp / str(trial), runs / f"eval-{cp}-t{trial}"
 
 
+def graded(job, eval_dir, task):
+    if job.get("dataset") == "swebench_pro":
+        reward = eval_dir / task / "reward.txt"
+        return reward.read_text().strip() == "1" if reward.exists() else None
+    reports = sorted(eval_dir.glob(f"logs/run_evaluation/*/{model_name(job)}/{task}/report.json"))
+    return bool(json.loads(reports[-1].read_text())[task]["resolved"]) if reports else None
+
+
 def collect(job_path, trial, only=None):
     job = load_job(job_path)
     job_id, kind = job["job_id"], job["arm"]["kind"]
@@ -74,12 +82,10 @@ def collect(job_path, trial, only=None):
         if meta.get("failed"):
             problems.append(f"{task} {cp}: trial failed: {meta['failed']}")
             continue
-        reports = sorted(eval_dir.glob(f"logs/run_evaluation/*/{model_name(job)}/{task}/report.json"))
-        if reports:
-            passed = bool(json.loads(reports[-1].read_text())[task]["resolved"])
-        elif not (art / "patch.diff").read_text().strip():
+        passed = graded(job, eval_dir, task)
+        if passed is None and not (art / "patch.diff").read_text().strip():
             passed = False
-        else:
+        elif passed is None:
             problems.append(f"{task} {cp}: no grader report")
             continue
         result = {
@@ -91,7 +97,7 @@ def collect(job_path, trial, only=None):
             "stop_mode": job["stop_mode"],
             "trial": trial,
             "passed": passed,
-            "grader": "swebench",
+            "grader": "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench",
             "evidence_role": "final" if cp == "step0" else "diagnosis",
             "cost_credits": meta["cost_credits"],
         }

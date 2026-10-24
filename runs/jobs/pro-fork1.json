@@ -1,0 +1,12 @@
+{
+  "job_id": "pro-fork1",
+  "dataset": "swebench_pro",
+  "start": "checkpoint",
+  "session_id": "pro-smoke1-instance_navidrome__navidrome-0a650de357babdcc8ce910fe37fee84acf4ed2fe-1",
+  "tool_call_ids": ["toolu_015Ms1kJ8Z3HePTudUngibpo"],
+  "arm": { "kind": "hint", "text": "Run the tests for the package you changed, then stop." },
+  "model": "claude-haiku-5-5",
+  "reruns": 1,
+  "stop_mode": "next_user_turn",
+  "budget_credits": 8000
+}

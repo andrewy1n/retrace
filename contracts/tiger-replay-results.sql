@@ -10,7 +10,7 @@ create table replay_results (
   droid_version   text    not null,
   stop_mode       text    not null check (stop_mode in ('next_user_turn', 'reuse_reply', 'simulated_user')),
   passed          boolean not null,
-  grader          text    not null check (grader = 'swebench'),
+  grader          text    not null check (grader in ('swebench', 'swebench_pro')),
   evidence_role   text    not null check (evidence_role in ('diagnosis', 'final')),
   cost_credits    numeric not null check (cost_credits >= 0),
   timed_out       boolean,
