@@ -1,0 +1,1 @@
+One label per file: `runs/labels/<session-id>.json`. The fields are `session_id`, `hard_signals`, `failure_type`, and `suspected_tool_call_id`. Kate writes these. Andrew does not read them. The allowed values are in `analysis/AGENTS.md`. Friction tickets that group these sessions live in `runs/tickets/`.

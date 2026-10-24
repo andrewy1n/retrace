@@ -1,0 +1,14 @@
+{
+  "session_id": "example-session",
+  "harness": "droid",
+  "task_id": "example__example-1",
+  "harness_session_id": "sess_example",
+  "steps": [
+    {
+      "tool_call_id": "call_example",
+      "message_id": "msg_example",
+      "tool_name": "Edit",
+      "snapshot_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "job_id": "job-example",
+  "task_id": "example__example-1",
+  "tool_call_id": "call_example",
+  "arm": "hint",
+  "model": "example-model",
+  "droid_version": "0.0.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": false,
+  "grader": "swebench",
+  "evidence_role": "diagnosis",
+  "cost_credits": 0.4
+}

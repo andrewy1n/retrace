@@ -1,0 +1,1 @@
+One trace per file: `runs/traces/<session-id>.json`. Each step stores a tool-call id, a message id, the tool name, and a snapshot ref. Tool input and output stay in the Droid session. The file must validate against `contracts/trace.schema.json`. Private sessions go in `runs/private/` and stay uncommitted.

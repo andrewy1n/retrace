@@ -1,0 +1,1 @@
+One replay job per file: `runs/jobs/<job-id>.json`. It must validate against `contracts/replay-job.schema.json`. A `checkpoint` job names `session_id` and `tool_call_ids` from the matching trace. A `step0` job names `task_ids` and runs each task fresh. `budget_credits` is a cap on Factory credits.

@@ -1,0 +1,1 @@
+One friction ticket per file: `runs/tickets/<ticket-id>.json`. It must validate against `contracts/friction-ticket.schema.json`. Fields are `ticket_id`, `friction_type`, `severity`, and `session_ids`. Kate writes these. A ticket is the input to replay.

@@ -1,0 +1,14 @@
+{
+  "job_id": "job-example",
+  "start": "checkpoint",
+  "session_id": "example-session",
+  "tool_call_ids": ["call_example"],
+  "arm": {
+    "kind": "hint",
+    "text": "tests are the spec; fix the source, not the tests"
+  },
+  "model": "example-model",
+  "reruns": 2,
+  "stop_mode": "next_user_turn",
+  "budget_credits": 5
+}

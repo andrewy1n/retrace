@@ -1,0 +1,6 @@
+{
+  "ticket_id": "test-tampering",
+  "friction_type": "test_gaming",
+  "severity": "high",
+  "session_ids": ["example-session"]
+}

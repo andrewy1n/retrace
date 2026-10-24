@@ -1,0 +1,1 @@
+One review per file: `runs/reviews/<proposal-id>.json`. Fields are `proposal_id`, `decision` (`approve`, `edit`, or `reject`), and `reason`. The dashboard is the writer. Kate's next pass can read them.

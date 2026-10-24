@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "replay-result.schema.json",
+  "title": "Replay result",
+  "description": "One trial. The sample size is the number of result files for that job, task, checkpoint, and arm. A diagnosis trial is a mid-session fork and is not final evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["job_id", "task_id", "arm", "model", "droid_version", "stop_mode", "trial", "passed", "grader", "evidence_role", "cost_credits"],
+  "properties": {
+    "job_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "minLength": 1, "description": "SWE-bench instance id." },
+    "tool_call_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Checkpoint of a diagnosis trial. Absent on a final trial."
+    },
+    "arm": { "enum": ["control", "hint", "candidate"] },
+    "model": { "type": "string", "minLength": 1, "description": "Model id Droid actually used." },
+    "droid_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Output of droid --version on the machine that ran the trial."
+    },
+    "stop_mode": {
+      "enum": ["next_user_turn", "reuse_reply", "simulated_user"],
+      "description": "Mode actually used for this trial."
+    },
+    "trial": { "type": "integer", "minimum": 1 },
+    "passed": { "type": "boolean" },
+    "grader": { "const": "swebench" },
+    "evidence_role": {
+      "enum": ["diagnosis", "final"],
+      "description": "diagnosis comes from a checkpoint job, a mid-session fork. final comes from a step0 job: a step-0 replay or a fresh held-out or regression run."
+    },
+    "cost_credits": {
+      "type": "number",
+      "minimum": 0,
+      "description": "tokenUsage.factoryCredits for this trial."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "evidence_role": { "const": "diagnosis" } } },
+      "then": { "required": ["tool_call_id"] }
+    },
+    {
+      "if": { "properties": { "evidence_role": { "const": "final" } } },
+      "then": { "not": { "required": ["tool_call_id"] } }
+    }
+  ]
+}

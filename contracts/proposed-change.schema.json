@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "proposed-change.schema.json",
+  "title": "Proposed change",
+  "description": "Manifest at analysis/proposals/<id>/proposal.json. The runner copies .factory/ and AGENTS.md from path and leaves this file in the retrace repo.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["proposal_id", "failure_type", "change_type", "path"],
+  "properties": {
+    "proposal_id": { "type": "string", "minLength": 1 },
+    "failure_type": {
+      "enum": [
+        "misread_requirement",
+        "wrong_assumption",
+        "skipped_verification",
+        "test_gaming",
+        "context_loss",
+        "other"
+      ]
+    },
+    "change_type": {
+      "enum": ["guardrail_hook", "skill", "tool", "custom_droid", "setting", "rule"],
+      "description": "Rank order is guardrail_hook, then skill or tool or custom_droid, then setting, then rule."
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Portable directory such as analysis/proposals/block-test-edits."
+    }
+  }
+}

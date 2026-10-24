@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trace.schema.json",
+  "title": "Trace",
+  "description": "An index of one Droid session. The conversation stays in the Droid session. A step stores ids and a git snapshot ref, not tool input or output.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "harness", "task_id", "harness_session_id", "steps"],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Id of this recorded session."
+    },
+    "harness": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Harness that produced the session. The demo harness is droid. Claude Code is an optional adapter."
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "SWE-bench instance id when the task comes from SWE-bench."
+    },
+    "harness_session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Session id that Droid resumeSession accepts. The optional Claude Code adapter stores the id resumeSessionAt accepts."
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/step" }
+    }
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool_call_id", "message_id", "tool_name", "snapshot_ref"],
+      "properties": {
+        "tool_call_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Id the snapshot is tagged with. Replay jobs refer to this, not a step index. This is the SDK tool-use id, not the message id."
+        },
+        "message_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Droid messageId. session.rewind targets this id."
+        },
+        "tool_name": { "type": "string", "minLength": 1 },
+        "snapshot_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Commit id from recorder/capture/snapshot.sh, pinned under refs/retrace/ in the task repo. It includes untracked files that are not ignored. Git snapshots are the source of truth for repo state."
+        }
+      }
+    }
+  }
+}

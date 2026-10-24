@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "friction-ticket.schema.json",
+  "title": "Friction ticket",
+  "description": "Signals-shaped input to replay. The stand-in detector is labeled Signals-style.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ticket_id", "friction_type", "severity", "session_ids"],
+  "properties": {
+    "ticket_id": { "type": "string", "minLength": 1 },
+    "friction_type": {
+      "enum": [
+        "misread_requirement",
+        "wrong_assumption",
+        "skipped_verification",
+        "test_gaming",
+        "context_loss",
+        "other"
+      ]
+    },
+    "severity": { "type": "string", "minLength": 1 },
+    "session_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+.env
+retrace.local.json
+node_modules/
+worktrees/
+runs/private/
+*.bundle
