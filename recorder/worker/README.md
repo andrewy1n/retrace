@@ -62,6 +62,7 @@ cat > ~/smoke.json <<'JOB'
 JOB
 run_job.sh ~/smoke.json 1
 # → /opt/retrace/runs/smoke1/django__django-11099/1/{prompt.md,start_commit,droid.json,droid.stderr,patch.diff,pred.json,meta.json,capture/,factory-sessions/,snapshots.bundle}
+#   also reachable as /opt/retrace/sessions/<job_id>-<task_id>-<trial>
 grade.sh ~/smoke.json 1
 # → /opt/retrace/repo/runs/results/smoke1/django__django-11099-step0-control-1.json
 ```

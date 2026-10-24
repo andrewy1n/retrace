@@ -8,8 +8,8 @@ git_dir=$(git rev-parse --absolute-git-dir)
 index=$(mktemp "$git_dir/retrace-index.XXXXXX")
 trap 'rm -f "$index"' EXIT
 
-if [[ -f $git_dir/index ]]; then
-  cp "$git_dir/index" "$index"
+if git rev-parse --verify -q HEAD >/dev/null; then
+  GIT_INDEX_FILE=$index git read-tree HEAD
 else
   rm -f "$index"
 fi

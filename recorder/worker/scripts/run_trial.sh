@@ -6,7 +6,8 @@
 #        RETRACE_REPO (default /opt/retrace/repo).
 # Output: /opt/retrace/runs/<job_id>/<task_id>/<trial>/{prompt.md,start_commit,droid.json,droid.stderr,patch.diff,pred.json,meta.json,
 #         capture/,factory-sessions/,snapshots.bundle}
-# Writes the trace to $RETRACE_REPO/runs/traces/<job_id>-<task_id>-<trial>.json.
+# Writes the trace to $RETRACE_REPO/runs/traces/<session_id>.json, where session_id is <job_id>-<task_id>-<trial>,
+# and links /opt/retrace/sessions/<session_id> to the output directory.
 set -euo pipefail
 
 [[ $# -eq 3 ]] || { sed -n '2,7p' "$0"; exit 1; }
@@ -100,7 +101,8 @@ PY
 
 # 6. Trace: keep the Droid session and the snapshot commits, then join them into runs/traces/.
 docker cp "$NAME:/root/.factory/sessions" "$OUT/factory-sessions" >/dev/null 2>&1 || true
-docker exec "$NAME" bash -c 'cd /testbed && refs=$(git for-each-ref --format="%(refname)" refs/retrace) && [ -n "$refs" ] && git bundle create /retrace/snapshots.bundle $refs ^$(cat /retrace/start_commit)' >/dev/null 2>&1 || true
+docker exec "$NAME" bash -c 'cd /testbed && refs=$(git for-each-ref --format="%(refname)" refs/retrace) && [ -n "$refs" ] && git bundle create /retrace/snapshots.bundle $refs ^$(git rev-parse "$(cat /retrace/start_commit)^")' >/dev/null 2>&1 || true
+mkdir -p "$ROOT/sessions" && ln -sfn "$OUT" "$ROOT/sessions/$JOB_ID-$IID-$TRIAL"
 TRANSCRIPT="$(find "$OUT/factory-sessions" -name '*.jsonl' 2>/dev/null | head -n 1)"
 CAPTURE="$(find "$OUT/capture" -name '*.jsonl' 2>/dev/null | head -n 1)"
 if [[ -n "$TRANSCRIPT" && -n "$CAPTURE" ]]; then
