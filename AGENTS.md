@@ -1,13 +1,13 @@
 # Retrace
 
-Harness improvement through replay. Trace features route work. Step-0 replay results are the evidence. Report an intervention under a stated setup, with counts, sample size, and an interval. A small or negative result is reported as such.
+Harness improvement through replay. Trace features route work. The improvement loop uses only signals a production system has. The dataset's grader is for our own verification (see Grader). Step-0 replay results are the evidence. Report an intervention under a stated setup, with counts, sample size, and an interval. A small or negative result is reported as such.
 
 Droid is the primary harness. Claude Code is an optional adapter. `splits/pool.json` holds the task pool.
 
 ## Owners
 
 - Andrew: `recorder/capture`, `recorder/replay`, and `dashboard/`. Writes traces, primitives, and replay results. Runs a job he is given. Owns the Droid SDK rewind and fork, the PostToolUse snapshot hook, `droid exec` runs, primitive extraction from the session JSONL and its Tiger table, Factory credit accounting, held-out and regression runs from step 0, and the dashboard page.
-- Kate: `analysis/labeler` and `analysis/proposals`. Writes features, diagnoses, labels, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results. Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
+- Kate: `analysis/labeler` and `analysis/proposals`. Writes features, diagnoses, labels, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results, except grader output (see Grader). Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
 - `dashboard/` is an Evidence project with a light theme only (`dashboard/README.md` has the run steps). It reads Tiger summaries through `TIGER_DASHBOARD_URL`, local traces, and `runs/reviews/`. It writes nothing. The pull request is the review surface.
 
 `recorder/capture`, `recorder/replay`, `analysis/labeler`, `analysis/proposals`, and `dashboard/` appear with their first source file.
@@ -35,13 +35,13 @@ Do not add a `CLAUDE.md`. Claude Code reads this file when no `CLAUDE.md` is pre
 
 ## Contract
 
-`contracts/` is the live shape. Edit a schema and its fixture in the same change. There is no version field and no numbered schema directory. A `checkpoint` job names `tool_call_id`s. A `step0` job names instance ids of its dataset. Pass/fail is the dataset's grader (`recorder/worker/scripts/grade.sh`).
+`contracts/` is the live shape. Edit a schema and its fixture in the same change. There is no version field and no numbered schema directory. A `checkpoint` job names `tool_call_id`s. A `step0` job names instance ids of its dataset. `passed` is the dataset's grader (`recorder/worker/scripts/grade.sh`). The Grader section limits who reads it.
 
 - Trace. One session in `runs/traces/<session-id>.json`. Each step has `tool_call_id`, `message_id` (the Droid `messageId` that `session.rewind` takes), `tool_name`, and `snapshot_ref`. The step does not include tool input or output. The conversation stays in the Droid session. The session also has `harness_session_id` (the id `resumeSession` accepts) and `task_id`. The demo harness value is `droid`.
 - Friction ticket. `runs/tickets/<ticket-id>.json`. Fields are `ticket_id`, `friction_type`, `severity`, and `session_ids`. The shape matches a Signals ticket so a later Signals or Linear ticket can seed the same file. The stand-in detector is labeled Signals-style and credits Factory Signals for the ideas it borrows.
 - Primitives. One session in `runs/primitives/<session-id>.json`, written by `recorder/capture/primitives.py` from the Droid transcript and `settings.json`. Session fields are `session_id`, `task_id`, `job_id`, `trial`, `harness`, `assistant_turns`, `tool_calls`, `token_usage` (the `tokenUsage` totals, with `factory_credits`), `timed_out`, and `calls`. Each call has `tool_call_id` (matches the trace), `position`, `turn`, `tool_name`, `command_class`, `test_runner`, `path_arg_count` (0 is a whole-suite run), `background`, `duration_s`, `is_error`, `exit_code`, `files`, `output_chars`, `output_tokens_est`, `turns_after`, and `repeats_earlier`. A call has no command text and no tool output. Only classes, counts, and repo paths.
 - Replay job. `runs/jobs/<job-id>.json`. `start` is `checkpoint` or `step0`. A `checkpoint` job has `session_id` and `tool_call_ids`. A `step0` job has `task_ids` and runs each task fresh. A job may have `dataset`: `swebench_verified` (default) or `swebench_pro`. A `checkpoint` job with a `control` or `candidate` arm has `continuation`, the message that continues each fork. Every job has an arm (`control`, hint text, or a proposal path), `model`, reruns, stop mode (`next_user_turn`, `reuse_reply`, `simulated_user`), and a Factory credit budget (`budget_credits`).
-- Replay result. One trial at `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Fields are `job_id`, `task_id`, `session_id` of the trial's trace when one was recorded, the arm kind, `model`, `droid_version`, the stop mode used, `trial`, `passed`, `grader` (`swebench` or `swebench_pro`), `evidence_role`, and `cost_credits` from `tokenUsage.factoryCredits`. A `checkpoint` trial is `diagnosis`, has `tool_call_id`, and is not final evidence. A `step0` trial is `final` and has no `tool_call_id`.
+- Replay result. One trial at `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Fields are `job_id`, `task_id`, `session_id` of the trial's trace when one was recorded, the arm kind, `model`, `droid_version`, the stop mode used, `trial`, `passed`, `grader` (`swebench` or `swebench_pro`), `evidence_role`, and `cost_credits` from `tokenUsage.factoryCredits`. A `checkpoint` trial is `diagnosis`, has `tool_call_id`, and is not final evidence. A `step0` trial is `final` and has no `tool_call_id`. A `diagnosis` trial still carries `passed` until proxy fields replace it. The loop does not read that field.
 - Proposed change. `analysis/proposals/<id>/proposal.json`. Fields are `proposal_id`, `failure_type`, `change_type`, `path`, and optional `pr_url` (the pull request that ships it, set once it exists). The runner copies `.factory/` and `AGENTS.md` from that directory onto the task checkout and leaves `proposal.json` in this repo.
 
 Features, diagnoses, and labels belong to Kate. Andrew does not read them. He gets them only as replay jobs. The label shape is in `analysis/AGENTS.md`.
@@ -54,6 +54,16 @@ The harness is the Droid CLI, the model, and the config Droid loads. It has no c
 - Config in the baseline. The only config is the user-level `~/.factory/hooks.json` that the runner writes into each container. It holds the capture hook. The task repo has no `.factory/` and no `AGENTS.md`.
 - A change is an overlay. `analysis/proposals/<id>/.factory/` and `AGENTS.md` are copied into the task checkout (`/app` or `/testbed`) before the session starts. The runner adds both paths to `.git/info/exclude`, so they stay out of the graded patch.
 - Shipping a change is a pull request in this repository. It adds `analysis/proposals/<id>/` and the evidence file `reports/<group>.md`. A reader who adopts the change copies the overlay into their own repository.
+
+## Grader
+
+The dataset's grader is the oracle. It is for our own verification only: it shows the impact of a frozen change. The improvement loop runs on signals a production system has, such as traces, primitives, snapshots, the repo's own tests at the start commit, and checks an agent writes from the task statement alone. In production, monitoring and rollback replace the grader.
+
+- Grader output never reaches the loop. Labels, target choice, checkpoint diagnosis, hints, and proposal selection do not read `passed`, the gold patch, the test patch, or the dataset's test lists. This holds for people as well as agents.
+- The grader scores step-0 held-out and regression trials after the candidate is frozen. People read those results in `reports/` and on the dashboard.
+- One frozen run per split. A candidate revised after its held-out or regression results needs new held-out and regression tasks. Otherwise label the result as derived from those tasks.
+- Regression tasks stay out of derivation, like held-out tasks.
+- Freeze proxy definitions before the derivation run. Report their agreement with the grader as a number, and do not tune a proxy against it.
 
 ## Gates
 

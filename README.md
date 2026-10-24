@@ -15,7 +15,7 @@ Andrew owns recording, replay, and the dashboard. Kate owns the labeler, proposa
 | `splits/` | Derivation, held-out, and regression instance ids |
 | `reports/` | Frozen comparisons |
 
-`dashboard/` is added with its first page. Proposal review starts from a friction ticket and shows the `.factory/hooks.json` guardrail. The Changes tab shows a before-and-after for the target failure type against untargeted types, a shipped-changes table, and rollback. Those figures come from Tiger summaries. Pass/fail is the SWE-bench grader.
+`dashboard/` is added with its first page. Proposal review starts from a friction ticket and shows the `.factory/hooks.json` guardrail. The Changes tab shows a before-and-after for the target failure type against untargeted types, a shipped-changes table, and rollback. Those figures come from Tiger summaries. Pass/fail is the SWE-bench grader. The grader is for our own verification of a frozen change, and the improvement loop never reads it.
 
 ## Pitch and plan
 

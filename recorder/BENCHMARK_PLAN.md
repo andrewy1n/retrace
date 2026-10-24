@@ -6,7 +6,7 @@ Status: draft, updated 23 Oct 2026. Nothing below has run on SWE-bench images ye
 Use **SWE-bench Verified** (500 tasks, 12 repos), a slice of about 36 to 40 tasks, run with Factory Droid (`droid exec`) on **x86 Linux**. Fallback: **Verified Mini** (50 tasks, django + sphinx).
 
 ## Why SWE-bench Verified
-- Each task has a repo, an issue, and an automatic pass/fail grader, so replay outcomes are objective and need no hand labeling.
+- Each task has a repo, an issue, and an automatic pass/fail grader, so we can verify a frozen change without hand labeling. The grader is for our own verification. The improvement loop never reads it.
 - Tasks are public, which suits a public repo.
 - Many repos, so we can hold out whole repos for the "unseen repos" claim.
 
