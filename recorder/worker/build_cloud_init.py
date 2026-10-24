@@ -9,6 +9,7 @@ SCRIPTS = [
     ("scripts/run_job.sh", "run_job.sh"),
     ("scripts/grade.sh", "grade.sh"),
     ("scripts/retrace_job.py", "retrace_job.py"),
+    ("scripts/tiger_sink.py", "tiger_sink.py"),
     ("../capture/snapshot.sh", "capture/snapshot.sh"),
     ("../capture/hook.sh", "capture/hook.sh"),
     ("../capture/hook.py", "capture/hook.py"),
@@ -82,7 +83,7 @@ runcmd:
   - [bash, -c, "mkdir -p /home/retrace/.ssh && cp /root/.ssh/authorized_keys /home/retrace/.ssh/ 2>/dev/null; chown -R retrace:retrace /home/retrace/.ssh; chmod 700 /home/retrace/.ssh; true"]
   - [bash, -c, "curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt-get install -y nodejs"]
   - [bash, -c, "export HOME=/root && curl -fsSL https://app.factory.ai/cli | sh && install -m 0755 /root/.local/bin/droid /usr/local/bin/droid"]
-  - [bash, -c, "python3 -m venv /opt/retrace/venv && /opt/retrace/venv/bin/pip install --upgrade pip && /opt/retrace/venv/bin/pip install 'swebench==5.0.2' datasets jsonschema"]
+  - [bash, -c, "python3 -m venv /opt/retrace/venv && /opt/retrace/venv/bin/pip install --upgrade pip && /opt/retrace/venv/bin/pip install 'swebench==5.0.2' datasets jsonschema 'psycopg[binary]'"]
   - [bash, -c, "git clone https://github.com/andrewy1n/retrace.git /opt/retrace/repo"]
   - [bash, -c, "git config --system --add safe.directory /opt/retrace/repo"]
   - [bash, -c, "mkdir -p /opt/retrace/runs /opt/retrace/logs && chown -R retrace:retrace /opt/retrace"]

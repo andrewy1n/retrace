@@ -4,7 +4,7 @@ One x86_64 VM runs `droid exec` inside the official SWE-bench Verified images an
 
 Files:
 - `cloud-init.yaml`: user data for the VM (generated, do not hand-edit)
-- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `retrace_job.py`: installed to `/opt/retrace/`
+- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `retrace_job.py`, `tiger_sink.py`: installed to `/opt/retrace/`
 - `build_cloud_init.py`: regenerates `cloud-init.yaml` after you edit a script
 
 Target: plan `vc2-16c-64gb` (16 shared vCPU, 64 GB RAM, 1280 GB SSD, $0.438/hr), region `sjc` (Silicon Valley), OS id `2284` = Ubuntu 24.04 LTS x64. All three were checked against `api.vultr.com/v2` on 23 Oct 2026.
@@ -114,6 +114,28 @@ Vultr bills stopped instances until they are destroyed. Delete the VM right afte
 
 ## Fallback
 If account limits block you, run the same scripts on any x86_64 Ubuntu host with Docker. Options are Factory Droid Computers, BYOM (`droid computer register`, https://docs.factory.ai/droid-computers/byom), or Remote Workspaces (https://docs.factory.ai/user-guides/remote-workspaces/index).
+
+## Tiger (results and primitives sink)
+
+`tiger_sink.py` upserts result files and primitives files into the Tiger Postgres database. It validates each file against `contracts/` first. One run is one transaction, so a bad file writes nothing.
+
+Setup on the worker, once per VM:
+```bash
+/opt/retrace/venv/bin/pip install 'psycopg[binary]'   # new VMs get it from cloud-init
+export TIGER_DATABASE_URL=...        # never commit this; set it in the shell or /root/.retrace.env
+```
+Create the tables and roles on the database before the first run. Apply `contracts/tiger-replay-results.sql` and `contracts/tiger-primitives.sql` as the owner. Both files create the grants for `retrace_worker` and `retrace_dashboard`, so create those roles first.
+
+Commands:
+```bash
+tiger_sink.py results /opt/retrace/repo/runs/results/<job-id>   # one job's result files
+tiger_sink.py primitives /opt/retrace/repo/runs/primitives      # all primitives files
+```
+On the dev machine, set `RETRACE_REPO=$PWD RETRACE_ROOT=$PWD` first, as for `retrace_job.py`.
+
+`grade.sh` runs `tiger_sink.py results` after each successful `collect`. It skips the step when `TIGER_DATABASE_URL` is unset. Primitives are not sent by `grade.sh`. Run `tiger_sink.py primitives` by hand.
+
+Each upsert replaces the row with the same key. A primitives session that gets fewer calls on a re-run keeps its old extra call rows, because the role has no delete grant.
 
 ## Unverified (test on the VM)
 - Checked on a live VM on 24 Oct (`vc2-16c-64gb`, sjc): cloud-init finished in 225 s (Docker 29.9.2, Droid 0.249.0, swebench 5.0.2). The gold patch resolves `django__django-11099` in 38 s. A `run_job.sh` and `grade.sh` smoke run on that task, model `gpt-6-sol`, passed: 25 s of Droid time, 25,576 `factory_credits`, one result file that validates against the schema. The image takes 4.2 GB on disk.
