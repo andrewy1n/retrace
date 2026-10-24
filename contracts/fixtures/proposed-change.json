@@ -2,5 +2,6 @@
   "proposal_id": "block-test-edits",
   "failure_type": "test_gaming",
   "change_type": "guardrail_hook",
-  "path": "analysis/proposals/block-test-edits"
+  "path": "analysis/proposals/block-test-edits",
+  "pr_url": "https://github.com/andrewy1n/retrace/pull/101"
 }

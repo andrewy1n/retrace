@@ -1,1 +1,1 @@
-One review per file: `runs/reviews/<proposal-id>.json`. Fields are `proposal_id`, `decision` (`approve`, `edit`, or `reject`), and `reason`. The dashboard is the writer. Kate's next pass can read them.
+One review per file: `runs/reviews/<proposal-id>.json`. Fields are `proposal_id`, `decision` (`approve`, `edit`, or `reject`), and `reason`. The reviewer commits the file in the proposal's pull request. The dashboard and Kate's next pass read it.

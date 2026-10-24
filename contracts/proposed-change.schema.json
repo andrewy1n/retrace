@@ -26,6 +26,11 @@
       "type": "string",
       "minLength": 1,
       "description": "Portable directory such as analysis/proposals/block-test-edits."
+    },
+    "pr_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Pull request that ships the proposal. Optional until the pull request exists. The dashboard links to it."
     }
   }
 }
