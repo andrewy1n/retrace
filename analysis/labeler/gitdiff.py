@@ -9,6 +9,10 @@ def git(repo, *args):
     ).stdout
 
 
+def has_commit(repo, ref):
+    return subprocess.run(["git", "cat-file", "-e", f"{ref}^{{commit}}"], cwd=repo, capture_output=True).returncode == 0
+
+
 def tree(repo, ref):
     return git(repo, "rev-parse", f"{ref}^{{tree}}").strip()
 
@@ -16,6 +20,15 @@ def tree(repo, ref):
 def changed_files(repo, a, b):
     """Paths whose content or mode differs between a and b."""
     return git(repo, "diff", "--name-only", "--no-renames", "-z", a, b).split("\0")[:-1]
+
+
+def numstat(repo, a, b):
+    """Path -> (added, deleted) lines from a to b. A binary file is (None, None)."""
+    out = {}
+    for row in git(repo, "diff", "--numstat", "--no-renames", "-z", a, b).split("\0")[:-1]:
+        added, deleted, path = row.split("\t", 2)
+        out[path] = (int(added), int(deleted)) if added.isdigit() else (None, None)
+    return out
 
 
 def added_lines(repo, a, b):

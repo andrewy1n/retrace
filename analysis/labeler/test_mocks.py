@@ -51,7 +51,7 @@ def main():
     if len(sys.argv) > 1:
         return 1 if check(Path(sys.argv[1]).resolve()) else 0
     with tempfile.TemporaryDirectory(prefix="retrace-mock-", ignore_cleanup_errors=True) as tmp:
-        print("Building 10 mock sessions (about 30 to 60 seconds)...", flush=True)
+        print(f"Building {len(make_mock.SESSIONS)} mock sessions (about 30 to 60 seconds)...", flush=True)
         make_mock.build(Path(tmp))
         return 1 if check(Path(tmp)) else 0
 

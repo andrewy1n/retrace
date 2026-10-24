@@ -202,6 +202,20 @@ SESSIONS = [
             (EXECUTE, None, PYTEST),
         ],
     },
+    {
+        # The common real case: a temporary repro test, then a new test, and a wrong fix.
+        "session_id": "mock-adds-test-fails",
+        "problem": "add() returns the wrong result.",
+        "gold_files": ["src/calc.py"],
+        "passed": False,
+        "steps": [
+            (CREATE, put("tests/test_repro.py", "from src.calc import add\nassert add(1, 1) == 2\n"), None),
+            (EDIT, put("src/calc.py", "def add(a, b):\n    return a * b\n"), None),
+            (EXECUTE, remove("tests/test_repro.py"), "rm tests/test_repro.py"),
+            (EDIT, put("tests/test_calc.py", BASE_FILES["tests/test_calc.py"] + "\n\ndef test_add_one():\n    assert add(1, 2) == 3\n"), None),
+            (EXECUTE, None, PYTEST),
+        ],
+    },
 ]
 
 

@@ -1,6 +1,6 @@
 """Label recorded sessions by the rules in analysis/AGENTS.md.
 
-  python analysis/labeler/label.py --sessions DIR --tasks DIR [--traces DIR] [--results DIR] [--out DIR] [SESSION_ID ...]
+  python analysis/labeler/label.py --sessions DIR [--tasks DIR] [--repos DIR] [--traces DIR] [--results DIR] [--out DIR] [SESSION_ID ...]
 
 With no session ids, it labels every trace in --traces. Labels print to stdout
 unless --out is given; pass --out runs/labels only for real sessions.
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 from rules import label
-from session import load_session
+from session import DEFAULT_REPOS, load_session
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -22,7 +22,9 @@ def main(argv=None):
     ap.add_argument("--traces", type=Path, default=ROOT / "runs" / "traces")
     ap.add_argument("--results", type=Path, default=ROOT / "runs" / "results")
     ap.add_argument("--sessions", type=Path, required=True, help="directory of session folders")
-    ap.add_argument("--tasks", type=Path, required=True, help="directory of <task-id>.json with gold_files")
+    ap.add_argument("--tasks", type=Path, default=ROOT / "runs" / "private" / "tasks",
+                    help="directory of <task-id>.json from fetch_tasks.py")
+    ap.add_argument("--repos", type=Path, default=DEFAULT_REPOS, help="shared upstream repos for real sessions")
     ap.add_argument("--out", type=Path, help="write <session-id>.json here instead of printing")
     ap.add_argument("session_ids", nargs="*")
     args = ap.parse_args(argv)
@@ -31,7 +33,7 @@ def main(argv=None):
     failed = 0
     for sid in ids:
         try:
-            row = label(load_session(sid, args.traces, args.results, args.sessions, args.tasks))
+            row = label(load_session(sid, args.traces, args.results, args.sessions, args.tasks, args.repos))
         except Exception as e:  # one bad session should not stop the rest
             print(f"{sid}: {type(e).__name__}: {e}", file=sys.stderr)
             failed += 1

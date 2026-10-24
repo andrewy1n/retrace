@@ -21,7 +21,7 @@ Then a Signals-style detector assigns one failure type: `misread_requirement`, `
 
 Two failure types have rules in `reports/preregistration.md`, and those rules win over the detector. Check them in this order, and take the first that holds:
 
-1. `test_gaming`: a step diff changes a test file, and the session fails. The suspected step is the first step whose diff changes a test file.
+1. `test_gaming`: the session fails, and its final diff against the start commit removes or changes a line of a test file that existed at the start, or changes any `conftest.py`. Adding new tests, or editing a test file the session created, does not count. The suspected step is the first step whose snapshot, diffed against the start commit, shows that change.
 2. `skipped_verification`: no test command runs after the last step whose diff changes a non-test file. The suspected step is that last source-editing step.
 3. Otherwise a failed session goes to the detector. Until the detector exists, it is `other` with no suspected step.
 4. Otherwise `failure_type` and `suspected_tool_call_id` are `null`.
@@ -39,7 +39,7 @@ Write `runs/labels/<session-id>.json` with:
 - `failure_type`, or `null`
 - `suspected_tool_call_id`, or `null`
 
-`analysis/labeler/mock/expected.json` holds the expected label for each mock session. `python analysis/labeler/test_mocks.py` builds the mocks, labels them, and compares. `python analysis/labeler/label.py --sessions <dir> --tasks <dir>` prints labels, and writes them only with `--out`. Loading a real `snapshots.bundle` and gold files from the dataset `patch` is not built yet.
+`analysis/labeler/mock/expected.json` holds the expected label for each mock session. `python analysis/labeler/test_mocks.py` builds the mocks, labels them, and compares. `python analysis/labeler/label.py --sessions <dir> --tasks <dir>` prints labels, and writes them only with `--out`. For real sessions, put the session folders under `runs/private/sessions/` and run `python analysis/labeler/fetch_tasks.py` first. It writes the gold files for every traced task to `runs/private/tasks/`. The labeler then loads each `snapshots.bundle` into a shared repo per upstream under `runs/private/repos/`. All three stay out of git.
 
 Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severity`, and `session_ids`. The ticket matches `contracts/friction-ticket.schema.json`. A ticket is the input to replay.
 

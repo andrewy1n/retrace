@@ -5,16 +5,21 @@ A session is spread over four places:
   traces/<session-id>.json         steps and snapshot refs (contracts/trace.schema.json)
   results/**/<...>.json            the trial whose session_id matches (contracts/replay-result.schema.json)
   sessions/<session-id>/           start_commit, the snapshots, and factory-sessions/ (recorder/AGENTS.md)
-  tasks/<task-id>.json             gold_files for the task (mocks only for now)
+  tasks/<task-id>.json             repo, base_commit, gold_files (fetch_tasks.py; mocks write their own)
 """
 
 import json
 from dataclasses import dataclass
 from pathlib import Path
 
-# The Execute tool's input key for its shell command. Unverified: confirm on the first real trace.
+from gitdiff import git, has_commit
+
+# The Execute tool's input key for its shell command. Checked on Droid 0.249.0.
 EXECUTE = "Execute"
 COMMAND_KEY = "command"
+
+# Shared upstream repos for real sessions. Gitignored, like everything under runs/private/.
+DEFAULT_REPOS = Path(__file__).resolve().parents[2] / "runs" / "private" / "repos"
 
 
 @dataclass
@@ -28,14 +33,29 @@ class Session:
     gold_files: list
 
 
-def open_repo(session_dir):
-    """Return a git repo that holds the session's snapshots under refs/retrace/."""
+def open_repo(session_dir, task, repos_dir, needed):
+    """Return a git repo that holds the commits in needed.
+
+    A mock folder has repo/. A real one has snapshots.bundle, which needs the
+    dataset base_commit (recorder/AGENTS.md). Real sessions share one repo per
+    upstream under repos_dir, and each fetch is skipped once its commits are there.
+    """
     if (session_dir / "repo").is_dir():
         return session_dir / "repo"
-    if (session_dir / "snapshots.bundle").exists():
-        # Step 6: clone the upstream repo at base_commit, then fetch the bundle (recorder/AGENTS.md).
-        raise NotImplementedError(f"{session_dir}: loading snapshots.bundle is not built yet")
-    raise FileNotFoundError(f"{session_dir}: no repo/ and no snapshots.bundle")
+    bundle = session_dir / "snapshots.bundle"
+    if not bundle.exists():
+        raise FileNotFoundError(f"{session_dir}: no repo/ and no snapshots.bundle")
+    repo = Path(repos_dir) / task["repo"].replace("/", "__")
+    if not (repo / ".git").exists():
+        repo.mkdir(parents=True, exist_ok=True)
+        git(repo, "init", "-q")
+    base = task["base_commit"]
+    if not has_commit(repo, base):
+        git(repo, "fetch", "-q", "--depth", "1", f"https://github.com/{task['repo']}.git", base)
+        git(repo, "update-ref", f"refs/base/{base}", base)  # keeps it from git gc
+    if not all(has_commit(repo, ref) for ref in needed):
+        git(repo, "fetch", "-q", str(bundle.resolve()), "refs/retrace/*:refs/retrace/*")
+    return repo
 
 
 def find_result(results_dir, session_id):
@@ -74,16 +94,18 @@ def read_commands(transcript):
     return commands
 
 
-def load_session(session_id, traces_dir, results_dir, sessions_dir, tasks_dir):
+def load_session(session_id, traces_dir, results_dir, sessions_dir, tasks_dir, repos_dir=DEFAULT_REPOS):
     trace = json.loads((Path(traces_dir) / f"{session_id}.json").read_text())
     session_dir = Path(sessions_dir) / session_id
     task = json.loads((Path(tasks_dir) / f"{trace['task_id']}.json").read_text())
+    start_commit = (session_dir / "start_commit").read_text().strip()
+    needed = [start_commit] + [step["snapshot_ref"] for step in trace["steps"]]
     return Session(
         session_id=session_id,
         trace=trace,
         result=find_result(results_dir, session_id),
-        start_commit=(session_dir / "start_commit").read_text().strip(),
-        repo=open_repo(session_dir),
+        start_commit=start_commit,
+        repo=open_repo(session_dir, task, repos_dir, needed),
         commands=read_commands(find_transcript(session_dir, trace["harness_session_id"])),
         gold_files=task["gold_files"],
     )
