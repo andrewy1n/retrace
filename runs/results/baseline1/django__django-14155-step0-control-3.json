@@ -1,0 +1,14 @@
+{
+  "job_id": "baseline1",
+  "task_id": "django__django-14155",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 3,
+  "passed": false,
+  "grader": "swebench",
+  "evidence_role": "final",
+  "cost_credits": 5959,
+  "session_id": "baseline1-django__django-14155-3"
+}

@@ -1,0 +1,44 @@
+{
+  "session_id": "baseline1-django__django-13279-2",
+  "harness": "droid",
+  "task_id": "django__django-13279",
+  "harness_session_id": "99f85a6d-a7ab-44f4-9c86-daee8e5dd427",
+  "steps": [
+    {
+      "tool_call_id": "toolu_012noJ8w9ioJwszsu1rxG7uw",
+      "message_id": "3dd938f6-2953-4fe2-b52a-f313e5ed65a5",
+      "tool_name": "Read",
+      "snapshot_ref": "29653aad93537f67ba3c5c9b8157da91716efb2a"
+    },
+    {
+      "tool_call_id": "toolu_015TfVVWpcCEnz9AjwafF6nk",
+      "message_id": "c620e4f5-aac6-43fb-968d-cc61233e5d7f",
+      "tool_name": "Read",
+      "snapshot_ref": "088828bb13f5a83c8767ef5d513869bbcd362a63"
+    },
+    {
+      "tool_call_id": "toolu_01XwhrMxYZKR1iHouvWGjcGW",
+      "message_id": "4c16bf20-b3e3-467c-9f3a-840c2ff7cc77",
+      "tool_name": "Grep",
+      "snapshot_ref": "c31624c820312cd0928b4d346a87764c4848e9d4"
+    },
+    {
+      "tool_call_id": "toolu_01UDjVKxj4se4pvSQGYFVF4J",
+      "message_id": "6c7a5cc5-c493-461a-b9c6-829bada0c589",
+      "tool_name": "Edit",
+      "snapshot_ref": "b76d4a3665a75738f679cc42c6bd7178db8343e7"
+    },
+    {
+      "tool_call_id": "toolu_019m97RQzLonAvDpVipVqMvd",
+      "message_id": "ae8cd552-2401-420d-9311-59258f8ccf66",
+      "tool_name": "Execute",
+      "snapshot_ref": "58ed9b0aee37ee6b203e47481826fd2c378ce2ae"
+    },
+    {
+      "tool_call_id": "toolu_01NEmstUmFsJxC8EjtHokdRW",
+      "message_id": "aca4bf1c-d30e-42c4-86d4-afa66db043f0",
+      "tool_name": "Execute",
+      "snapshot_ref": "396739426c61a9de6013a279b8d0930e616f7f4b"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "job_id": "baseline1",
+  "task_id": "sympy__sympy-24443",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 3,
+  "passed": true,
+  "grader": "swebench",
+  "evidence_role": "final",
+  "cost_credits": 3814,
+  "session_id": "baseline1-sympy__sympy-24443-3"
+}

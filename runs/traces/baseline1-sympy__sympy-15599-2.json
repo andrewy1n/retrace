@@ -1,0 +1,56 @@
+{
+  "session_id": "baseline1-sympy__sympy-15599-2",
+  "harness": "droid",
+  "task_id": "sympy__sympy-15599",
+  "harness_session_id": "860e6975-2070-4781-a47d-0e5f462ba7a3",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01WuVT4SqQGC8UMqAbDiY5v7",
+      "message_id": "b63fef71-3a4f-4d18-9740-ed48d14d30b3",
+      "tool_name": "Read",
+      "snapshot_ref": "67641c42d21c634591e2cece8b55db6845cc0f8a"
+    },
+    {
+      "tool_call_id": "toolu_01QBg5yS8QJgct794MupFHSQ",
+      "message_id": "d67a17ab-b632-4ec1-8734-7ba63dad070b",
+      "tool_name": "Edit",
+      "snapshot_ref": "6e24582db6da9bfaf2a261fb990f4307027f7d49"
+    },
+    {
+      "tool_call_id": "toolu_011s5QWtam1J6HLXkTVLLUvX",
+      "message_id": "333d025d-7a87-4adb-81d2-da69671f098d",
+      "tool_name": "Edit",
+      "snapshot_ref": "d5a2d9ab88ed45eb55f0f0b53dae510c8b0cea1c"
+    },
+    {
+      "tool_call_id": "toolu_01SMHJKNZT3iDjNt8kFxMKGm",
+      "message_id": "6e615bb0-fe5b-4ec2-8fc8-7cbe8971553b",
+      "tool_name": "Execute",
+      "snapshot_ref": "74e15abd21569a2ad91650fe46daa6b022052ce2"
+    },
+    {
+      "tool_call_id": "toolu_0151u2UEu6u2t46o5EK1Aju7",
+      "message_id": "cc9b55e2-0634-4c3e-bfab-064a654d9671",
+      "tool_name": "Execute",
+      "snapshot_ref": "43a57aba3f7af2c0057c37bfe2cb738c9f7901e9"
+    },
+    {
+      "tool_call_id": "toolu_01R7frp7XrH57oCptGZkLLf8",
+      "message_id": "8dfa0d28-b504-4f7e-b147-0f48d2642fab",
+      "tool_name": "Execute",
+      "snapshot_ref": "1d6f32a16b975fed1b3ba4eaf5e5db905dc01044"
+    },
+    {
+      "tool_call_id": "toolu_01KT6d946fhvEAHSN8sRFz24",
+      "message_id": "7b297e78-a122-4403-a81a-4c074534e3cd",
+      "tool_name": "Execute",
+      "snapshot_ref": "e91f42a0d5fcdc13a7ef684ec0c69c80d757701b"
+    },
+    {
+      "tool_call_id": "toolu_0126MoGpp2zqGGo5YD69KRni",
+      "message_id": "ccbafaf8-bff0-4973-b983-d8d85351773b",
+      "tool_name": "Execute",
+      "snapshot_ref": "b8a73778ce91f7ca38507bab665c6697671882f3"
+    }
+  ]
+}
