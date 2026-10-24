@@ -2,7 +2,7 @@
   "drawn": "2026-10-24",
   "seed": 11,
   "source": "SWE-bench/SWE-bench_Verified. Drawn by splits/draw_pool.py from the quotas in that file. Dev keeps the 26 baseline1 tasks. Held-out repos (matplotlib, scikit-learn, xarray, astropy) were chosen for large test suites, before any run on them, and appear nowhere in dev.",
-  "gold_check": "TBD",
+  "gold_check": "Dev: all 48 new candidates, spares included, resolve with the gold patch on swebench 5.0.2 (2026-10-24). Held-out: pending.",
   "dev": [
     "django__django-13279",
     "django__django-11815",
