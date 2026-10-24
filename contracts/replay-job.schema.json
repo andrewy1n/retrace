@@ -77,6 +77,11 @@
       "type": "number",
       "minimum": 0,
       "description": "Cap on tokenUsage.factoryCredits for this job. Cal Hacks has posted no hacker spending allotment. The Factory track prize is $2,000 cash, Factory credits, and swag, with no credit quantity."
+    },
+    "continuation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The message that continues each fork of a checkpoint job under a control or candidate arm. A hint arm sends its own text."
     }
   },
   "allOf": [
@@ -88,8 +93,16 @@
       "if": { "properties": { "start": { "const": "step0" } } },
       "then": {
         "required": ["task_ids"],
-        "not": { "anyOf": [{ "required": ["session_id"] }, { "required": ["tool_call_ids"] }] }
+        "not": { "anyOf": [{ "required": ["session_id"] }, { "required": ["tool_call_ids"] }, { "required": ["continuation"] }] }
       }
+    },
+    {
+      "if": { "properties": { "start": { "const": "checkpoint" }, "arm": { "properties": { "kind": { "enum": ["control", "candidate"] } } } } },
+      "then": { "required": ["continuation"] }
+    },
+    {
+      "if": { "properties": { "arm": { "properties": { "kind": { "const": "hint" } } } } },
+      "then": { "not": { "required": ["continuation"] } }
     }
   ]
 }

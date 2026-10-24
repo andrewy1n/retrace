@@ -2,8 +2,7 @@
 # Run one trial of a checkpoint job: rewind a recorded Droid session to one step and continue it in the task image.
 #
 # Usage: /opt/retrace/replay/run_checkpoint.sh <job.json> <tool_call_id> <trial>
-# Needs: FACTORY_API_KEY. RETRACE_CONTINUATION (the message that continues the fork) for control and candidate arms.
-#        A hint arm sends its hint text instead.
+# Needs: FACTORY_API_KEY. A control or candidate arm sends the job's continuation text. A hint arm sends its hint text.
 # Optional: DROID_TIMEOUT (seconds, default 1800), RETRACE_REPO (default /opt/retrace/repo),
 #        RETRACE_SESSIONS (recorded sessions, default /opt/retrace/sessions), RETRACE_DROID (default /usr/local/bin/droid).
 #        RETRACE_IMAGE and RETRACE_PLATFORM (default linux/amd64) replace the dataset image, for a host with another CPU.
@@ -42,7 +41,7 @@ SNAPSHOT="$(jq -r --arg id "$TCID" '.steps as $s | ($s | map(.tool_call_id) | in
 if [[ "$ARM" == hint ]]; then
   MESSAGE="$(jq -r .arm.text "$JOB")"
 else
-  MESSAGE="${RETRACE_CONTINUATION:?Set RETRACE_CONTINUATION to the text that continues the fork. The $ARM arm has no text of its own.}"
+  MESSAGE="$(jq -r .continuation "$JOB")"
 fi
 if [[ "$ARM" == candidate ]]; then
   [[ -d "$REPO/$CANDIDATE/.factory" || -f "$REPO/$CANDIDATE/AGENTS.md" ]] \

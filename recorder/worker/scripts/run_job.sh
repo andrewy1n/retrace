@@ -4,7 +4,6 @@
 # Usage: /opt/retrace/run_job.sh <job.json> [parallel=8]
 # Stops starting trials once the credits spent reach budget_credits. Running trials finish, so up to
 # <parallel> trials can overshoot. Exits 3 when trials are left undone.
-# A checkpoint job needs RETRACE_CONTINUATION in the environment unless its arm is a hint.
 # Then grade: /opt/retrace/grade.sh <job.json>
 set -euo pipefail
 
@@ -24,9 +23,6 @@ if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
   RUNNER="$ROOT/replay/run_checkpoint.sh"
   TASK="$(jq -r .task_id "$REPO/runs/traces/$(jq -r .session_id "$JOB").json")"
   UNITS="$(jq -r '.tool_call_ids[]' "$JOB")"
-  if [[ "$(jq -r .arm.kind "$JOB")" != hint && -z "${RETRACE_CONTINUATION:-}" ]]; then
-    echo "Set RETRACE_CONTINUATION to the text that continues each fork." >&2; exit 1
-  fi
   unit_dir() { echo "$RUNS/$TASK/$1/$2"; }
 else
   RUNNER="$ROOT/run_trial.sh"

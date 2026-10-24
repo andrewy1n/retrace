@@ -277,7 +277,6 @@ write_files:
       # Usage: /opt/retrace/run_job.sh <job.json> [parallel=8]
       # Stops starting trials once the credits spent reach budget_credits. Running trials finish, so up to
       # <parallel> trials can overshoot. Exits 3 when trials are left undone.
-      # A checkpoint job needs RETRACE_CONTINUATION in the environment unless its arm is a hint.
       # Then grade: /opt/retrace/grade.sh <job.json>
       set -euo pipefail
 
@@ -297,9 +296,6 @@ write_files:
         RUNNER="$ROOT/replay/run_checkpoint.sh"
         TASK="$(jq -r .task_id "$REPO/runs/traces/$(jq -r .session_id "$JOB").json")"
         UNITS="$(jq -r '.tool_call_ids[]' "$JOB")"
-        if [[ "$(jq -r .arm.kind "$JOB")" != hint && -z "${RETRACE_CONTINUATION:-}" ]]; then
-          echo "Set RETRACE_CONTINUATION to the text that continues each fork." >&2; exit 1
-        fi
         unit_dir() { echo "$RUNS/$TASK/$1/$2"; }
       else
         RUNNER="$ROOT/run_trial.sh"
@@ -737,8 +733,7 @@ write_files:
       # Run one trial of a checkpoint job: rewind a recorded Droid session to one step and continue it in the task image.
       #
       # Usage: /opt/retrace/replay/run_checkpoint.sh <job.json> <tool_call_id> <trial>
-      # Needs: FACTORY_API_KEY. RETRACE_CONTINUATION (the message that continues the fork) for control and candidate arms.
-      #        A hint arm sends its hint text instead.
+      # Needs: FACTORY_API_KEY. A control or candidate arm sends the job's continuation text. A hint arm sends its hint text.
       # Optional: DROID_TIMEOUT (seconds, default 1800), RETRACE_REPO (default /opt/retrace/repo),
       #        RETRACE_SESSIONS (recorded sessions, default /opt/retrace/sessions), RETRACE_DROID (default /usr/local/bin/droid).
       #        RETRACE_IMAGE and RETRACE_PLATFORM (default linux/amd64) replace the dataset image, for a host with another CPU.
@@ -777,7 +772,7 @@ write_files:
       if [[ "$ARM" == hint ]]; then
         MESSAGE="$(jq -r .arm.text "$JOB")"
       else
-        MESSAGE="${RETRACE_CONTINUATION:?Set RETRACE_CONTINUATION to the text that continues the fork. The $ARM arm has no text of its own.}"
+        MESSAGE="$(jq -r .continuation "$JOB")"
       fi
       if [[ "$ARM" == candidate ]]; then
         [[ -d "$REPO/$CANDIDATE/.factory" || -f "$REPO/$CANDIDATE/AGENTS.md" ]] \
