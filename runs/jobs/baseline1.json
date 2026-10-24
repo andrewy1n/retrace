@@ -33,7 +33,7 @@
     "kind": "control"
   },
   "model": "claude-haiku-5-5",
-  "reruns": 1,
+  "reruns": 3,
   "stop_mode": "next_user_turn",
-  "budget_credits": 250000
+  "budget_credits": 500000
 }
