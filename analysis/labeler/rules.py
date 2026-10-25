@@ -3,11 +3,14 @@
 import re
 from dataclasses import dataclass
 
+from features import features
 from gitdiff import added_lines, blobs, changed_files, numstat, tree
 from session import EXECUTE
 
-# The pattern in reports/preregistration.md.
-TEST_FILE = re.compile(r"(^|/)(test_[^/]*\.py|[^/]*_test\.py|conftest\.py)$|(^|/)(tests|testing)/")
+# The pattern in reports/preregistration.md. A top-level test/ is ansible's; django/test/ is library code.
+TEST_FILE = re.compile(
+    r"(^|/)(test_[^/]*\.py|[^/]*_test\.py|[^/]*_test\.go|conftest\.py)$|(^|/)(tests|testing)/|^test/"
+)
 # A starting list, to be checked against the baseline.
 TEST_COMMAND = re.compile(r"\bpytest\b|\bunittest\b|\btox\b|manage\.py\s+test\b|runtests")
 # Starting values, to be checked against the baseline.
@@ -107,6 +110,22 @@ def weakens_tests(s, start_files, ref):
     return False
 
 
+def tested_after(s, steps, last):
+    """Does a test command run after trace step `last`?
+
+    With primitives, any later call whose command_class is test counts, including
+    calls the trace lacks. Without them, the transcript command must match TEST_COMMAND.
+    """
+    if s.primitives:
+        calls = s.primitives["calls"]
+        position = {c["tool_call_id"]: c["position"] for c in calls}[steps[last]["tool_call_id"]]
+        return any(c["command_class"] == "test" and c["position"] > position for c in calls)
+    return any(
+        step["tool_name"] == EXECUTE and TEST_COMMAND.search(s.commands.get(step["tool_call_id"], ""))
+        for step in steps[last + 1:]
+    )
+
+
 def failure(s, f):
     """(failure_type, suspected_tool_call_id), by the ordered rules in analysis/AGENTS.md."""
     steps = s.trace["steps"]
@@ -121,11 +140,7 @@ def failure(s, f):
     source_edits = [i for i, files in enumerate(f.step_files) if any(not is_test(p) for p in files)]
     if source_edits:
         last = source_edits[-1]
-        tested = any(
-            step["tool_name"] == EXECUTE and TEST_COMMAND.search(s.commands.get(step["tool_call_id"], ""))
-            for step in steps[last + 1:]
-        )
-        if not tested:
+        if not tested_after(s, steps, last):
             return "skipped_verification", steps[last]["tool_call_id"]
 
     if failed:
@@ -141,4 +156,5 @@ def label(s):
         "hard_signals": [name for name, rule in SIGNALS.items() if rule(s, f)],
         "failure_type": failure_type,
         "suspected_tool_call_id": suspected,
+        "features": features(s.primitives),
     }

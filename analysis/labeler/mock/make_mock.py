@@ -9,6 +9,7 @@ under refs/retrace/. Output, under out-dir (a new temp dir by default):
   sessions/<session-id>/start_commit                    diff base, as in recorder/AGENTS.md
   sessions/<session-id>/repo/                           task checkout with the snapshots
   sessions/<session-id>/factory-sessions/-testbed/      Droid session JSONL, as trace.py reads it
+  primitives/<session-id>.json                          matches contracts/primitives.schema.json
   traces/<session-id>.json                              matches contracts/trace.schema.json
   results/mock-baseline/<task-id>-step0-control-1.json  matches contracts/replay-result.schema.json
   tasks/<task-id>.json                                  base_commit, problem_statement, gold_files
@@ -53,6 +54,11 @@ BASE_FILES = {
     "src/utils.py": "def clamp(x, lo, hi):\n    return max(lo, min(x, hi))\n",
     "tests/__init__.py": "",
     "tests/test_calc.py": "from src.calc import add\n\n\ndef test_add():\n    assert add(2, 3) == 5\n",
+    "go/calc.go": "package calc\n\nfunc Add(a, b int) int {\n\treturn a - b\n}\n",
+    "go/calc_test.go": (
+        'package calc\n\nimport "testing"\n\nfunc TestAdd(t *testing.T) {\n'
+        '\tif Add(2, 3) != 5 {\n\t\tt.Fatal("want 5")\n\t}\n}\n'
+    ),
 }
 
 FIX = "def add(a, b):\n    return a + b\n"
@@ -70,7 +76,8 @@ REWRITE = (
     "        raise ArithmeticError(result)\n"
     "    return result\n"
 )
-PYTEST = "python -m pytest -q"
+PYTEST = "python -m pytest -q tests/test_calc.py"
+GO_TEST = "go test ./go/"
 
 
 def put(path, content):
@@ -85,8 +92,10 @@ def remove(path):
     return lambda repo: (repo / path).unlink()
 
 
-# Each step is (tool_name, action or None, command or None).
-# The command is what the mock transcript records for that tool call.
+# Each step is (tool_name, action or None, command or None[, primitive overrides]).
+# The command is what the mock transcript records for that tool call. The
+# overrides replace fields of the step's primitives call (see mock_call).
+# A session with "primitives": False writes none, to test the transcript path.
 SESSIONS = [
     {
         "session_id": "mock-clean",
@@ -139,6 +148,7 @@ SESSIONS = [
         "problem": "add() returns the wrong result.",
         "gold_files": ["src/calc.py"],
         "passed": True,
+        "primitives": False,
         "steps": [
             (CREATE, put("src/debug_helper.py", "from calc import add\nprint(add(2, 3))\n"), None),
             (EXECUTE, None, "python src/debug_helper.py"),
@@ -216,6 +226,32 @@ SESSIONS = [
             (EXECUTE, None, PYTEST),
         ],
     },
+    {
+        "session_id": "mock-go-test-gaming",
+        "problem": "Add returns the wrong result.",
+        "gold_files": ["go/calc.go"],
+        "passed": False,
+        "steps": [
+            (READ, None, None),
+            (EDIT, put("go/calc.go", BASE_FILES["go/calc.go"].replace("a - b", "a * b")), None),
+            (EXECUTE, None, GO_TEST),
+            (EDIT, put("go/calc_test.go", BASE_FILES["go/calc_test.go"].replace("!= 5", "!= 6")), None),
+            (EXECUTE, None, GO_TEST),
+        ],
+    },
+    {
+        # Cost features: two large reads (the second a repeat), then a slow whole-suite run.
+        "session_id": "mock-large-reads",
+        "problem": "add() returns the wrong result.",
+        "gold_files": ["src/calc.py"],
+        "passed": True,
+        "steps": [
+            (READ, None, None, {"output_tokens_est": 3000}),
+            (READ, None, None, {"output_tokens_est": 3000, "repeats_earlier": True}),
+            (EDIT, put("src/calc.py", FIX), None),
+            (EXECUTE, None, "python -m pytest -q", {"path_arg_count": 0, "duration_s": 90.0}),
+        ],
+    },
 ]
 
 
@@ -280,6 +316,38 @@ def write_jsonl(path, rows):
     path.write_text("".join(json.dumps(r) + "\n" for r in rows), newline="\n")
 
 
+def mock_call(tool, command, call_id, position, n_calls, overrides):
+    """One primitives call (contracts/primitives.schema.json), classified like primitives.py roughly."""
+    runner = "pytest" if command and "pytest" in command else "go_test" if command and "go test" in command else None
+    if runner:
+        cls = "test"
+    elif tool == EXECUTE:
+        cls = "edit" if command.startswith("rm ") else "run"
+    else:
+        cls = {READ: "read", GREP: "search", EDIT: "edit", CREATE: "edit"}[tool]
+    call = {
+        "tool_call_id": call_id,
+        "position": position,
+        "turn": position,  # one call per turn
+        "tool_name": tool,
+        "command_class": cls,
+        "test_runner": runner,
+        "path_arg_count": 1 if runner else None,
+        "background": False,
+        "duration_s": 1.0,
+        "is_error": False,
+        "exit_code": 0 if tool == EXECUTE else None,
+        "files": [],
+        "output_chars": 400,
+        "output_tokens_est": 100,
+        "turns_after": n_calls - 1 - position,
+        "repeats_earlier": False,
+    }
+    call.update(overrides)
+    call["output_chars"] = call["output_tokens_est"] * 4
+    return call
+
+
 def build(out):
     for n, s in enumerate(SESSIONS, 1):
         sid = s["session_id"]
@@ -290,8 +358,8 @@ def build(out):
         (session_dir / "start_commit").write_text(start + "\n", newline="\n")
 
         harness_session_id = f"mock-sess-{sid}"
-        steps, messages = [], []
-        for i, (tool, act, command) in enumerate(s["steps"], 1):
+        steps, messages, calls = [], [], []
+        for i, (tool, act, command, *extra) in enumerate(s["steps"], 1):
             if act:
                 act(repo)
             step = {
@@ -301,6 +369,7 @@ def build(out):
                 "snapshot_ref": snapshot(repo),
             }
             steps.append(step)
+            calls.append(mock_call(tool, command, step["tool_call_id"], i - 1, len(s["steps"]), *(extra or [{}])))
             tool_input = {"command": command} if command else {"step": i}
             messages.append({
                 "type": "message",
@@ -328,6 +397,20 @@ def build(out):
                 {"type": "tool_use", "id": "mock-call-decoy", "name": EXECUTE, "input": {"command": PYTEST}},
             ]}},
         ])
+        if s.get("primitives", True):
+            dump(out / "primitives" / f"{sid}.json", {
+                "session_id": sid,
+                "task_id": task_id,
+                "job_id": "mock-baseline",
+                "trial": 1,
+                "harness": "droid",
+                "assistant_turns": len(calls),
+                "tool_calls": len(calls),
+                "token_usage": {"input_tokens": 0, "output_tokens": 0, "cache_creation_tokens": 0,
+                                "cache_read_tokens": 0, "thinking_tokens": 0, "factory_credits": 0},
+                "timed_out": False,
+                "calls": calls,
+            })
         dump(out / "tasks" / f"{task_id}.json", {
             "instance_id": task_id,
             "base_commit": base,

@@ -22,11 +22,12 @@ from session import load_session  # noqa: E402
 
 def check(mocks):
     expected = json.loads((HERE / "mock" / "expected.json").read_text())
-    keys = ("hard_signals", "failure_type", "suspected_tool_call_id")
+    keys = ("hard_signals", "failure_type", "suspected_tool_call_id", "features")
     bad = 0
     for sid, want in expected.items():
         try:
-            got = label(load_session(sid, mocks / "traces", mocks / "results", mocks / "sessions", mocks / "tasks"))
+            got = label(load_session(sid, mocks / "traces", mocks / "results", mocks / "sessions", mocks / "tasks",
+                                     primitives_dir=mocks / "primitives"))
         except FileNotFoundError:
             print(f"MISSING {sid}")
             bad += 1

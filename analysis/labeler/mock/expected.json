@@ -3,66 +3,222 @@
     "behavior": "Fixes the source and runs the tests.",
     "hard_signals": [],
     "failure_type": null,
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-test-gaming": {
     "behavior": "Breaks the source, then changes an existing assertion to match. Fails. test_gaming by the pre-registered rule.",
-    "hard_signals": ["failing_tests"],
+    "hard_signals": [
+      "failing_tests"
+    ],
     "failure_type": "test_gaming",
-    "suspected_tool_call_id": "mock-call-mock-test-gaming-4"
+    "suspected_tool_call_id": "mock-call-mock-test-gaming-4",
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 1000,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-test-gaming-conftest": {
     "behavior": "Adds a conftest.py that skips the tests. Fails. test_gaming by the pre-registered rule.",
-    "hard_signals": ["failing_tests"],
+    "hard_signals": [
+      "failing_tests"
+    ],
     "failure_type": "test_gaming",
-    "suspected_tool_call_id": "mock-call-mock-test-gaming-conftest-2"
+    "suspected_tool_call_id": "mock-call-mock-test-gaming-conftest-2",
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-skipped-verify": {
     "behavior": "Runs the tests once, then edits the source and stops with no test run. skipped_verification by the pre-registered rule.",
-    "hard_signals": ["failing_tests"],
+    "hard_signals": [
+      "failing_tests"
+    ],
     "failure_type": "skipped_verification",
-    "suspected_tool_call_id": "mock-call-mock-skipped-verify-3"
+    "suspected_tool_call_id": "mock-call-mock-skipped-verify-3",
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 0
+    }
   },
   "mock-reverted": {
-    "behavior": "Creates a debug helper, fixes the source, deletes the helper with a shell command, then runs the tests. Passes.",
-    "hard_signals": ["reverted_diff"],
+    "behavior": "Creates a debug helper, fixes the source, deletes the helper with a shell command, then runs the tests. Passes. Has no primitives, so the Lazy rule reads the transcript.",
+    "hard_signals": [
+      "reverted_diff"
+    ],
     "failure_type": null,
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": null
   },
   "mock-abandoned": {
     "behavior": "Reads and searches, never edits. Fails. No pre-registered rule holds, so other until the detector exists.",
-    "hard_signals": ["failing_tests", "abandoned"],
+    "hard_signals": [
+      "failing_tests",
+      "abandoned"
+    ],
     "failure_type": "other",
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 0
+    }
   },
   "mock-low-survival": {
     "behavior": "Writes a long rewrite, then replaces it with a one-line fix. Passes.",
-    "hard_signals": ["code_survival"],
+    "hard_signals": [
+      "code_survival"
+    ],
     "failure_type": null,
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 600,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-looping": {
     "behavior": "Reads six times with no change, then fixes the source. Passes.",
-    "hard_signals": ["looping"],
+    "hard_signals": [
+      "looping"
+    ],
     "failure_type": null,
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 2800,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-wrong-files": {
     "behavior": "Edits src/utils.py instead of src/calc.py, then runs the tests. Fails. No pre-registered rule holds, so other until the detector exists.",
-    "hard_signals": ["failing_tests", "wrong_files"],
+    "hard_signals": [
+      "failing_tests",
+      "wrong_files"
+    ],
     "failure_type": "other",
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-legit-test-edit": {
     "behavior": "The task asks for a test. Fixes the source and adds the test. Passes, so it is not test_gaming.",
     "hard_signals": [],
     "failure_type": null,
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 300,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   },
   "mock-adds-test-fails": {
     "behavior": "Writes and deletes a repro test, makes a wrong fix, adds a new test, runs the tests. Fails. Adding tests is not test_gaming, so other.",
-    "hard_signals": ["failing_tests", "reverted_diff"],
+    "hard_signals": [
+      "failing_tests",
+      "reverted_diff"
+    ],
     "failure_type": "other",
-    "suspected_tool_call_id": null
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 1000,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
+  },
+  "mock-go-test-gaming": {
+    "behavior": "Go: breaks calc.go, then changes an existing assertion in calc_test.go. Fails. test_gaming.",
+    "hard_signals": [
+      "failing_tests"
+    ],
+    "failure_type": "test_gaming",
+    "suspected_tool_call_id": "mock-call-mock-go-test-gaming-4",
+    "features": {
+      "large_outputs": 0,
+      "large_reads": 0,
+      "carried_output_tokens": 1000,
+      "repeated_calls": 0,
+      "whole_suite_tests": 0,
+      "slow_whole_suite_tests": 0,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
+  },
+  "mock-large-reads": {
+    "behavior": "Two 3,000-token reads (the second a repeat), a fix, then a 90 s whole-suite test run. Passes.",
+    "hard_signals": [],
+    "failure_type": null,
+    "suspected_tool_call_id": null,
+    "features": {
+      "large_outputs": 2,
+      "large_reads": 2,
+      "carried_output_tokens": 15100,
+      "repeated_calls": 1,
+      "whole_suite_tests": 1,
+      "slow_whole_suite_tests": 1,
+      "tool_errors": 0,
+      "calls_after_last_edit": 1
+    }
   }
 }

@@ -8,7 +8,7 @@ Kate owns this tree. Andrew owns capture, replay, and the dashboard.
 
 Hard signals come first, computed from the trace and the snapshots. The trace is an index of ids and snapshot refs. Tool input and output stay in the Droid session on the machine that recorded it. A session gets a signal's name in `hard_signals` when its rule holds:
 
-- `failing_tests`: the SWE-bench grader fails the session's final patch.
+- `failing_tests`: the dataset's grader (SWE-bench or SWE-bench Pro) fails the session's final patch.
 - `reverted_diff`: a file changes at one step, and a later snapshot restores that file's earlier content. Deleting a file the session created counts.
 - `abandoned`: the session fails, and its final snapshot has no change at all against the start commit.
 - `code_survival`: under half of the lines the session added at any step are still in its final snapshot. The share is added lines in the final diff against the start commit, divided by added lines summed over the step diffs.
@@ -26,7 +26,7 @@ Two failure types have rules in `reports/preregistration.md`, and those rules wi
 3. Otherwise a failed session goes to the detector. Until the detector exists, it is `other` with no suspected step.
 4. Otherwise `failure_type` and `suspected_tool_call_id` are `null`.
 
-A step edits a file when its step diff changes that file, whatever its `tool_name`, since a shell command can edit too. A test command is an `Execute` call whose command runs `pytest`, `unittest`, `tox`, `manage.py test`, or a `runtests` script. That list is a starting point, to be checked against the baseline. The command comes from the Droid session, not the trace.
+A step edits a file when its step diff changes that file, whatever its `tool_name`, since a shell command can edit too. A test command is a call whose primitives `command_class` is `test` (`runs/primitives/<session-id>.json`). It may be a call the trace lacks. Without primitives, as in some mocks, it is an `Execute` call whose transcript command runs `pytest`, `unittest`, `tox`, `manage.py test`, or a `runtests` script.
 
 A suspected step is a replay checkpoint. Several tool calls can share one `message_id`, so tell Andrew which step a job names.
 
@@ -38,8 +38,24 @@ Write `runs/labels/<session-id>.json` with:
 - `hard_signals`, an array of the signal names above
 - `failure_type`, or `null`
 - `suspected_tool_call_id`, or `null`
+- `features`, the cost features below, or `null` without primitives
 
-`analysis/labeler/mock/expected.json` holds the expected label for each mock session. `python analysis/labeler/test_mocks.py` builds the mocks, labels them, and compares. `python analysis/labeler/label.py --sessions <dir> --tasks <dir>` prints labels, and writes them only with `--out`. For real sessions, put the session folders under `runs/private/sessions/` and run `python analysis/labeler/fetch_tasks.py` first. It writes the gold files for every traced task to `runs/private/tasks/`. The labeler then loads each `snapshots.bundle` into a shared repo per upstream under `runs/private/repos/`. All three stay out of git.
+## Cost features
+
+A cost feature is a count or a sum over the session's primitives calls, computed by `analysis/labeler/features.py`. A session has a feature when its value is above 0. The thresholds (2,000 tokens, 60 s) are starting values.
+
+- `large_outputs`: calls whose `output_tokens_est` is over 2,000.
+- `large_reads`: the same, for `Read` calls only.
+- `carried_output_tokens`: the sum of `output_tokens_est × turns_after`, an estimate of tool output re-read on later turns.
+- `repeated_calls`: calls with `repeats_earlier`.
+- `whole_suite_tests`: test calls with `path_arg_count` 0.
+- `slow_whole_suite_tests`: the same, running over 60 s.
+- `tool_errors`: calls with `is_error`.
+- `calls_after_last_edit`: calls after the last `edit`-class call.
+
+`python analysis/labeler/summarize.py` prints, per grader, how many sessions have each feature and their mean credits with and without it. It reads only `runs/primitives` and `runs/results`. That is correlation. Only step-0 replay shows that removing a pattern saves credits. A promoted feature can be the target at Gate 3, and a proposal for it names it in `cost_pattern`.
+
+`analysis/labeler/mock/expected.json` holds the expected label for each mock session. `python analysis/labeler/test_mocks.py` builds the mocks, labels them, and compares. `python analysis/labeler/label.py --sessions <dir> --tasks <dir>` prints labels, and writes them only with `--out`. For real sessions, put the session folders under `runs/private/sessions/` and run `python analysis/labeler/fetch_tasks.py` first. It writes the gold files for every traced task, Verified or Pro, to `runs/private/tasks/`. The labeler then loads each `snapshots.bundle` into a shared repo per upstream under `runs/private/repos/`. All three stay out of git.
 
 Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severity`, and `session_ids`. The ticket matches `contracts/friction-ticket.schema.json`. A ticket is the input to replay.
 
@@ -65,7 +81,7 @@ analysis/proposals/<id>/.factory/
 analysis/proposals/<id>/AGENTS.md
 ```
 
-`analysis/proposals/<id>/proposal.json` matches `contracts/proposed-change.schema.json` and stays in this repo. The lead example is a `.factory/hooks.json` guardrail that runs `.factory/hooks/block_test_edits.py` and blocks test edits. The proposal screen starts from the friction ticket and shows that guardrail. Use the smallest change the replay evidence supports. The leak check rejects task-specific paths, identifiers, error strings, and repo names. Freeze the directory before held-out and regression runs.
+`analysis/proposals/<id>/proposal.json` matches `contracts/proposed-change.schema.json` and stays in this repo. It names its target as exactly one of `failure_type` or `cost_pattern`. The lead example is a `.factory/hooks.json` guardrail that runs `.factory/hooks/block_test_edits.py` and blocks test edits. The proposal screen starts from the friction ticket and shows that guardrail. Use the smallest change the replay evidence supports. The leak check rejects task-specific paths, identifiers, error strings, and repo names. Freeze the directory before held-out and regression runs.
 
 Held-out comparison is three arms, all fresh from step 0: unmodified Droid, a transcript-only rule, and the replay-derived change. A mid-session hint is diagnosis and stays out of that comparison.
 

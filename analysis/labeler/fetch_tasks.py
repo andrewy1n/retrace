@@ -17,7 +17,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DATASET = "SWE-bench/SWE-bench_Verified"  # the dataset recorder/worker runs
+# The datasets recorder/worker runs. Pro ids start with instance_, so ids never collide.
+DATASETS = ["SWE-bench/SWE-bench_Verified", "ScaleAI/SWE-bench_Pro"]
 API = "https://datasets-server.huggingface.co/rows"
 PAGE = 100
 
@@ -34,10 +35,10 @@ def get(params, tries=3):
             time.sleep(2 * (attempt + 1))
 
 
-def dataset_rows():
+def dataset_rows(dataset):
     offset, total = 0, None
     while total is None or offset < total:
-        page = get({"dataset": DATASET, "config": "default", "split": "test", "offset": offset, "length": PAGE})
+        page = get({"dataset": dataset, "config": "default", "split": "test", "offset": offset, "length": PAGE})
         total = page["num_rows_total"]
         for item in page["rows"]:
             yield item["row"]
@@ -63,7 +64,7 @@ def main():
     wanted = {json.loads(p.read_text())["task_id"] for p in args.traces.glob("*.json")}
     args.out.mkdir(parents=True, exist_ok=True)
     found = set()
-    for row in dataset_rows():
+    for row in (row for dataset in DATASETS for row in dataset_rows(dataset)):
         if row["instance_id"] not in wanted:
             continue
         task = {
@@ -77,7 +78,7 @@ def main():
     missing = sorted(wanted - found)
     print(f"wrote {len(found)} tasks to {args.out}")
     if missing:
-        sys.exit(f"not in {DATASET}: {', '.join(missing)}")
+        sys.exit(f"not in {' or '.join(DATASETS)}: {', '.join(missing)}")
 
 
 if __name__ == "__main__":

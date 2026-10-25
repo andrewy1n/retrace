@@ -5,7 +5,11 @@
   "description": "Manifest at analysis/proposals/<id>/proposal.json. The runner copies .factory/ and AGENTS.md from path and leaves this file in the retrace repo.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["proposal_id", "failure_type", "change_type", "path"],
+  "required": ["proposal_id", "change_type", "path"],
+  "oneOf": [
+    { "required": ["failure_type"], "not": { "required": ["cost_pattern"] } },
+    { "required": ["cost_pattern"], "not": { "required": ["failure_type"] } }
+  ],
   "properties": {
     "proposal_id": { "type": "string", "minLength": 1 },
     "failure_type": {
@@ -16,7 +20,13 @@
         "test_gaming",
         "context_loss",
         "other"
-      ]
+      ],
+      "description": "The failure group the change targets. Exactly one of failure_type and cost_pattern."
+    },
+    "cost_pattern": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "The cost feature the change targets, by its name in analysis/AGENTS.md, such as large_reads. Exactly one of failure_type and cost_pattern."
     },
     "change_type": {
       "enum": ["guardrail_hook", "skill", "tool", "custom_droid", "setting", "rule"],

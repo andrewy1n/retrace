@@ -9,6 +9,8 @@ A session is spread over four places:
 """
 
 import json
+import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -29,16 +31,20 @@ class Session:
     result: dict
     start_commit: str
     repo: Path
-    commands: dict  # tool_call_id -> shell command, for Execute calls
+    commands: dict  # tool_call_id -> shell command, for Execute calls; empty when primitives exist
     gold_files: list
+    primitives: dict = None  # runs/primitives/<session-id>.json, or None (mocks without one)
 
 
 def open_repo(session_dir, task, repos_dir, needed):
     """Return a git repo that holds the commits in needed.
 
-    A mock folder has repo/. A real one has snapshots.bundle, which needs the
-    dataset base_commit (recorder/AGENTS.md). Real sessions share one repo per
-    upstream under repos_dir, and each fetch is skipped once its commits are there.
+    A mock folder has repo/. A real one has snapshots.bundle, whose prerequisite
+    is the parent of start_commit (recorder/AGENTS.md). On Verified that is the
+    dataset base_commit; on Pro, start_commit is base_commit, so it is an older
+    commit. The bundle header names its prerequisites, and each is fetched from
+    upstream by id. Real sessions share one repo per upstream under repos_dir,
+    and each fetch is skipped once its commits are there.
     """
     if (session_dir / "repo").is_dir():
         return session_dir / "repo"
@@ -49,13 +55,31 @@ def open_repo(session_dir, task, repos_dir, needed):
     if not (repo / ".git").exists():
         repo.mkdir(parents=True, exist_ok=True)
         git(repo, "init", "-q")
-    base = task["base_commit"]
-    if not has_commit(repo, base):
-        git(repo, "fetch", "-q", "--depth", "1", f"https://github.com/{task['repo']}.git", base)
-        git(repo, "update-ref", f"refs/base/{base}", base)  # keeps it from git gc
     if not all(has_commit(repo, ref) for ref in needed):
+        for prereq in bundle_prerequisites(bundle):
+            if not has_commit(repo, prereq):
+                fetch_upstream(repo, task["repo"], prereq)
         git(repo, "fetch", "-q", str(bundle.resolve()), "refs/retrace/*:refs/retrace/*")
     return repo
+
+
+def bundle_prerequisites(bundle):
+    """Commit ids on the bundle header's "-<id>" lines."""
+    with open(bundle, "rb") as f:
+        header = f.read(64 * 1024).split(b"\n\n", 1)[0]
+    return [line[1:41].decode() for line in header.split(b"\n") if line.startswith(b"-")]
+
+
+def fetch_upstream(repo, name, commit):
+    for attempt in range(3):  # GitHub fetches fail now and then
+        try:
+            git(repo, "fetch", "-q", "--depth", "1", f"https://github.com/{name}.git", commit)
+            break
+        except subprocess.CalledProcessError:
+            if attempt == 2:
+                raise
+            time.sleep(5 * (attempt + 1))
+    git(repo, "update-ref", f"refs/base/{commit}", commit)  # keeps it from git gc
 
 
 def find_result(results_dir, session_id):
@@ -94,18 +118,24 @@ def read_commands(transcript):
     return commands
 
 
-def load_session(session_id, traces_dir, results_dir, sessions_dir, tasks_dir, repos_dir=DEFAULT_REPOS):
+def load_session(session_id, traces_dir, results_dir, sessions_dir, tasks_dir, repos_dir=DEFAULT_REPOS,
+                 primitives_dir=None):
     trace = json.loads((Path(traces_dir) / f"{session_id}.json").read_text())
     session_dir = Path(sessions_dir) / session_id
     task = json.loads((Path(tasks_dir) / f"{trace['task_id']}.json").read_text())
     start_commit = (session_dir / "start_commit").read_text().strip()
     needed = [start_commit] + [step["snapshot_ref"] for step in trace["steps"]]
+    prim_file = Path(primitives_dir) / f"{session_id}.json" if primitives_dir else None
+    primitives = json.loads(prim_file.read_text()) if prim_file and prim_file.exists() else None
+    # Primitives classify every call, so the transcript is read only without them.
+    commands = {} if primitives else read_commands(find_transcript(session_dir, trace["harness_session_id"]))
     return Session(
         session_id=session_id,
         trace=trace,
         result=find_result(results_dir, session_id),
         start_commit=start_commit,
         repo=open_repo(session_dir, task, repos_dir, needed),
-        commands=read_commands(find_transcript(session_dir, trace["harness_session_id"])),
+        commands=commands,
         gold_files=task["gold_files"],
+        primitives=primitives,
     )
