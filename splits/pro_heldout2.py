@@ -5,7 +5,8 @@
 
 draw continues the seeded order of splits/pro_candidates.py within each held-out repo, past the tasks that file
 already holds, and takes the next DRAW_PER_REPO. select keeps, per repo and in that order, the first KEEP_PER_REPO
-tasks whose gold patch passes and whose empty patch fails. Neither step reads an agent outcome.
+tasks whose gold patch passes and whose empty patch fails, and whose image is not Alpine (splits/pro-heldout2-alpine.json,
+read from /etc/os-release). Neither step reads an agent outcome.
 """
 
 import json
@@ -23,6 +24,7 @@ DRAW_PER_REPO = 11
 KEEP_PER_REPO = 8
 CANDIDATES = ROOT / "splits" / "pro-heldout2-candidates.json"
 GOLD = ROOT / "splits" / "pro-heldout2-gold-check.json"
+ALPINE = ROOT / "splits" / "pro-heldout2-alpine.json"
 OUT = ROOT / "splits" / "pro-heldout2.json"
 
 
@@ -51,7 +53,9 @@ def draw():
 
 def select():
     cands = json.loads(CANDIDATES.read_text())
-    ok = {c["instance_id"] for c in json.loads(GOLD.read_text()) if c["gold_reward"] == 1 and c["empty_reward"] == 0}
+    alpine = set(json.loads(ALPINE.read_text())["tasks"]) if ALPINE.exists() else set()
+    ok = {c["instance_id"] for c in json.loads(GOLD.read_text())
+          if c["gold_reward"] == 1 and c["empty_reward"] == 0 and c["instance_id"] not in alpine}
     held_out = []
     for repo, ts in cands["repos"].items():
         keep = [t["instance_id"] for t in ts if t["instance_id"] in ok][:KEEP_PER_REPO]
@@ -62,7 +66,8 @@ def select():
         "seed": SEED,
         "source": "splits/pro_heldout2.py: the seeded order of splits/pro_candidates.py within the held-out repos of "
                   "splits/pro-pool.json, past the tasks splits/pro-candidates.json holds, keeping per repo the first "
-                  f"{KEEP_PER_REPO} that pass the gold patch and fail the empty patch (splits/pro-heldout2-gold-check.json). "
+                  f"{KEEP_PER_REPO} that pass the gold patch and fail the empty patch (splits/pro-heldout2-gold-check.json) and whose "
+                  "image is not Alpine (splits/pro-heldout2-alpine.json). "
                   "No agent ran any of them before the draw.",
         "held_out_repos": list(cands["repos"]),
         "held_out": held_out,

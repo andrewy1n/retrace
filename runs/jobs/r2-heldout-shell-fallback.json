@@ -17,16 +17,16 @@
     "instance_navidrome__navidrome-69e0a266f48bae24a11312e9efbe495a337e4c84",
     "instance_navidrome__navidrome-10108c63c9b5bdf2966ffb3239bbfd89683e37b7",
     "instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a",
-    "instance_navidrome__navidrome-66b74c81f115c78cb69910b0472eeb376750efc4",
     "instance_navidrome__navidrome-812dc2090f20ac4f8ac271b6ed95be5889d1a3ca",
-    "instance_future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+    "instance_navidrome__navidrome-d8e794317f788198227e10fb667e10496b3eb99a",
     "instance_future-architect__vuls-9aa0d87a21bede91c2b45c32187456bb69455e92",
     "instance_future-architect__vuls-be7b9114cc9545e68fb0ee7bc63d7ec53d1a00ad",
-    "instance_future-architect__vuls-e1fab805afcfc92a2a615371d0ec1e667503c254-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
     "instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a",
     "instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af",
     "instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
-    "instance_future-architect__vuls-8659668177f1feb65963db7a967347a79c5f9c40"
+    "instance_future-architect__vuls-8659668177f1feb65963db7a967347a79c5f9c40",
+    "instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702",
+    "instance_future-architect__vuls-86b60e1478e44d28b1aff6b9ac7e95ceb05bc5fc"
   ],
   "arm": {
     "kind": "candidate",

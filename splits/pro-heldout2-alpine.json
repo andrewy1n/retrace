@@ -1,0 +1,9 @@
+{
+  "checked": "2026-10-25",
+  "rule": "Gold-checked round-2 candidates whose image /etc/os-release names Alpine. The glibc Droid binary does not start there.",
+  "tasks": [
+    "instance_future-architect__vuls-e1fab805afcfc92a2a615371d0ec1e667503c254-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+    "instance_future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+    "instance_navidrome__navidrome-66b74c81f115c78cb69910b0472eeb376750efc4"
+  ]
+}
