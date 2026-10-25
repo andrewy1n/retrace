@@ -3,7 +3,8 @@
 # for the first edit. It fires at most once per session.
 #
 # The count comes from the session transcript (transcript_path in the hook input), so a
-# resumed or forked session counts the calls it already made. POSIX sh, grep and sed only,
+# resumed or forked session counts the calls it already made. A batch of parallel calls
+# gets one block, not one per call (checked on Droid 0.249.0). POSIX sh, grep and sed only,
 # so it runs in any image. Any failure exits 0 and lets the call through.
 
 LIMIT=10
@@ -38,7 +39,9 @@ for t in $names; do
 done
 [ "$n" -ge "$LIMIT" ] || exit 0
 
-: > "$state" 2>/dev/null
+# Droid runs one hook per call in a batch of parallel calls, all at once. mkdir is atomic,
+# so only the first of them claims the nudge and the rest let their call through.
+mkdir "$state" 2>/dev/null || exit 0
 cat >&2 <<EOF
 $MARK This session has made $n read, search, and shell calls without editing a file.
 Stop exploring for now. State in one sentence the change you will make and where, then make

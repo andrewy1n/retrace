@@ -33,6 +33,13 @@ expect "10 calls, no edit: blocked" 2 "$(run s10 Read "$tmp/t10")"
 grep -q '\[explore-budget\]' "$tmp/stderr" && expect "message names the guardrail" 0 0 || expect "message names the guardrail" 0 1
 expect "same session again: allowed (fires once)" 0 "$(run s10 Read "$tmp/t10")"
 
+for i in 1 2 3; do
+  ( printf '{"session_id":"sp","transcript_path":"%s","tool_name":"Read"}' "$tmp/t10" \
+      | sh "$hook" 2>/dev/null; echo $? > "$tmp/par$i" ) &
+done
+wait
+expect "3 parallel calls at the limit: one blocked" 1 "$(cat "$tmp"/par1 "$tmp"/par2 "$tmp"/par3 | grep -c '^2$')"
+
 printf '%s\n' '{"type":"tool_result","content":"[explore-budget] earlier"}' >> "$tmp/t10"
 expect "marker in transcript, new container: allowed" 0 "$(run s10-fork Grep "$tmp/t10")"
 

