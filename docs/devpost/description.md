@@ -44,8 +44,6 @@ The discovery round promoted one feature: **calls before the first edit**. It ex
 
 The fix is a 51-line POSIX shell hook. After 10 tool calls with no edit, it blocks one call and asks the agent to make its first edit. It fires at most once per session.
 
-We also asked an LLM to propose a fix from the same transcripts alone. It proposed nearly the same exploration budget. A comparison between the two would measure mechanism, not method, so we removed that arm from the final run and recorded the change in the pre-registration before any held-out run.
-
 The final test runs the frozen hook against unmodified Droid on 22 held-out tasks from 3 unseen repos (qutebrowser, navidrome, vuls) and on 8 regression tasks, with 2 runs per task per arm.
 
 **Results.** On the held-out repos, the hook cut runs with more than 12 calls before the first edit from 27 of 44 to 4 of 44: a paired difference of -52.3 points (95% CI -65.9 to -38.6). It cut credits by about 14% (geometric-mean ratio 0.861, 95% CI 0.788 to 0.951). The agent made its first edit 4.1 calls sooner on average. Pass rate did not drop: 43 of 44 runs passed without the hook, and 44 of 44 with it. On the 8 regression tasks, the behaviour fell from 9 of 16 runs to 0 of 16, and no task that passed before failed with the hook. The pass rates sit near the ceiling, so this run cannot show a pass-rate gain. One proxy, the repo's own tests, turned out weak on the held-out repos, and we report that too.
