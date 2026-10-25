@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$FACTORY_PROJECT_DIR/.factory/hooks/exploration_budget.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

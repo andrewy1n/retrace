@@ -1,0 +1,6 @@
+{
+  "proposal_id": "armb-transcript-only",
+  "cost_pattern": "calls_before_first_edit",
+  "change_type": "guardrail_hook",
+  "path": "analysis/proposals/armb-transcript-only"
+}

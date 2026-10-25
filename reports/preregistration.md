@@ -14,13 +14,13 @@ Fill every `TBD` before the commit. The commit SHA goes under Contract in the pr
 | Reruns per task per arm | 2 |
 | Grader | The SWE-bench Pro V2 verifier (`swebench_pro`): the task's `tests/test.sh` from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`, run in a fresh container with the patch applied, read from `reward.txt` |
 
-All three arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run.
+Both final arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run. Arm B was built but does not run in the held-out and regression comparison (Amendment 1).
 
 | Arm | Harness |
 |---|---|
 | A | Unmodified Droid |
-| B | Transcript-only change, from the prompt below |
-| C | Replay-derived change from `analysis/proposals/<id>` |
+| B | Transcript-only change, from the prompt below. Built as `analysis/proposals/armb-transcript-only`, not run (Amendment 1) |
+| C | Replay-derived change from `analysis/proposals/explore-budget` |
 
 ## Primary outcome
 
@@ -62,7 +62,7 @@ Each report gives every proxy's agreement with the grader on `final` trials, per
 
 ## Main claim
 
-On held-out tasks from unseen repos, C has a lower incidence of the targeted behaviour than A and B, with no meaningful drop on the regression set. A small or negative result is reported as such.
+On held-out tasks from unseen repos, C has a lower incidence of the targeted behaviour than A, with no meaningful drop on the regression set. No claim compares C with B (Amendment 1). A small or negative result is reported as such.
 
 ## Arm B prompt
 
@@ -85,3 +85,19 @@ Return each file path and its full contents.
 
 <transcripts>
 ```
+
+## Amendments
+
+### Amendment 1, 2026-10-24: arm B leaves the final comparison
+
+Made after Gate 3 (2756d4b) and before any held-out or regression run, so no held-out or regression result informed it.
+
+Arm B ran as written above: one sample of `claude-opus-5-5` through `droid exec` 0.249.0, on this prompt with the 20 derivation transcripts whose hard signal holds, condensed by `analysis/features/armb_inputs.py`. Its answer and files are in `analysis/proposals/armb-transcript-only/`, unedited, with `source.json`. It passes the same leak check as arm C.
+
+The final comparison runs arms A and C only, for three reasons:
+
+- Budget: three arms with 2 reruns exceed the 2,000,000-credit cap by about 0.6M, and arm B's 44 held-out trials (22 tasks, 2 reruns) cost about that much at the Pro mean of 14,025 credits. The regression set already runs A and C only.
+- Arm B proposes nearly the same change as arm C: an exploration budget that nudges the agent after 10 calls with no edit. A comparison between them would measure mostly mechanism, not method.
+- Arm B's `.factory/hooks.json` nests its events under a top-level `hooks` key, unlike every hook format verified on Droid 0.249.0, and it needs `python3` and `$FACTORY_PROJECT_DIR` in the task container. Neither was checked, and repairing it with what arm C's checks taught would no longer make it transcript-only.
+
+The report describes arm B's proposal next to arm C's and makes no claim about their relative effect.

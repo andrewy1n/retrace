@@ -1,0 +1,19 @@
+{
+  "arm": "B",
+  "model": "claude-opus-5-5",
+  "harness": "droid exec 0.249.0, default autonomy, --disable-builtin-skills, one sample",
+  "input": "analysis/features/armb_inputs.py: the Arm B prompt in reports/preregistration.md with 20 condensed derivation transcripts (runs/diagnoses/)",
+  "prompt_sha256": "31d8f38b735a71b7b971f06141a7a614110fb7a21bdf659465c5f4c6bc80ab08",
+  "prompt_chars": 573564,
+  "droid_session_id": "e573f2d3-6c28-422d-b797-01b661847675",
+  "usage": {
+    "input_tokens": 246586,
+    "output_tokens": 4306,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 255160,
+    "factory_credits": 939307,
+    "thinking_tokens": 1584,
+    "ttft_ms": 7026
+  },
+  "files": "written verbatim from answer.md; nothing edited"
+}
