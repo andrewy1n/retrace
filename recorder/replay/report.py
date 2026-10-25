@@ -11,6 +11,7 @@ a task's pass value is the share of its trials that pass, and its credit value i
 trials that the timeout did not kill. Intervals are percentile bootstraps over tasks with a fixed seed.
 The proxy agreement section compares each proxy with the grader on trials the proxy can judge.
 --signal adds the hard signal as an arm column and a paired incidence difference per task, from the primitives.
+A signal with a count (calls_before_first_edit) also gets the paired mean count difference, as the pre-registration says.
 The verification section counts test commands after each run's last successful edit, from the primitives.
 Proxies read `proxies` in the result and the last test call in runs/primitives (--primitives).
 """
@@ -45,7 +46,21 @@ def skipped_verification(calls):
     return None if n is None else n == 0
 
 
-SIGNALS = {"whole_suite_tests": whole_suite_tests, "skipped_verification": skipped_verification}
+CALLS_BEFORE_FIRST_EDIT_LIMIT = 12
+
+
+def calls_before_first_edit_count(calls):
+    edits = [c["position"] for c in calls if c.get("command_class") == "edit"]
+    return min(edits) if edits else len(calls)
+
+
+def calls_before_first_edit(calls):
+    return calls_before_first_edit_count(calls) > CALLS_BEFORE_FIRST_EDIT_LIMIT
+
+
+SIGNALS = {"whole_suite_tests": whole_suite_tests, "skipped_verification": skipped_verification,
+           "calls_before_first_edit": calls_before_first_edit}
+COUNTS = {"calls_before_first_edit": calls_before_first_edit_count}
 
 
 def wilson(k, n, z=1.96):
@@ -270,6 +285,14 @@ def paired_lines(control, other, cname, oname, primitives_dir=None, signal=None,
         out.append(f"- {signal_name} incidence difference ({oname} minus {cname}), share of a task's runs, over {len(both)} tasks with primitives in both arms: "
                    f"{100 * m:+.1f} points (95% interval {100 * lo:+.1f} to {100 * hi:+.1f}).")
         out.append(f"- Tasks where only {cname} shows {signal_name} in some run: {only_c}. Only {oname}: {only_o}. Exact McNemar p = {mcnemar_exact(only_c, only_o):.3f}.")
+        count = COUNTS.get(signal_name)
+        if count:
+            per = {(t, arm): [count(c) for c in (run_calls(r, primitives_dir) for r in rs) if c is not None]
+                   for t in common for arm, rs in (("c", ct[t]), ("o", ot[t]))}
+            tasks = [t for t in common if per[t, "c"] and per[t, "o"]]
+            m, lo, hi = bootstrap_mean([sum(per[t, "o"]) / len(per[t, "o"]) - sum(per[t, "c"]) / len(per[t, "c"]) for t in tasks])
+            out.append(f"- Mean {signal_name} count difference ({oname} minus {cname}), paired by task, over {len(tasks)} tasks: "
+                       f"{m:+.1f} calls (95% interval {lo:+.1f} to {hi:+.1f}).")
     if len(common) < 10:
         out.append(f"- Bootstrap intervals rest on {len(common)} tasks. With fewer than 10 tasks they say little.")
     return out

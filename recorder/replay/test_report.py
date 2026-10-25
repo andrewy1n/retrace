@@ -236,6 +236,31 @@ def test_signal_difference_counts_tasks_where_only_one_arm_shows_it(tmp_path):
     assert "Tasks where only A shows whole_suite_tests in some run: 1. Only C: 0." in text
 
 
+def test_calls_before_first_edit_flags_more_than_twelve_calls():
+    reads = [call(i, "read") for i in range(13)]
+    assert report.calls_before_first_edit(reads + [call(13, "edit")]) is True
+    assert report.calls_before_first_edit(reads[:12] + [call(12, "edit")]) is False
+
+
+def test_calls_before_first_edit_counts_every_call_when_the_run_never_edits():
+    reads = [call(i, "read") for i in range(13)]
+    assert report.calls_before_first_edit_count(reads) == 13
+    assert report.calls_before_first_edit_count([call(0, "read"), call(1, "edit"), call(2, "edit")]) == 1
+
+
+def test_calls_before_first_edit_reports_paired_mean_count_difference(tmp_path):
+    prim = tmp_path / "prim"
+    write_job(tmp_path / "res", "a", [result(t, 1, True, 10, session_id=f"a-{t}") for t in "xy"])
+    write_job(tmp_path / "res", "c", [result(t, 1, True, 10, session_id=f"c-{t}") for t in "xy"])
+    for t in "xy":
+        write_prim(prim, f"a-{t}", *[call(i, "read") for i in range(14)], call(14, "edit"))
+        write_prim(prim, f"c-{t}", *[call(i, "read") for i in range(4)], call(4, "edit"))
+    text = run_report(tmp_path, ["A=a", "C=c"], "--signal", "calls_before_first_edit", "--primitives", str(prim))
+    assert "calls_before_first_edit incidence difference (C minus A)" in text
+    assert "-100.0 points" in text
+    assert "Mean calls_before_first_edit count difference (C minus A), paired by task, over 2 tasks: -10.0 calls" in text
+
+
 def test_arm_row_counts_runs_without_primitives(tmp_path):
     prim = tmp_path / "prim"
     write_job(tmp_path / "res", "a", [result("x", 1, True, 10), result("y", 1, True, 10)])

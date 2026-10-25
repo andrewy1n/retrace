@@ -1,7 +1,8 @@
 import { has } from './format.js';
 
 export const SIGNALS = {
-  whole_suite_tests: { column: 'signal_whole_suite_tests', metric: 'Runs with a whole-suite test run over 60 s' }
+  whole_suite_tests: { column: 'signal_whole_suite_tests', metric: 'Runs with a whole-suite test run over 60 s' },
+  calls_before_first_edit: { column: 'signal_calls_before_first_edit', metric: 'Runs with more than 12 calls before the first edit' }
 };
 
 const BOOTSTRAPS = 10000;
