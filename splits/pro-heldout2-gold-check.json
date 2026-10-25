@@ -1,0 +1,299 @@
+[
+  {
+    "instance_id": "instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a",
+    "image_bytes": 5438540991,
+    "pull_s": 111,
+    "gold_reward": 1,
+    "gold_s": 125,
+    "empty_reward": 0,
+    "empty_s": 119
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-8659668177f1feb65963db7a967347a79c5f9c40",
+    "image_bytes": 3607979720,
+    "pull_s": 82,
+    "gold_reward": 1,
+    "gold_s": 60,
+    "empty_reward": 0,
+    "empty_s": 47
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-86b60e1478e44d28b1aff6b9ac7e95ceb05bc5fc",
+    "image_bytes": 4410362939,
+    "pull_s": 78,
+    "gold_reward": 1,
+    "gold_s": 26,
+    "empty_reward": 0,
+    "empty_s": 34
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
+    "image_bytes": 4891601153,
+    "pull_s": 131,
+    "gold_reward": 1,
+    "gold_s": 40,
+    "empty_reward": 0,
+    "empty_s": 36
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-9aa0d87a21bede91c2b45c32187456bb69455e92",
+    "image_bytes": 4056987225,
+    "pull_s": 62,
+    "gold_reward": 1,
+    "gold_s": 34,
+    "empty_reward": 0,
+    "empty_s": 33
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af",
+    "image_bytes": 6275155590,
+    "pull_s": 136,
+    "gold_reward": 1,
+    "gold_s": 67,
+    "empty_reward": 0,
+    "empty_s": 62
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-be7b9114cc9545e68fb0ee7bc63d7ec53d1a00ad",
+    "image_bytes": 6221274033,
+    "pull_s": 143,
+    "gold_reward": 1,
+    "gold_s": 51,
+    "empty_reward": 0,
+    "empty_s": 51
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-c11ba27509f733d7d280bdf661cbbe2e7a99df4c",
+    "image_bytes": 4940240722,
+    "pull_s": 75,
+    "gold_reward": 1,
+    "gold_s": 46,
+    "empty_reward": 0,
+    "empty_s": 52
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-e1fab805afcfc92a2a615371d0ec1e667503c254-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+    "image_bytes": 6707091688,
+    "pull_s": 116,
+    "gold_reward": 1,
+    "gold_s": 59,
+    "empty_reward": 0,
+    "empty_s": 77
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+    "image_bytes": 6635039092,
+    "pull_s": 162,
+    "gold_reward": 1,
+    "gold_s": 43,
+    "empty_reward": 0,
+    "empty_s": 26
+  },
+  {
+    "instance_id": "instance_future-architect__vuls-f6509a537660ea2bce0e57958db762edd3a36702",
+    "image_bytes": 5385354224,
+    "pull_s": 92,
+    "gold_reward": 1,
+    "gold_s": 52,
+    "empty_reward": 0,
+    "empty_s": 75
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-0130c6dc13438b48cf0fdfab08a89e357b5517c9",
+    "image_bytes": 4076977308,
+    "pull_s": 115,
+    "gold_reward": 1,
+    "gold_s": 30,
+    "empty_reward": 0,
+    "empty_s": 24
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-10108c63c9b5bdf2966ffb3239bbfd89683e37b7",
+    "image_bytes": 4154562125,
+    "pull_s": 108,
+    "gold_reward": 1,
+    "gold_s": 28,
+    "empty_reward": 0,
+    "empty_s": 22
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c",
+    "image_bytes": 4158691546,
+    "pull_s": 112,
+    "gold_reward": 1,
+    "gold_s": 38,
+    "empty_reward": 0,
+    "empty_s": 27
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-3853c3318f67b41a9e4cb768618315ff77846fdb",
+    "image_bytes": 4687843258,
+    "pull_s": 110,
+    "gold_reward": 1,
+    "gold_s": 27,
+    "empty_reward": 0,
+    "empty_s": 22
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-3982ba725883e71d4e3e618c61d5140eeb8d850a",
+    "image_bytes": 4540042562,
+    "pull_s": 87,
+    "gold_reward": 1,
+    "gold_s": 30,
+    "empty_reward": 0,
+    "empty_s": 21
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-55730514ea59d5f1d0b8e3f8745569c29bdbf7b4",
+    "image_bytes": 4766761196,
+    "pull_s": 109,
+    "gold_reward": 1,
+    "gold_s": 26,
+    "empty_reward": 0,
+    "empty_s": 17
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-66b74c81f115c78cb69910b0472eeb376750efc4",
+    "image_bytes": 3078684874,
+    "pull_s": 88,
+    "gold_reward": 1,
+    "gold_s": 41,
+    "empty_reward": 0,
+    "empty_s": 22
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-69e0a266f48bae24a11312e9efbe495a337e4c84",
+    "image_bytes": 4149695038,
+    "pull_s": 115,
+    "gold_reward": 1,
+    "gold_s": 29,
+    "empty_reward": 0,
+    "empty_s": 23
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-812dc2090f20ac4f8ac271b6ed95be5889d1a3ca",
+    "image_bytes": 4875221827,
+    "pull_s": 128,
+    "gold_reward": 1,
+    "gold_s": 23,
+    "empty_reward": 0,
+    "empty_s": 21
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-89b12b34bea5687c70e4de2109fd1e7330bb2ba2",
+    "image_bytes": 4946541579,
+    "pull_s": 136,
+    "gold_reward": 1,
+    "gold_s": 21,
+    "empty_reward": 0,
+    "empty_s": 11
+  },
+  {
+    "instance_id": "instance_navidrome__navidrome-d8e794317f788198227e10fb667e10496b3eb99a",
+    "image_bytes": 4151988778,
+    "pull_s": 110,
+    "gold_reward": 1,
+    "gold_s": 24,
+    "empty_reward": 0,
+    "empty_s": 21
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-0833b5f6f140d04200ec91605f88704dd18e2970-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+    "image_bytes": 2287919931,
+    "pull_s": 34,
+    "gold_reward": 1,
+    "gold_s": 14,
+    "empty_reward": 0,
+    "empty_s": 30
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-0d2afd58f3d0e34af21cee7d8a3fc9d855594e9f-vnan",
+    "image_bytes": 2450153295,
+    "pull_s": 19,
+    "gold_reward": 1,
+    "gold_s": 15,
+    "empty_reward": 0,
+    "empty_s": 13
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-0fc6d1109d041c69a68a896db87cf1b8c194cef7-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+    "image_bytes": 2469745638,
+    "pull_s": 24,
+    "gold_reward": 1,
+    "gold_s": 28,
+    "empty_reward": 0,
+    "empty_s": 27
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-233cb1cc48635130e5602549856a6fa4ab4c087f-v35616345bb8052ea303186706cec663146f0f184",
+    "image_bytes": 2322487263,
+    "pull_s": 23,
+    "gold_reward": 1,
+    "gold_s": 26,
+    "empty_reward": 0,
+    "empty_s": 33
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-2dd8966fdcf11972062c540b7a787e4d0de8d372-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+    "image_bytes": 2147574483,
+    "pull_s": 15,
+    "gold_reward": 1,
+    "gold_s": 13,
+    "empty_reward": 0,
+    "empty_s": 15
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-305e7c96d5e2fdb3b248b27dfb21042fb2b7e0b8-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+    "image_bytes": 2396352068,
+    "pull_s": 18,
+    "gold_reward": 1,
+    "gold_s": 21,
+    "empty_reward": 0,
+    "empty_s": 27
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367",
+    "image_bytes": 3556903875,
+    "pull_s": 45,
+    "gold_reward": 1,
+    "gold_s": 47,
+    "empty_reward": 0,
+    "empty_s": 47
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+    "image_bytes": 2473353726,
+    "pull_s": 19,
+    "gold_reward": 1,
+    "gold_s": 23,
+    "empty_reward": 0,
+    "empty_s": 16
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-9b71c1ea67a9e7eb70dd83214d881c2031db6541-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+    "image_bytes": 2188489815,
+    "pull_s": 24,
+    "gold_reward": 1,
+    "gold_s": 19,
+    "empty_reward": 0,
+    "empty_s": 116
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-ec2dcfce9eee9f808efc17a1b99e227fc4421dea-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+    "image_bytes": 2130183683,
+    "pull_s": 15,
+    "gold_reward": 1,
+    "gold_s": 27,
+    "empty_reward": 0,
+    "empty_s": 15
+  },
+  {
+    "instance_id": "instance_qutebrowser__qutebrowser-ef5ba1a0360b39f9eff027fbdc57f363597c3c3b-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+    "image_bytes": 2188618812,
+    "pull_s": 14,
+    "gold_reward": 1,
+    "gold_s": 19,
+    "empty_reward": 0,
+    "empty_s": 128
+  }
+]
