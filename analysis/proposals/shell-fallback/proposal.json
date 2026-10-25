@@ -1,0 +1,6 @@
+{
+  "proposal_id": "shell-fallback",
+  "cost_pattern": "shell_error_streak",
+  "change_type": "guardrail_hook",
+  "path": "analysis/proposals/shell-fallback"
+}
