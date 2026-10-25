@@ -8,5 +8,5 @@ The runner copies only `.factory/` onto the task checkout. sha256 of each file a
 |---|---|
 | `.factory/hooks.json` | `95b07e6b53edb0370f56bc2a0b9b53c79bba6ffda5279de0c1b3a005b11f8681` |
 | `.factory/hooks/shell_fallback.sh` | `e00e17ef270889091a57b0bc8c1e60aa839fb4e62d1c919784de316e5c6824e8` |
-| `proposal.json` | `4d90efe6ae09c614e4cd77518b237c854c8678ad67a203f43cf5f728f0e27168` |
+| `proposal.json` (with `pr_url`) | `5b9f35bae4cd11d424cb05150d442d73e8ee87e2b17139c26e65ecd288f7999a` |
 | `test_hook.sh` | `1895e4aa792bfefccbccca0c040b17520392b984e7ad2c2310253f69507c7608` |
