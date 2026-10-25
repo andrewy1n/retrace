@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/retrace-lockup.png" alt="Retrace" width="360">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/retrace-lockup-dark.png">
+    <img src="docs/retrace-lockup.png" alt="Retrace" width="360">
+  </picture>
 </p>
 
 <p align="center">
