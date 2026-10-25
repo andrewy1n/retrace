@@ -117,6 +117,12 @@ def test_python_selection_prefers_the_longest_shared_directory_prefix():
     ]
 
 
+def test_python_selection_maps_a_package_init_to_the_package_name():
+    tree = ["lib/add_book/__init__.py", "lib/add_book/tests/test_add_book.py", "lib/tests/test___init__.py"]
+    sel = repo_tests.select(["lib/add_book/__init__.py"], tree)
+    assert sel["selected"] == ["lib/add_book/tests/test_add_book.py"]
+
+
 def test_python_selection_is_capped_at_ten_and_spreads_over_sources():
     tree = [f"t{i}/test_big.py" for i in range(12)] + ["t/test_small.py"]
     sel = repo_tests.select(["src/big.py", "src/small.py"], tree)

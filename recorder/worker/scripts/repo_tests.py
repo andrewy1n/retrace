@@ -94,6 +94,8 @@ def select_python(sources, tree):
     ranked = []
     for src in sources:
         stem = posixpath.basename(src)[:-3]
+        if stem == "__init__":
+            stem = posixpath.basename(posixpath.dirname(src))
         found = by_name.get(f"test_{stem}.py", set()) | by_name.get(f"{stem}_test.py", set())
         here = dir_parts(src)
         ranked.append(sorted(found, key=lambda c: (-shared_prefix(here, dir_parts(c)), c)))
