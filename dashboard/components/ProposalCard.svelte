@@ -10,7 +10,7 @@
   $: v = behaviourVerdict(p);
   $: final = p.evidence_role === 'final';
   $: diagnosis = p.evidence_role === 'diagnosis';
-  $: hasGuards = has(p.guard_repo) || has(p.guard_acceptance);
+  $: hasGuards = has(p.guard_tests) || has(p.guard_timeouts) || has(p.guard_repo) || has(p.guard_acceptance);
 </script>
 
 <style>
@@ -63,10 +63,21 @@
         <span class="rt-v rt-none">Not run</span>
       {/if}
     </div>
+    <div>
+      <span class="rt-k">Turns per run</span>
+      {#if final && has(p.turns_delta_pct)}
+        <span class="rt-v {effectClass(p.turns_delta_pct, p.turns_low_pct, p.turns_high_pct)}">{signed(p.turns_delta_pct)}%</span>
+        <span class="rt-s {effectClass(p.turns_delta_pct, p.turns_low_pct, p.turns_high_pct)}">{interval(p.turns_low_pct, p.turns_high_pct)} · per run</span>
+      {:else}
+        <span class="rt-v rt-none">Not run</span>
+      {/if}
+    </div>
     {/if}
     <div>
       <span class="rt-k">Guards</span>
       {#if hasGuards}
+        {#if has(p.guard_tests)}<span class="guard"><b>Last test run</b> {p.guard_tests}</span>{/if}
+        {#if has(p.guard_timeouts)}<span class="guard"><b>Timeouts</b> {p.guard_timeouts}</span>{/if}
         {#if has(p.guard_repo)}<span class="guard"><b>Repo tests</b> {p.guard_repo}</span>{/if}
         {#if has(p.guard_acceptance)}<span class="guard"><b>Acceptance check</b> {p.guard_acceptance}</span>{/if}
       {:else}

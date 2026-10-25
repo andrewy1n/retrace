@@ -35,6 +35,8 @@ select r.job_id, r.task_id, r.arm, r.trial, r.session_id, r.model,
        r.proxies->'acceptance'->>'at_start' as acc_at_start,
        s.session_id is not null as has_primitives,
        sum(c.duration_s)::float8 as tool_seconds,
+       s.assistant_turns,
+       (array_agg(c.exit_code order by c.position desc) filter (where c.test_runner is not null))[1] = 0 as last_test_pass,
        coalesce(bool_or(c.test_runner is not null and c.path_arg_count = 0 and coalesce(c.duration_s, 0) > 60), false) as signal_whole_suite_tests,
        coalesce(min(c.position) filter (where c.command_class = 'edit'), count(c.position)) > 12 as signal_calls_before_first_edit,
        coalesce(e.signal_shell_error_streak, false) as signal_shell_error_streak,
@@ -46,5 +48,5 @@ left join primitives_calls c on c.session_id = s.session_id
 left join execs e on e.session_id = s.session_id
 left join rereads rr on rr.session_id = s.session_id
 where r.evidence_role = 'final' and r.arm in ('control', 'candidate')
-group by r.job_id, r.task_id, r.arm, r.trial, r.session_id, r.model, r.cost_credits, r.timed_out, r.proxies, s.session_id,
+group by r.job_id, r.task_id, r.arm, r.trial, r.session_id, r.model, r.cost_credits, r.timed_out, r.proxies, s.session_id, s.assistant_turns,
          e.signal_shell_error_streak, rr.signal_file_rereads

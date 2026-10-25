@@ -76,7 +76,15 @@ function guardText(control, candidate) {
   const [rck, rcn] = repo(control);
   const [ak, an] = acc(candidate);
   const [ack, acn] = acc(control);
+  const tests = (rs) => { const u = rs.filter((r) => r.last_test_pass !== null && r.last_test_pass !== undefined); return [u.filter((r) => r.last_test_pass).length, u.length]; };
+  const timeouts = (rs) => [rs.filter((r) => r.timed_out).length, rs.length];
+  const [tk, tn] = tests(candidate);
+  const [tck, tcn] = tests(control);
+  const [ok, on] = timeouts(candidate);
+  const [ock, ocn] = timeouts(control);
   return {
+    guard_tests: tn ? `${tk} of ${tn} runs end with passing tests; baseline ${tck} of ${tcn}` : '',
+    guard_timeouts: `${ok} of ${on} runs time out; baseline ${ock} of ${ocn}`,
     guard_repo: rn ? `${rk} of ${rn} runs regress repo tests; baseline ${rck} of ${rcn}` : '',
     guard_acceptance: an ? `${ak} of ${an} pass; baseline ${ack} of ${acn}` : ''
   };
@@ -88,6 +96,7 @@ export function compareArms(control, candidate, signal) {
   const out = { paired_tasks: pairedDiffs(control, candidate, () => 1).length };
   out.credits = percentChange(control, candidate, logOf('cost_credits'));
   out.tool_time = percentChange(control, candidate, logOf('tool_seconds'));
+  out.turns = percentChange(control, candidate, logOf('assistant_turns'));
   if (signal) {
     const sig = signalOf(signal.column);
     const seen = (rs) => rs.map(sig).filter((v) => v !== null);
@@ -162,6 +171,11 @@ export function buildProposals(list, runs) {
       row.time_delta_pct = cmp.tool_time.delta;
       row.time_low_pct = cmp.tool_time.low;
       row.time_high_pct = cmp.tool_time.high;
+    }
+    if (cmp.turns) {
+      row.turns_delta_pct = cmp.turns.delta;
+      row.turns_low_pct = cmp.turns.low;
+      row.turns_high_pct = cmp.turns.high;
     }
     row.runs = [...control, ...candidate];
     return row;

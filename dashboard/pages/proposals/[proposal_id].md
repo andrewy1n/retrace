@@ -120,7 +120,7 @@ order by position
   $: files = row?.overlay_files ? row.overlay_files.split(';') : [];
   $: diffHtml = row ? diffFor(example ? patches[row.proposal_id] : row.patch) : null;
   $: incChart = final ? intervalChart(row.inc_delta_pp, row.inc_low_pp, row.inc_high_pp, 'pp') : null;
-  $: guards = row ? [has(row.guard_repo) ? `Repo tests: ${row.guard_repo}.` : null, has(row.guard_acceptance) ? `Acceptance check: ${row.guard_acceptance}.` : null].filter(Boolean) : [];
+  $: guards = row ? [has(row.guard_tests) ? `Last test run: ${row.guard_tests}.` : null, has(row.guard_timeouts) ? `Timeouts: ${row.guard_timeouts}.` : null, has(row.guard_repo) ? `Repo tests: ${row.guard_repo}.` : null, has(row.guard_acceptance) ? `Acceptance check: ${row.guard_acceptance}.` : null].filter(Boolean) : [];
   $: creditChart = final && has(row.credits_delta_pct) ? intervalChart(row.credits_delta_pct, row.credits_low_pct, row.credits_high_pct, '%') : null;
   $: timeChart = final && has(row.time_delta_pct) ? intervalChart(row.time_delta_pct, row.time_low_pct, row.time_high_pct, '%') : null;
   $: rank = row ? ['guardrail_hook', 'skill', 'tool', 'custom_droid', 'setting', 'rule'].indexOf(row.change_type) : -1;
