@@ -68,7 +68,7 @@ from c
 order by proxy
 ```
 
-<DataTable data={agreement} wrapTitles=true>
+<DataTable data={agreement} wrapTitles=true emptySet=pass emptyMessage="No final trial has proxies yet.">
   <Column id=proxy title="Proxy" />
   <Column id=predicts_pass title="Predicts pass when" />
   <Column id=n title="Usable trials" />
@@ -96,7 +96,7 @@ group by 1, 2
 order by job_id, arm
 ```
 
-<DataTable data={forks} rows=20 wrapTitles=true>
+<DataTable data={forks} rows=20 wrapTitles=true emptySet=pass emptyMessage="No checkpoint fork has proxies yet.">
   <Column id=job_id title="Job" />
   <Column id=arm title="Arm" />
   <Column id=forks title="Forks" />

@@ -907,6 +907,7 @@ write_files:
 
       repo_tests_proxy() {
         local cached="" patched_seconds=0 start_seconds=0
+        resolve_image || return 1
         list_tree || return 1
         "$PY" "$TOOL" select --patch "$PATCH" --tree "$TREE" > "$WORK/selection.json" || return 1
         if [[ "$(jq '.selected | length' "$WORK/selection.json")" -eq 0 ]]; then
@@ -920,7 +921,6 @@ write_files:
         cached="$CACHE/$(jq -r .key "$WORK/selection.json").json"
         # Any failure below leaves the default error result.
         write_repo_tests --error
-        resolve_image || return 1
 
         if [[ -f "$cached" ]]; then
           jq .outcomes "$cached" > "$WORK/start.json"
