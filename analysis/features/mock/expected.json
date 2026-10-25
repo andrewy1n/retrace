@@ -14,7 +14,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 1
+      "calls_before_first_edit": 1,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-test-gaming": {
@@ -34,7 +36,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 1
+      "calls_before_first_edit": 1,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-test-gaming-conftest": {
@@ -55,7 +59,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 1
+      "calls_before_first_edit": 1,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-skipped-verify": {
@@ -75,7 +81,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 0,
-      "calls_before_first_edit": 2
+      "calls_before_first_edit": 2,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-reverted": {
@@ -107,7 +115,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 0,
-      "calls_before_first_edit": 3
+      "calls_before_first_edit": 3,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-low-survival": {
@@ -128,7 +138,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 0
+      "calls_before_first_edit": 0,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-looping": {
@@ -148,7 +160,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 6
+      "calls_before_first_edit": 6,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-wrong-files": {
@@ -166,7 +180,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 1
+      "calls_before_first_edit": 1,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-legit-test-edit": {
@@ -184,7 +200,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 0
+      "calls_before_first_edit": 0,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-adds-test-fails": {
@@ -205,7 +223,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 0
+      "calls_before_first_edit": 0,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-go-test-gaming": {
@@ -225,7 +245,9 @@
       "slow_whole_suite_tests": 0,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 1
+      "calls_before_first_edit": 1,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   },
   "mock-large-reads": {
@@ -243,7 +265,9 @@
       "slow_whole_suite_tests": 1,
       "tool_errors": 0,
       "calls_after_last_edit": 1,
-      "calls_before_first_edit": 2
+      "calls_before_first_edit": 2,
+      "shell_error_streak": 0,
+      "large_root_searches": 0
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "target": "shell_error_streak",
+  "threshold": 3,
+  "sessions": 43,
+  "with_signal": 12,
+  "credits_with_signal": 162812,
+  "patterns": {
+    "background_recovery": 7,
+    "no_recovery": 5
+  },
+  "unexplained": [
+    "pro-baseline1-instance_ansible__ansible-1bd7dcf339dd8b6c50bc16670be2448a206f4fdb-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-1",
+    "pro-baseline1-instance_gravitational__teleport-c782838c3a174fdff80cafd8cd3b1aa4dae8beb2-1",
+    "pro-baseline1-instance_gravitational__teleport-c782838c3a174fdff80cafd8cd3b1aa4dae8beb2-2",
+    "pro-baseline1-instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26-1",
+    "pro-baseline1-instance_internetarchive__openlibrary-7c8dc180281491ccaa1b4b43518506323750d1e4-v298a7a812ceed28c4c18355a091f1b268fe56d86-1",
+    "pro-baseline1-instance_internetarchive__openlibrary-7f6b722a10f822171501d027cad60afe53337732-ve8c8d62a2b60610a3c4631f5f23ed866bada9818-1",
+    "pro-baseline1-instance_internetarchive__openlibrary-7f6b722a10f822171501d027cad60afe53337732-ve8c8d62a2b60610a3c4631f5f23ed866bada9818-2"
+  ],
+  "unexplained_rule": "costliest quarter of derivation sessions (factory_credits) without the signal"
+}

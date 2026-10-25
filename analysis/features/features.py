@@ -23,6 +23,19 @@ def calls_before_first_edit(calls):
     return min(edits) if edits else len(calls)
 
 
+def shell_error_streak(calls):
+    prev, n = None, 0
+    for c in calls:
+        if c["tool_name"] == "Execute":
+            n += bool(c["is_error"] and prev is not None and prev["is_error"])
+            prev = c
+    return n
+
+
+def large_root_searches(calls):
+    return sum(c["command_class"] == "search" and c["files"] == ["."] and large(c) for c in calls)
+
+
 def calls_after_last_edit(calls):
     edits = [c["position"] for c in calls if c["command_class"] == "edit"]
     return sum(c["position"] > max(edits) for c in calls) if edits else 0
@@ -38,7 +51,24 @@ FEATURES = {
     "tool_errors": lambda calls: sum(bool(c["is_error"]) for c in calls),
     "calls_after_last_edit": calls_after_last_edit,
     "calls_before_first_edit": calls_before_first_edit,
+    "shell_error_streak": shell_error_streak,
+    "large_root_searches": large_root_searches,
 }
+
+SHELL_ERROR_STREAK_MIN = 3
+LARGE_ROOT_SEARCHES_MIN = 1
+
+
+def shell_error_streak_signal(calls):
+    """(holds, count): 3 or more errored Execute calls that each follow an errored Execute call."""
+    n = shell_error_streak(calls)
+    return n >= SHELL_ERROR_STREAK_MIN, n
+
+
+def large_root_searches_signal(calls):
+    """(holds, count): a search over the whole repo returns over 2,000 tokens at least once."""
+    n = large_root_searches(calls)
+    return n >= LARGE_ROOT_SEARCHES_MIN, n
 
 
 def features(primitives):

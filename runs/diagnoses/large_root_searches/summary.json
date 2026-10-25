@@ -1,0 +1,21 @@
+{
+  "target": "large_root_searches",
+  "threshold": 1,
+  "sessions": 43,
+  "with_signal": 9,
+  "credits_with_signal": 162929,
+  "patterns": {
+    "capped": 4,
+    "large": 5
+  },
+  "unexplained": [
+    "pro-baseline1-instance_ansible__ansible-1bd7dcf339dd8b6c50bc16670be2448a206f4fdb-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-1",
+    "pro-baseline1-instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59-1",
+    "pro-baseline1-instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59-2",
+    "pro-baseline1-instance_gravitational__teleport-c782838c3a174fdff80cafd8cd3b1aa4dae8beb2-2",
+    "pro-baseline1-instance_internetarchive__openlibrary-7c8dc180281491ccaa1b4b43518506323750d1e4-v298a7a812ceed28c4c18355a091f1b268fe56d86-1",
+    "pro-baseline1-instance_internetarchive__openlibrary-7f6b722a10f822171501d027cad60afe53337732-ve8c8d62a2b60610a3c4631f5f23ed866bada9818-1",
+    "pro-baseline1-instance_internetarchive__openlibrary-7f6b722a10f822171501d027cad60afe53337732-ve8c8d62a2b60610a3c4631f5f23ed866bada9818-2"
+  ],
+  "unexplained_rule": "costliest quarter of derivation sessions (factory_credits) without the signal"
+}

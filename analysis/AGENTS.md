@@ -61,6 +61,10 @@ A cost feature is a count or a sum over the session's primitives calls, computed
 - `tool_errors`: calls with `is_error`.
 - `calls_after_last_edit`: calls after the last `edit`-class call.
 - `calls_before_first_edit`: calls before the first `edit`-class call, or every call when the session never edits. Promoted in discovery round 1 (16% of within-task credit variance out of task on the 21 derivation tasks), and the Gate 3 target.
+- `shell_error_streak`: errored `Execute` calls that directly follow an errored `Execute` call. Promoted in discovery round 2 by count times cost: 12 of 43 derivation control sessions (6 tasks), 52 calls, about 18,000 credits by the per-call estimate. Its out-of-task score is -8%, since it varies within only 5 tasks. Target of `analysis/proposals/shell-fallback`.
+- `large_root_searches`: search calls over the whole repo (`files` is `["."]`) with `output_tokens_est` over 2,000. Promoted in discovery round 2 by count times cost: 9 of 43 derivation control sessions, about 9,800 credits by the per-call estimate. Its out-of-task score is -21%, since it varies within only 3 tasks. Target of `analysis/proposals/root-search-limit`.
+
+The round 2 features are mostly constant within a task, so the within-task score cannot see them, and count times cost ranks them instead. The per-call estimate is `output_tokens_est × (0.05 + 0.004 × turns_after)` plus the call's share of its turn's mean cost.
 
 `python analysis/features/summarize.py` prints, per dataset (from the job file), how many sessions have each feature and their mean credits with and without it. It reads only `runs/primitives` and `runs/jobs`. That is correlation. Only step-0 replay shows that removing a pattern saves credits. A promoted feature can be the target at Gate 3, and a proposal for it names it in `cost_pattern`.
 
@@ -72,7 +76,7 @@ Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severi
 
 Features and diagnoses route work. They are not evidence. Spot-check about ten feature records before a target is selected.
 
-Write diagnoses to `runs/diagnoses/`, citing `tool_call_id`s only, with the list of what stays unexplained. `python analysis/features/diagnose.py` writes one file per derivation control session whose hard signal holds, with the cited calls before the first edit, their kinds, and a pattern (`rereads`, `searches`, `broad_reads`, `runs_first`, or `mixed`). `summary.json` counts the patterns and lists the costliest quarter of derivation sessions without the signal as unexplained. On 2026-10-24, 20 of 43 sessions have the signal, 14 of them `rereads`. In those 14 sessions, 146 of 187 reads before the first edit page through a file with `offset` and `limit`, about 137 lines at a time.
+Write diagnoses to `runs/diagnoses/`, citing `tool_call_id`s only, with the list of what stays unexplained. `python analysis/features/diagnose.py` writes one file per derivation control session whose hard signal holds, with the cited calls before the first edit, their kinds, and a pattern (`rereads`, `searches`, `broad_reads`, `runs_first`, or `mixed`). `summary.json` counts the patterns and lists the costliest quarter of derivation sessions without the signal as unexplained. On 2026-10-24, 20 of 43 sessions have the signal, 14 of them `rereads`. `python analysis/features/diagnose_r2.py` does the same for `shell_error_streak` and `large_root_searches` under `runs/diagnoses/<target>/`. In those 14 sessions, 146 of 187 reads before the first edit page through a file with `offset` and `limit`, about 137 lines at a time.
 
 ## Jobs and proposals
 

