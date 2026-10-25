@@ -13,6 +13,10 @@ select * from mock.proposals where proposal_id = '${params.proposal_id}'
 select * from proposal_list.proposals where proposal_id <> ''
 ```
 
+```sql fork_calls
+select * from fork_view.calls where proposal_path <> ''
+```
+
 ```sql pruns
 select * from tiger.proposal_runs
 ```
@@ -153,6 +157,31 @@ order by position
 
   const sessionLabel = 'ansible d33bed, trial 1';
   const checkpoints = { toolu_01Pm3ZNrBCDtHNUh83ovCqeC: 'Step 10', toolu_016dLe3d1iqCZzTGPkUnoaXN: 'Step 17' };
+  const isTrue = (v) => v === true || String(v).toLowerCase() === 'true';
+  const labelOf = (b) => (b.arm === 'recorded' ? 'Recorded run (original)' : b.arm === 'control' ? `Baseline rerun ${b.trial}` : `With change, rerun ${b.trial}`);
+  $: forkSets = (() => {
+    const mine = Array.from(fork_calls ?? []).filter((c) => row && c.proposal_path === row.path);
+    const groups = new Map();
+    for (const c of mine) {
+      const key = `${c.checkpoint}|${c.arm}|${c.trial}`;
+      if (!groups.has(key)) groups.set(key, { checkpoint: c.checkpoint, at: Number(c.fork_position), arm: c.arm, trial: Number(c.trial), credits: c.cost_credits, calls: [] });
+      groups.get(key).calls.push({ ...c, position: Number(c.position), blocked: isTrue(c.blocked), is_error: isTrue(c.is_error) });
+    }
+    const order = { recorded: 0, control: 1, candidate: 2 };
+    const sets = new Map();
+    for (const g of groups.values()) {
+      g.calls.sort((a, b) => a.position - b.position);
+      const edit = g.calls.find((c) => c.command_class === 'edit');
+      g.firstEdit = edit ? edit.position : g.calls.length;
+      g.after = g.calls.filter((c) => c.position >= g.at);
+      if (!sets.has(g.checkpoint)) sets.set(g.checkpoint, { at: g.at, prefix: [], branches: [] });
+      const set = sets.get(g.checkpoint);
+      if (g.arm === 'recorded') set.prefix = g.calls.filter((c) => c.position < g.at);
+      set.branches.push(g);
+    }
+    for (const s of sets.values()) s.branches.sort((a, b) => order[a.arm] - order[b.arm] || a.trial - b.trial);
+    return [...sets.values()];
+  })();
   let selTask = '';
   const bySession = (calls) => {
     const m = new Map();
@@ -209,6 +238,11 @@ order by position
   .run { margin: 16px 0; }
   .runhead { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; font-size: 13px; }
   .runhead span { color: #71717a; }
+  .prefix { margin: 8px 0; }
+  .plabel { font-size: 12px; color: #71717a; }
+  .chip.locked { opacity: 0.55; }
+  .chip.blocked { background: #fbe4e1; border-color: #d98a80; }
+  .divider { margin: 10px 0 4px; padding: 6px 0; border-top: 1.5px solid #27272a; font-size: 12px; color: #27272a; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #52525b; }
   .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; border: 1px solid; vertical-align: -1px; }
   .matrix { display: grid; grid-template-columns: 160px repeat(4, 1fr); gap: 6px; align-items: center; font-size: 13px; max-width: 900px; }
@@ -370,6 +404,41 @@ order by position
 </div>
 <p class="note">{forkRows.length} forks in Tiger. The planned run is 12: 2 steps × 3 fork arms × 2 reruns. The recorded run has 1 run per step.</p>
       {:else if !example && final}
+        {#each forkSets as set}
+          <h2 class="rt-h2">Rewind to a step and rerun</h2>
+          <p class="rt-tab-note">A recorded session had made {set.at} calls and not yet edited anything. We rewound it to call {set.at}, restored the repository as it was at that point, and ran it again: {set.branches.filter((b) => b.arm === 'control').length} times as it was (baseline) and {set.branches.filter((b) => b.arm === 'candidate').length} times with the change installed. The first {set.at} calls are the same in every run.</p>
+          <div class="prefix">
+            <div class="plabel">Calls 0 to {set.at - 1}, kept from the recording</div>
+            <div class="strip">
+              {#each set.prefix as c}
+                <div class="chip {kind(c)} locked" title="{c.tool_name} {c.command_class}"><small>{c.position}</small>{c.label}</div>
+              {/each}
+            </div>
+          </div>
+          <div class="divider">Rewound here, at call {set.at}. Same task, same repository state, same conversation.</div>
+          {#each set.branches as b}
+            <div class="run">
+              <div class="runhead">
+                <b>{labelOf(b)}</b>
+                <span>first edit at call {b.firstEdit}{b.credits ? ` · ${Number(b.credits).toLocaleString('en-US', { maximumFractionDigits: 0 })} credits` : ''}</span>
+              </div>
+              <div class="strip">
+                {#each b.after as c}
+                  <div class="chip {kind(c)}" class:cp={c.command_class === 'edit' && c.position === b.firstEdit} class:blocked={c.blocked} title="{c.tool_name} {c.command_class}{c.blocked ? ', stopped by the change' : ''}">
+                    <small>{c.position}</small>{c.blocked ? 'blocked' : c.label}
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/each}
+          <div class="legend">
+            <span><i style="background:#e8eff8;border-color:#9bb5d6"></i>Edit</span>
+            <span><i style="background:#fbf1dc;border-color:#d9b765"></i>Execute</span>
+            <span><i style="background:#f4f4f5;border-color:#d4d4d8"></i>Read / Search</span>
+            <span><i style="border:1.5px dashed #27272a"></i>First edit</span>
+            <span><i style="background:#fbe4e1;border-color:#d98a80"></i>Call stopped by the change</span>
+          </div>
+        {/each}
         <h2 class="rt-h2">Tool calls, run by run</h2>
         <p class="rt-tab-note">Each box is one tool call, in order. A dashed outline marks the first edit. The task opens on the largest gap in calls before the first edit.</p>
         <label class="pick">Task

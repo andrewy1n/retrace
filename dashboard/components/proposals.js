@@ -108,6 +108,7 @@ export function buildProposals(list, runs) {
     const files = has(p.overlay_files) ? p.overlay_files.split(';') : [];
     const row = {
       proposal_id: p.proposal_id,
+      path: p.path,
       title: words(p.proposal_id.replace(/-/g, '_')),
       kind: has(p.cost_pattern) ? 'cost' : 'failure',
       target: words(target),

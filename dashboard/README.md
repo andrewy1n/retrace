@@ -9,6 +9,8 @@ An [Evidence](https://evidence.dev) project. Each page is a Markdown file with S
 | Runs | `pages/runs.md` | Real: `primitives_sessions` and `primitives_calls` joined to `replay_runs`, with a job filter. Charts: cumulative credit share, credits against turns, mean credits per job and arm, tool output and time by command class, test runs per session, long test runs, and the proxies of step-0 runs. Then the session table and the checkpoint forks. Each session links to `pages/sessions/[session_id].md`, which charts time and tool output per call. |
 | Monitoring | `pages/monitoring.md` | Example: `sources/mock/monitoring.csv`. Daily series for a shipped change, with the ship date marked: behaviour incidence, credits, and repo-test regressions per session, before against after. Rollback is a pull request revert. |
 
+`fork_view.py` writes `sources/fork_view/calls.csv` (gitignored) from the checkpoint jobs in `runs/jobs/` and the primitives. The proposal page uses it for "Rewind to a step and rerun": the shared calls before the checkpoint, then each rerun from there. A call that a hook stopped is read from the private session copy in `runs/private/sessions/` when it exists.
+
 The dashboard shows no grader data. The dashboard role reads the view `replay_runs`, which has no `passed` or `grader` column, plus `primitives_sessions` and `primitives_calls`. It cannot read `replay_results`. Grader results live in `reports/`.
 
 The top bar (`pages/+layout.svelte`) links Proposals, Runs, and Monitoring. Chart colors are the validated categorical palette in `evidence.config.yaml`; a command class, an arm, or a proxy status keeps the same color on every page. Shared UI is in `components/`. `format.js` holds the status names, the verdict rule, and the interval chart.

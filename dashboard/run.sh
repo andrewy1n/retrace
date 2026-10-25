@@ -7,7 +7,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 refresh() {
   python3 -I proposal_list.py ${PROPOSALS:+--proposals "$PROPOSALS"} ${JOBS:+--jobs "$JOBS"}
-  rm -rf .evidence/template/static/data/proposal_list
+  python3 -I fork_view.py
+  rm -rf .evidence/template/static/data/proposal_list .evidence/template/static/data/fork_view
   npx evidence sources
 }
 set -a; . ../.env; set +a
