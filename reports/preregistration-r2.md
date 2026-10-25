@@ -73,4 +73,4 @@ Made after the round-2 held-out and regression results, and before any round-3 c
 
 The round-2 results gave one method rule: promote a target only when its estimated credit share in derivation sessions is large. That rule reads credit ratios, not grader output and not held-out sessions. The analysis role chose `file_rereads` (d152e31) from the 21 derivation tasks only, with an estimated share of 17% of derivation credits. It read no held-out or regression session, primitive, or result. The candidate is frozen (`FROZEN.md`) before its held-out and regression runs.
 
-Arm A ran about 2 to 3 hours before the round-3 arms. The report states the gap. The round-3 report names 1 candidate, and the round-2 reports keep their count of 2.
+Arm A ran about 2 to 5 hours before the round-3 arms. The report states the measured gap. The round-3 report names 1 candidate, and the round-2 reports keep their count of 2.
