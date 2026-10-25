@@ -58,9 +58,37 @@ def calls_before_first_edit(calls):
     return calls_before_first_edit_count(calls) > CALLS_BEFORE_FIRST_EDIT_LIMIT
 
 
+SHELL_ERROR_STREAK_MIN = 3
+LARGE_OUTPUT_TOKENS = 2000
+
+
+def shell_error_streak_count(calls):
+    prev, n = None, 0
+    for c in calls:
+        if c["tool_name"] == "Execute":
+            n += bool(c["is_error"] and prev is not None and prev["is_error"])
+            prev = c
+    return n
+
+
+def shell_error_streak(calls):
+    return shell_error_streak_count(calls) >= SHELL_ERROR_STREAK_MIN
+
+
+def large_root_searches_count(calls):
+    return sum(c["command_class"] == "search" and c["files"] == ["."]
+               and (c["output_tokens_est"] or 0) > LARGE_OUTPUT_TOKENS for c in calls)
+
+
+def large_root_searches(calls):
+    return large_root_searches_count(calls) >= 1
+
+
 SIGNALS = {"whole_suite_tests": whole_suite_tests, "skipped_verification": skipped_verification,
-           "calls_before_first_edit": calls_before_first_edit}
-COUNTS = {"calls_before_first_edit": calls_before_first_edit_count}
+           "calls_before_first_edit": calls_before_first_edit, "shell_error_streak": shell_error_streak,
+           "large_root_searches": large_root_searches}
+COUNTS = {"calls_before_first_edit": calls_before_first_edit_count, "shell_error_streak": shell_error_streak_count,
+          "large_root_searches": large_root_searches_count}
 
 
 def wilson(k, n, z=1.96):

@@ -43,3 +43,16 @@ As in `reports/preregistration.md`. No task has an acceptance check, so `accepta
 As in `reports/preregistration.md`. Each candidate gets its own report, `reports/<target>-r2.md` and `reports/<target>-r2-regression.md`, written by `recorder/replay/report.py`. Several targets are tested at once, so each report states how many candidates round 2 tested. A small or negative result is reported as such. A candidate with no credit gain or with regression harm gets no pull request.
 
 ## Amendments
+
+### Amendment 1, 2026-10-25: the round-2 targets
+
+Made after discovery round 2 (5d3cb75) and before any candidate runs on held-out or regression tasks. Arm A had started. Nobody in the analysis role read its sessions or results.
+
+Discovery round 2 tested 2 candidates. Neither target passes the out-of-task promotion rule of `analysis/AGENTS.md` (each varies within only a few derivation tasks). Both were promoted by count times cost. The splits are `splits/shell_error_streak.json` and `splits/large_root_searches.json`.
+
+| Target | Candidate | Hard signal |
+|---|---|---|
+| `shell_error_streak` | `analysis/proposals/shell-fallback` | The run has 3 or more errored `Execute` calls that each directly follow an errored `Execute` call, from primitives (`shell_error_streak` in `recorder/replay/report.py`). The count is reported with it. |
+| `large_root_searches` | `analysis/proposals/root-search-limit` | The run has at least 1 search call over the whole repo (primitives `files` is `["."]`) whose `output_tokens_est` is over 2,000 (`large_root_searches` in `recorder/replay/report.py`). The count is reported with it. |
+
+`shell_error_streak` comes from a Droid 0.249.0 defect, not from the model: in an image without `ps`, every foreground `Execute` call is reported as killed by SIGKILL (root `AGENTS.md`, Environment). 4 of the 8 qutebrowser held-out images lack `ps`, and none of the navidrome or vuls images. The image property was read before any candidate run. It reads no outcome. The `shell-fallback` report also gives each result on the held-out tasks whose image lacks `ps`, as a secondary breakdown.
