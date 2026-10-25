@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Write the step-0 held-out and regression jobs for one split.
 
-  make_jobs.py --splits splits/<group>.json --arm-b <path> --arm-c <path> --reruns N --prefix P --budget CREDITS
+  make_jobs.py --splits splits/<group>.json [--arm-b <path>] --arm-c <path> --reruns N --prefix P --budget CREDITS
 
-Writes runs/jobs/<P>-heldout-{a,b,c}.json and <P>-regression-{a,c}.json. Arm A is control.
+Writes runs/jobs/<P>-heldout-{a,c}.json and <P>-regression-{a,c}.json. Arm A is control. With --arm-b it also writes
+<P>-heldout-b.json.
 """
 import argparse
 import json
@@ -82,11 +83,11 @@ def validate(root, path):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--splits", required=True)
-    ap.add_argument("--arm-b", required=True, help="transcript-only overlay directory, relative to the repo")
+    ap.add_argument("--arm-b", help="transcript-only overlay directory, relative to the repo (optional)")
     ap.add_argument("--arm-c", required=True, help="replay-derived overlay directory, relative to the repo")
     ap.add_argument("--reruns", required=True, type=int, help="reruns per task per arm (pre-registration: at least 2)")
     ap.add_argument("--prefix", required=True, help="job-id prefix, such as final1")
-    ap.add_argument("--budget", required=True, type=float, help="total Factory credits for all five jobs")
+    ap.add_argument("--budget", required=True, type=float, help="total Factory credits for all jobs")
     ap.add_argument("--model", default="claude-haiku-5-5")
     ap.add_argument("--parallel", type=int, default=8, help="trials in flight at once")
     ap.add_argument("--root", default=str(Path(__file__).resolve().parents[2]), help="repo root")
@@ -103,13 +104,15 @@ def main(argv=None):
         fail("budget must be positive")
 
     group, ids = load_splits(args.splits)
-    arm_b = check_proposal(root, "arm B", args.arm_b)
+    arm_b = check_proposal(root, "arm B", args.arm_b) if args.arm_b else None
     arm_c = check_proposal(root, "arm C", args.arm_c)
     if arm_b == arm_c:
         fail("arm B and arm C are the same directory")
 
-    arms = {"a": {"kind": "control"}, "b": {"kind": "candidate", "path": arm_b}, "c": {"kind": "candidate", "path": arm_c}}
-    plan = [(f"{args.prefix}-{kind}-{arm}", ids[key], arms[arm]) for kind, key, arm in JOBS]
+    arms = {"a": {"kind": "control"}, "c": {"kind": "candidate", "path": arm_c}}
+    if arm_b:
+        arms["b"] = {"kind": "candidate", "path": arm_b}
+    plan = [(f"{args.prefix}-{kind}-{arm}", ids[key], arms[arm]) for kind, key, arm in JOBS if arm in arms]
     n_trials = {jid: len(tasks) * args.reruns for jid, tasks, _ in plan}
     total = sum(n_trials.values())
     budgets = {jid: int(args.budget * n / total) for jid, n in n_trials.items()}
@@ -135,7 +138,9 @@ def main(argv=None):
 
     print(f"group {group}: derivation {len(ids['derivation'])}, held_out {len(ids['held_out'])}, regression {len(ids['regression'])}")
     print(f"model {args.model}, reruns {args.reruns}, dataset swebench_pro, stop_mode next_user_turn")
-    print(f"arm B {arm_b}\narm C {arm_c}")
+    if arm_b:
+        print(f"arm B {arm_b}")
+    print(f"arm C {arm_c}")
     print(f"\n{'job':<34}{'tasks':>6}{'trials':>8}{'budget':>12}{'est. credits':>14}")
     for job in jobs:
         n = n_trials[job["job_id"]]

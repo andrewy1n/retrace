@@ -66,6 +66,15 @@ def test_writes_five_valid_jobs(root, capsys):
     assert "total" in out and "estimated wall time" in out
 
 
+def test_without_arm_b_writes_four_jobs(root):
+    splits = write_splits(root)
+    make_jobs.main(["--splits", str(splits), "--arm-c", "analysis/proposals/arm-c", "--reruns", "2", "--prefix", "final1",
+                    "--budget", "2000000", "--root", str(root)])
+    j = jobs(root)
+    assert sorted(j) == ["final1-heldout-a", "final1-heldout-c", "final1-regression-a", "final1-regression-c"]
+    assert sum(x["budget_credits"] for x in j.values()) <= 2000000
+
+
 def test_budget_splits_in_proportion_to_trials(root):
     run(root, write_splits(root), **{"--budget": "1000000"})
     j = jobs(root)
@@ -192,6 +201,23 @@ def test_run_final_together_starts_all_five(repo):
     r = wrapper(repo, "final1", "--together")
     assert r.returncode == 0, r.stderr
     assert [x[3] for x in submits(repo)] == ["2", "2", "2", "1", "1"]
+
+
+def test_run_final_without_arm_b_runs_four_jobs(repo):
+    (repo / "runs" / "jobs" / "final1-heldout-b.json").unlink()
+    subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "y"], check=True)
+    r = wrapper(repo, "final1")
+    assert r.returncode == 0, r.stderr
+    assert [(Path(x[1]).stem, x[3]) for x in submits(repo)] == [
+        ("final1-heldout-a", "4"), ("final1-heldout-c", "4"), ("final1-regression-a", "4"), ("final1-regression-c", "4")]
+
+
+def test_run_final_together_without_arm_b(repo):
+    (repo / "runs" / "jobs" / "final1-heldout-b.json").unlink()
+    subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "y"], check=True)
+    r = wrapper(repo, "final1", "--together")
+    assert r.returncode == 0, r.stderr
+    assert [x[3] for x in submits(repo)] == ["2", "2", "2", "2"]
 
 
 def test_run_final_refuses_when_jobs_run(repo):
