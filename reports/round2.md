@@ -26,6 +26,6 @@ Round 3 applied that rule. It tested 1 candidate, `read-whole-file`, on the roun
 |---|---|---|---|---|---|---|---|
 | `read-whole-file` | `file_rereads` | 14 of 48 to 20 of 48 | 1.120 (0.994 to 1.288) | 44 to 45 of 48 | 1.056 (0.908 to 1.245) | none | `file_rereads-r3.md`, `file_rereads-r3-regression.md` |
 
-The result is negative. The signal counts each blocked call as a reread, so incidence rose. Without errored calls, rereads per run fell from 1.90 to 1.46, but credits did not fall. A block costs a turn, and the agent then made its wider read or Grep call, so the block gave back the turn it was meant to save. No pull request.
+The result is negative. The signal counts each blocked call as a reread, so incidence rose. Without errored calls, rereads per run fell from 1.90 to 1.46, but credits did not fall. A block costs a turn, and the agent then made its wider read or Grep call, so the block gave back the turn it was meant to save: turns per run rose from 19.0 to 19.5. No pull request.
 
 The credit share of a behaviour is not the credit a hook can save. A hook that blocks a call and asks for a different call adds a turn each time it fires. It saves credits only when the calls it prevents later cost more than that turn. Round 1's `explore-budget` met that test. The three hooks of rounds 2 and 3 did not.
