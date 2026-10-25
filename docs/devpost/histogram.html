@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 210px; gap: 36px; margin-top: 52px; align-items: start; }
+  .plot { position: relative; height: 300px; margin-left: 36px; border-bottom: 1.5px solid #94a3b8; }
+  .grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid #edf0f4; }
+  .ytick { position: absolute; left: -36px; width: 26px; text-align: right; font-size: 13.5px; color: var(--muted); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
+  .bars { position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 2px; }
+  .bar { flex: 1; background: var(--grey-mark); border-radius: 4px 4px 0 0; }
+  .bar.hi { background: var(--accent); }
+  .xt { display: flex; gap: 2px; margin-left: 36px; margin-top: 8px; }
+  .xt span { flex: 1; text-align: center; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .xlabel { margin-left: 36px; margin-top: 10px; font-size: 14.5px; color: var(--muted); text-align: center; }
+  .yname { position: absolute; left: -36px; top: -30px; font-size: 13.5px; color: var(--muted); }
+  .thr { position: absolute; top: -14px; bottom: 0; border-left: 2px dashed var(--ink); }
+  .thr-lbl { position: absolute; top: -14px; font-size: 14px; color: var(--ink); font-weight: 600; white-space: nowrap; padding-left: 10px; line-height: 1.3; }
+  .thr-lbl small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; }
+  .stat .big { font-size: 56px; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .big span { color: var(--muted); font-weight: 500; font-size: 30px; }
+  .stat .cap { margin-top: 10px; font-size: 16px; line-height: 1.4; color: var(--ink); }
+  .stat .cap2 { margin-top: 20px; font-size: 15px; line-height: 1.45; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  .key { display: inline-block; width: 11px; height: 11px; border-radius: 3px; background: var(--accent); margin-right: 6px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+<div id="frame">
+  <h1>The agent explores too long before it edits</h1>
+  <div class="sub">Tool calls before the first edit in 43 control sessions on 21 SWE-bench Pro tasks (Droid with Claude Haiku 5.5). The cutoff is the median, fixed in the pre-registration before any held-out run.</div>
+
+  <div class="wrap">
+    <div>
+      <div class="plot" id="plot"><div class="yname">Sessions</div><div class="bars" id="bars"></div></div>
+      <div class="xt" id="xt"></div>
+      <div class="xlabel">Tool calls before the first edit</div>
+    </div>
+    <div class="stat">
+      <div class="big">20<span> / 43</span></div>
+      <div class="cap"><span class="key"></span>sessions make more than 12 calls before their first edit.</div>
+      <div class="cap2">In 14 of them, the agent pages through files it has already read.</div>
+    </div>
+  </div>
+  <div class="foot">Sessions: SWE-bench Pro derivation tasks (ansible, openlibrary, flipt, teleport): 2 runs per task, plus 1 runner-check run. Counts come from per-call primitives. A shell edit counts as an edit.</div>
+</div>
+<script>
+  const vals = [2,3,3,3,4,5,6,7,7,7,8,8,8,9,9,9,9,10,10,11,11,12,12,13,13,13,14,15,16,16,16,18,18,18,19,19,21,21,21,22,24,30,43];
+  const bins = [];
+  for (let lo = 1; lo <= 28; lo += 3) bins.push({ lo, hi: lo + 2, label: `${lo}–${lo + 2}` });
+  bins.push({ lo: 31, hi: Infinity, label: "31+" });
+  bins.forEach(b => b.n = vals.filter(v => v >= b.lo && v <= b.hi).length);
+  const yMax = 12;
+  const plot = document.getElementById("plot"), bars = document.getElementById("bars"), xt = document.getElementById("xt");
+  for (let t = 0; t <= yMax; t += 4) {
+    const y = 100 - (t / yMax) * 100;
+    const g = document.createElement("div"); g.className = "grid-line"; g.style.top = y + "%"; plot.insertBefore(g, bars);
+    const l = document.createElement("div"); l.className = "ytick"; l.style.top = y + "%"; l.textContent = t; plot.appendChild(l);
+  }
+  bins.forEach(b => {
+    const d = document.createElement("div");
+    d.className = "bar" + (b.lo > 12 ? " hi" : "");
+    d.style.height = (b.n / yMax) * 100 + "%";
+    bars.appendChild(d);
+    const s = document.createElement("span"); s.textContent = b.label; xt.appendChild(s);
+  });
+  const cut = 4 / bins.length * 100;
+  const thr = document.createElement("div"); thr.className = "thr"; thr.style.left = `calc(${cut}% - 1px)`; plot.appendChild(thr);
+  const lbl = document.createElement("div"); lbl.className = "thr-lbl"; lbl.style.left = cut + "%";
+  lbl.innerHTML = "Median: 12 calls<small>pre-registered cutoff</small>"; plot.appendChild(lbl);
+</script>
+</body>
+</html>

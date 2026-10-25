@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  .stage { position: relative; height: 330px; margin-top: 30px; }
+  .stage svg.links { position: absolute; inset: 0; overflow: visible; }
+  .dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; transform: translate(-50%, -50%); background: var(--accent); }
+  .dot.faded { background: #dbe6f4; }
+  .dot.grey { background: var(--grey-mark); }
+  .dot.cited { width: 24px; height: 24px; background: #fff; border: 5px solid var(--accent); }
+  .dot.hook { background: var(--warm); border-radius: 5px; width: 18px; height: 18px; }
+  .snap { position: absolute; width: 8px; height: 8px; border-radius: 2px; transform: translate(-50%, -50%); background: #9db9dc; }
+  .lane { position: absolute; font-size: 15px; font-weight: 600; color: var(--ink); transform: translateY(-50%); }
+  .lane small { display: block; font-weight: 400; color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+  .note { position: absolute; font-size: 14px; color: var(--muted); line-height: 1.35; }
+  .note b { color: var(--ink); font-weight: 600; }
+  .legend { display: flex; gap: 22px; align-items: center; color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { display: inline-block; }
+  .callout { margin-top: 22px; background: var(--loop); border: 1px solid var(--loop-edge); border-radius: 14px; padding: 14px 18px; font-size: 15.5px; line-height: 1.45; color: var(--ink); }
+</style>
+</head>
+<body>
+<div id="frame">
+  <h1>Replay: rewind a session and fork it</h1>
+  <div class="sub">Retrace rewinds a recorded Droid session to the step a diagnosis cites and restores that step's git snapshot. Then it runs two forks that differ only in the harness change.</div>
+
+  <div class="stage" id="stage">
+    <svg class="links" id="links"></svg>
+  </div>
+
+  <div class="legend">
+    <span><i class="lg" style="width:12px;height:12px;border-radius:50%;background:var(--accent)"></i>tool call</span>
+    <span><i style="width:8px;height:8px;border-radius:2px;background:#9db9dc"></i>git snapshot</span>
+    <span><i style="width:14px;height:14px;border-radius:50%;border:4px solid var(--accent);background:#fff"></i>cited step</span>
+    <span><i style="width:13px;height:13px;border-radius:4px;background:var(--warm)"></i>fix fires</span>
+    <span style="margin-left:auto;font-style:italic">Schematic, not measured data</span>
+  </div>
+
+  <div class="callout"><b>Forks are for diagnosis.</b> They show whether a cited step drives the cost, before any expensive run. Final evidence comes only from fresh runs on repos the loop never saw.</div>
+</div>
+<script>
+  const stage = document.getElementById("stage");
+  const links = document.getElementById("links");
+  const x0 = 200, dx = 32, k = 6;
+  const yRec = 40, yCtl = 170, yFix = 270;
+  const ns = "http://www.w3.org/2000/svg";
+
+  function el(cls, x, y, html) {
+    const e = document.createElement("div");
+    e.className = cls; e.style.left = x + "px"; e.style.top = y + "px";
+    if (html) e.innerHTML = html;
+    stage.appendChild(e); return e;
+  }
+  function path(d, stroke, dash, w = 2) {
+    const p = document.createElementNS(ns, "path");
+    p.setAttribute("d", d); p.setAttribute("fill", "none");
+    p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", w);
+    p.setAttribute("stroke-linecap", "round");
+    if (dash) p.setAttribute("stroke-dasharray", dash);
+    links.appendChild(p);
+  }
+
+  el("lane", 0, yRec, "Recorded session<small>original run</small>");
+  el("lane", 0, yCtl, "Control fork<small>no change</small>");
+  el("lane", 0, yFix, "Fix fork<small>overlay installed</small>");
+
+  const nRec = 20;
+  const xk = x0 + k * dx;
+  path(`M${x0} ${yRec}H${x0 + (nRec - 1) * dx}`, "#dbe6f4", null, 2);
+  for (let i = 0; i < nRec; i++) {
+    const x = x0 + i * dx;
+    el("dot" + (i === k ? " cited" : i > k ? " faded" : ""), x, yRec);
+    if (i <= k) el("snap", x, yRec + 22);
+  }
+
+  const xs = xk + dx;
+  path(`M${xk} ${yRec + 12} C ${xk} ${yCtl - 40}, ${xs - 30} ${yCtl}, ${xs} ${yCtl}`, "#c9ced6", null, 2);
+  path(`M${xk} ${yRec + 12} C ${xk} ${yFix - 60}, ${xs - 30} ${yFix}, ${xs} ${yFix}`, "#2a78d6", null, 2);
+
+  const nCtl = 13, nFix = 8;
+  path(`M${xs} ${yCtl}H${xs + (nCtl - 1) * dx}`, "#e5e7eb", null, 2);
+  for (let i = 0; i < nCtl; i++) el("dot grey", xs + i * dx, yCtl);
+  path(`M${xs} ${yFix}H${xs + (nFix - 1) * dx}`, "#cfe0f5", null, 2);
+  for (let i = 0; i < nFix; i++) el("dot" + (i === 0 ? " hook" : ""), xs + i * dx, yFix);
+
+  el("note", xk + 16, yRec + 52, "<b>Rewind here.</b> <code>session.rewind</code>,<br>then restore the snapshot.");
+  el("note", xs + (nFix - 1) * dx + 24, yFix - 20, "Compare calls, credits,<br>and the repo's own tests.");
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap");
+
+:root {
+  --ink: #0f172a;
+  --muted: #5b6475;
+  --faint: #94a3b8;
+  --line: #e2e8f0;
+  --bg: #ffffff;
+  --accent: #2a78d6;
+  --accent-ink: #1d4f91;
+  --loop: #f1f6fd;
+  --loop-edge: #c4dbf5;
+  --gate: #fff6ee;
+  --gate-edge: #f6b98e;
+  --warm: #c2410c;
+  --oracle: #f8fafc;
+  --oracle-edge: #c3cbd6;
+  --grey-mark: #c9ced6;
+}
+
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); font-family: Inter, system-ui, sans-serif; color: var(--ink); padding: 0; }
+#frame { width: 960px; padding: 44px 48px 40px; background: var(--bg); }
+h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+.sub { color: var(--muted); font-size: 17px; line-height: 1.45; margin-top: 8px; max-width: 820px; }
+.tag { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.tag.warm { color: var(--warm); }
+.tag.grey { color: var(--muted); }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(15, 23, 42, .05); }
+.n { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--accent); }
+.t { font-weight: 600; font-size: 19px; margin-top: 2px; letter-spacing: -0.01em; }
+.d { color: var(--muted); font-size: 15.5px; line-height: 1.4; margin-top: 5px; }
+code { font-family: "JetBrains Mono", monospace; font-size: 0.92em; }
+.foot { color: var(--muted); font-size: 14px; margin-top: 22px; }
