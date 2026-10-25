@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Write dashboard/sources/proposal_list/proposals.csv from analysis/proposals and runs/jobs.
 
-One row per proposal.json. A candidate job names the proposal in arm.path. Its control job is the job
-`<name>-control` when the candidate job is `<name>-candidate`, else the one control job with the same task_ids.
+One row per proposal.json. A candidate job names the proposal in arm.path. Its control job is
+`<name>-control` when the candidate job is `<name>-candidate`, else a control job with the same
+task_ids. When several controls share those tasks, the one with the longest shared job-id prefix
+wins. When that still ties and the candidate id starts with r<round>, the control is the latest
+earlier round on those tasks. Several candidates may share one control.
 The row holds no result. The page joins it to Tiger.
 With no proposal the file holds one empty row, because Evidence writes no table for an empty file. Pages filter on proposal_id.
 """
@@ -27,6 +30,20 @@ def load_jobs(jobs_dir):
     return jobs
 
 
+def _prefix_len(a, b):
+    n = 0
+    for x, y in zip(a.split("-"), b.split("-")):
+        if x != y:
+            break
+        n += 1
+    return n
+
+
+def _round(job_id):
+    head = job_id.split("-", 1)[0]
+    return int(head[1:]) if len(head) > 1 and head[0] == "r" and head[1:].isdigit() else None
+
+
 def control_for(candidate, jobs):
     controls = [j for j in jobs if j["arm"]["kind"] == "control"]
     if candidate["job_id"].endswith("-candidate"):
@@ -35,7 +52,21 @@ def control_for(candidate, jobs):
         if named:
             return named[0]
     same = [j for j in controls if set(j["task_ids"]) == set(candidate["task_ids"])]
-    return same[0] if len(same) == 1 else None
+    if len(same) <= 1:
+        return same[0] if same else None
+    best = max(_prefix_len(candidate["job_id"], j["job_id"]) for j in same)
+    tied = [j for j in same if _prefix_len(candidate["job_id"], j["job_id"]) == best]
+    if len(tied) == 1:
+        return tied[0]
+    cand_round = _round(candidate["job_id"])
+    if cand_round is None:
+        return None
+    earlier = [j for j in tied if _round(j["job_id"]) is not None and _round(j["job_id"]) <= cand_round]
+    if not earlier:
+        return None
+    top = max(_round(j["job_id"]) for j in earlier)
+    picked = [j for j in earlier if _round(j["job_id"]) == top]
+    return picked[0] if len(picked) == 1 else None
 
 
 def pairs_for(path, jobs):

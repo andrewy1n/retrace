@@ -2,7 +2,10 @@ import { has } from './format.js';
 
 export const SIGNALS = {
   whole_suite_tests: { column: 'signal_whole_suite_tests', metric: 'Runs with a whole-suite test run over 60 s' },
-  calls_before_first_edit: { column: 'signal_calls_before_first_edit', metric: 'Runs with more than 12 calls before the first edit' }
+  calls_before_first_edit: { column: 'signal_calls_before_first_edit', metric: 'Runs with more than 12 calls before the first edit' },
+  shell_error_streak: { column: 'signal_shell_error_streak', metric: 'Runs with 3 or more errored shell calls in a row' },
+  large_root_searches: { column: 'signal_large_root_searches', metric: 'Runs with a whole-repo search over 2,000 output tokens' },
+  file_rereads: { column: 'signal_file_rereads', metric: 'Runs with 3 or more rereads of a file' }
 };
 
 const BOOTSTRAPS = 10000;
@@ -49,11 +52,19 @@ function byTask(rows, value) {
 function pairedDiffs(control, candidate, value) {
   const c = byTask(control, value);
   const a = byTask(candidate, value);
-  return [...a].filter(([t]) => c.has(t)).map(([t, v]) => v - c.get(t));
+  return [...a.keys()].filter((t) => c.has(t)).sort().map((t) => a.get(t) - c.get(t));
 }
 
 export const signalOf = (column) => (r) => (r.has_primitives ? (r[column] ? 1 : 0) : null);
-const logCredits = (r) => (!r.timed_out && Number(r.cost_credits) > 0 ? Math.log(Number(r.cost_credits)) : null);
+const logOf = (field) => (r) => (!r.timed_out && Number(r[field]) > 0 ? Math.log(Number(r[field])) : null);
+
+function percentChange(control, candidate, value) {
+  const d = pairedDiffs(control, candidate, value);
+  if (!d.length) return null;
+  const b = bootstrapMean(d);
+  const pct = (x) => round1((Math.exp(x) - 1) * 100);
+  return { delta: pct(b.mean), low: pct(b.low), high: pct(b.high) };
+}
 
 const repoUsable = (r) => r.repo_status === 'ok';
 const accUsable = (r) => r.acc_at_start === 'fail' && r.acc_status !== 'error' && has(r.acc_status);
@@ -74,12 +85,9 @@ function guardText(control, candidate) {
 const words = (s) => s.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
 export function compareArms(control, candidate, signal) {
-  const credit = pairedDiffs(control, candidate, logCredits);
   const out = { paired_tasks: pairedDiffs(control, candidate, () => 1).length };
-  if (credit.length) {
-    const b = bootstrapMean(credit);
-    out.credits = { delta: round1((Math.exp(b.mean) - 1) * 100), low: round1((Math.exp(b.low) - 1) * 100), high: round1((Math.exp(b.high) - 1) * 100) };
-  }
+  out.credits = percentChange(control, candidate, logOf('cost_credits'));
+  out.tool_time = percentChange(control, candidate, logOf('tool_seconds'));
   if (signal) {
     const sig = signalOf(signal.column);
     const seen = (rs) => rs.map(sig).filter((v) => v !== null);
@@ -113,13 +121,14 @@ export function buildProposals(list, runs) {
       kind: has(p.cost_pattern) ? 'cost' : 'failure',
       target: words(target),
       change_type: p.change_type,
-      status: has(p.pr_url) ? 'in_review' : hasRuns ? 'replay' : 'drafted',
+      status: has(p.pr_url) ? 'in_review' : hasRuns ? 'undecided' : 'drafted',
       severity: '',
       sessions: candidate.length,
       evidence_role: hasRuns ? 'final' : '',
       target_metric: signal ? signal.metric : 'Target behaviour',
       pr_url: p.pr_url,
-      summary: `Targets ${has(p.cost_pattern) ? 'the cost pattern' : 'the failure group'} ${target.replace(/_/g, ' ')}. The overlay has ${files.length} ${files.length === 1 ? 'file' : 'files'}.`,
+      summary: `Targets ${has(p.cost_pattern) ? 'the cost pattern' : 'the failure group'} ${target.replace(/_/g, ' ')}. The overlay has ${files.length} ${files.length === 1 ? 'file' : 'files'}.` +
+        (pairs.length ? ` Compared on ${pairs.map((x) => `${x[0]} against ${x[1]}`).join('; ')}.` : ''),
       overlay_files: p.overlay_files,
       patch: p.patch,
       signal_defined: Boolean(signal),
@@ -130,7 +139,9 @@ export function buildProposals(list, runs) {
     const cmp = compareArms(control, candidate, signal);
     Object.assign(row, guardText(control, candidate));
     row.paired_tasks = cmp.paired_tasks;
-    row.setup = `${cmp.paired_tasks} tasks, ${candidate.length} runs with the change and ${control.length} baseline runs, ${candidate[0].model}. Ranges are 95% intervals over tasks`;
+    const splits = new Set(pairs.flat().map((id) => (id.includes('heldout') ? 'heldout' : id.includes('regression') ? 'regression' : '')));
+    const pooled = splits.has('heldout') && splits.has('regression') ? ' Held-out and regression tasks are pooled.' : '';
+    row.setup = `${cmp.paired_tasks} tasks, ${candidate.length} runs with the change and ${control.length} baseline runs, ${candidate[0].model}.${pooled} Ranges are 95% intervals over tasks`;
     if (cmp.arm) {
       row.inc_arm_k = cmp.arm[0];
       row.inc_arm_n = cmp.arm[1];
@@ -147,13 +158,18 @@ export function buildProposals(list, runs) {
       row.credits_low_pct = cmp.credits.low;
       row.credits_high_pct = cmp.credits.high;
     }
+    if (cmp.tool_time) {
+      row.time_delta_pct = cmp.tool_time.delta;
+      row.time_low_pct = cmp.tool_time.low;
+      row.time_high_pct = cmp.tool_time.high;
+    }
     row.runs = [...control, ...candidate];
     return row;
   });
 }
 
 export function statusRank(s) {
-  return { in_review: 1, replay: 2, drafted: 3, shipped: 4 }[s] ?? 5;
+  return { in_review: 1, undecided: 2, diagnosis: 3, drafted: 4, shipped: 5 }[s] ?? 6;
 }
 
 const shortTask = (id) => id.replace(/^instance_(.+?)-([0-9a-f]{8})[0-9a-f]{32}.*$/, '$1-$2');

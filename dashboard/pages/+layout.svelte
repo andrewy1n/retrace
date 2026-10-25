@@ -64,6 +64,16 @@
   :global(.rt-metrics .rt-v) { display: block; margin-top: 2px; font-size: 20px; font-weight: 650; color: #18181b; }
   :global(.rt-metrics .rt-v.rt-none) { font-size: 14px; font-weight: 400; color: #a1a1aa; }
   :global(.rt-metrics .rt-s) { display: block; font-size: 12px; color: #71717a; }
+  :global(.rt-metrics .rt-v.rt-better),
+  :global(.rt-kpi .rt-big.rt-better) { color: #166534; }
+  :global(.rt-metrics .rt-v.rt-worse),
+  :global(.rt-kpi .rt-big.rt-worse) { color: #b91c1c; }
+  :global(.rt-metrics .rt-v.rt-better-soft) { color: #3f7f5f; }
+  :global(.rt-metrics .rt-v.rt-worse-soft) { color: #c2410c; }
+  :global(.rt-metrics .rt-s.rt-better),
+  :global(.rt-metrics .rt-s.rt-better-soft) { color: #3f7f5f; }
+  :global(.rt-metrics .rt-s.rt-worse),
+  :global(.rt-metrics .rt-s.rt-worse-soft) { color: #c2410c; }
   :global(.rt-foot) { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
   :global(.rt-spacer) { flex: 1; }
   :global(.rt-link) { font-size: 13px; color: #27272a; text-decoration: none; font-weight: 500; }

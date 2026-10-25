@@ -122,6 +122,7 @@ order by position
   $: incChart = final ? intervalChart(row.inc_delta_pp, row.inc_low_pp, row.inc_high_pp, 'pp') : null;
   $: guards = row ? [has(row.guard_repo) ? `Repo tests: ${row.guard_repo}.` : null, has(row.guard_acceptance) ? `Acceptance check: ${row.guard_acceptance}.` : null].filter(Boolean) : [];
   $: creditChart = final && has(row.credits_delta_pct) ? intervalChart(row.credits_delta_pct, row.credits_low_pct, row.credits_high_pct, '%') : null;
+  $: timeChart = final && has(row.time_delta_pct) ? intervalChart(row.time_delta_pct, row.time_low_pct, row.time_high_pct, '%') : null;
   $: rank = row ? ['guardrail_hook', 'skill', 'tool', 'custom_droid', 'setting', 'rule'].indexOf(row.change_type) : -1;
 
   $: taskRows = row?.runs ? taskTable(row.runs, row.signal_column) : [];
@@ -325,6 +326,11 @@ order by position
         {#if creditChart}
           <h3 class="rt-h3">Credits per run difference</h3>
           <ECharts config={creditChart} height=110px />
+        {/if}
+        {#if timeChart}
+          <h3 class="rt-h3">Tool time per run difference</h3>
+          <p>This adds up how long each tool call ran. It leaves out the time the model spent deciding. A negative number means the commands took less time.</p>
+          <ECharts config={timeChart} height=110px />
         {/if}
         <h3 class="rt-h3">Guards</h3>
         {#each guards as g}<p>{g}</p>{:else}<p>Not run.</p>{/each}

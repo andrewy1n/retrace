@@ -18,7 +18,7 @@ select * from tiger.proposal_runs
 ```
 
 <script>
-  import { signed, interval, has } from '../components/format.js';
+  import { signed, interval, has, effectClass } from '../components/format.js';
   import { buildProposals, statusRank } from '../components/proposals.js';
   $: real = buildProposals(plist, pruns);
   $: example = real.length === 0;
@@ -42,11 +42,12 @@ select * from tiger.proposal_runs
 <div class="rt-kpis">
   <div class="rt-kpi rt-attn"><span class="rt-k">Waiting for review</span><span class="rt-big">{count("in_review")}</span><span class="rt-s">Decide in the pull request</span></div>
   <div class="rt-kpi"><span class="rt-k">Shipped</span><span class="rt-big">{count("shipped")}</span><span class="rt-s">{count("rejected")} rejected</span></div>
-  <div class="rt-kpi"><span class="rt-k">In progress</span><span class="rt-big">{count("drafted", "replay")}</span><span class="rt-s">Drafted or in replay</span></div>
+  <div class="rt-kpi"><span class="rt-k">Undecided</span><span class="rt-big">{count("undecided")}</span><span class="rt-s">Finished, no decision to adopt</span></div>
+  <div class="rt-kpi"><span class="rt-k">Not run yet</span><span class="rt-big">{count("drafted")}</span><span class="rt-s">Drafted, no replay</span></div>
   <div class="rt-kpi">
     <span class="rt-k">Largest behaviour cut</span>
     {#if g}
-      <span class="rt-big">{signed(g.inc_delta_pp)} pp</span>
+      <span class="rt-big {effectClass(g.inc_delta_pp, g.inc_low_pp, g.inc_high_pp)}">{signed(g.inc_delta_pp)} pp</span>
       <span class="rt-s">{interval(g.inc_low_pp, g.inc_high_pp)} · {g.target_metric.toLowerCase()} · {g.title}</span>
     {:else}
       <span class="rt-big">None yet</span><span class="rt-s">No interval excludes zero</span>
@@ -55,7 +56,7 @@ select * from tiger.proposal_runs
   <div class="rt-kpi">
     <span class="rt-k">Best credit saving</span>
     {#if s}
-      <span class="rt-big">{signed(s.credits_delta_pct)}%</span>
+      <span class="rt-big {effectClass(s.credits_delta_pct, s.credits_low_pct, s.credits_high_pct)}">{signed(s.credits_delta_pct)}%</span>
       <span class="rt-s">{interval(s.credits_low_pct, s.credits_high_pct)} per run · {s.title}</span>
     {:else}
       <span class="rt-big">None yet</span><span class="rt-s">No interval excludes zero</span>

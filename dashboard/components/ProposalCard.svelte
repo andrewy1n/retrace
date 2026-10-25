@@ -1,7 +1,7 @@
 <script>
   import Chip from './Chip.svelte';
   import PrButton from './PrButton.svelte';
-  import { STATUS, CHANGE, has, signed, interval } from './format.js';
+  import { STATUS, CHANGE, has, signed, interval, effectClass } from './format.js';
   import { behaviourVerdict, share } from './behaviour.js';
 
   export let p;
@@ -35,8 +35,8 @@
         <span class="rt-v rt-none">Not measured</span>
         <span class="rt-s">{p.signal_defined ? 'No recorded runs yet' : 'No incidence signal is defined for this target'}</span>
       {:else if final}
-        <span class="rt-v">{signed(p.inc_delta_pp)} pp</span>
-        <span class="rt-s">{interval(p.inc_low_pp, p.inc_high_pp)} · {share(p.inc_arm_k, p.inc_arm_n)} runs, baseline {share(p.inc_base_k, p.inc_base_n)}</span>
+        <span class="rt-v {effectClass(p.inc_delta_pp, p.inc_low_pp, p.inc_high_pp)}">{signed(p.inc_delta_pp)} pp</span>
+        <span class="rt-s {effectClass(p.inc_delta_pp, p.inc_low_pp, p.inc_high_pp)}">{interval(p.inc_low_pp, p.inc_high_pp)} · {share(p.inc_arm_k, p.inc_arm_n)} runs, baseline {share(p.inc_base_k, p.inc_base_n)}</span>
       {:else if diagnosis}
         <span class="rt-v">{p.inc_arm_k}/{p.inc_arm_n} vs {p.inc_base_k}/{p.inc_base_n}</span>
         <span class="rt-s">forks with the change vs baseline, no interval</span>
@@ -47,12 +47,23 @@
     <div>
       <span class="rt-k">Credits per run</span>
       {#if final && has(p.credits_delta_pct)}
-        <span class="rt-v">{signed(p.credits_delta_pct)}%</span>
-        <span class="rt-s">{interval(p.credits_low_pct, p.credits_high_pct)} · {p.example ? 'held-out' : 'per run'}</span>
+        <span class="rt-v {effectClass(p.credits_delta_pct, p.credits_low_pct, p.credits_high_pct)}">{signed(p.credits_delta_pct)}%</span>
+        <span class="rt-s {effectClass(p.credits_delta_pct, p.credits_low_pct, p.credits_high_pct)}">{interval(p.credits_low_pct, p.credits_high_pct)} · {p.example ? 'held-out' : 'per run'}</span>
       {:else}
         <span class="rt-v rt-none">Not run</span>
       {/if}
     </div>
+    {#if !p.example}
+    <div>
+      <span class="rt-k">Tool time per run</span>
+      {#if final && has(p.time_delta_pct)}
+        <span class="rt-v {effectClass(p.time_delta_pct, p.time_low_pct, p.time_high_pct)}">{signed(p.time_delta_pct)}%</span>
+        <span class="rt-s {effectClass(p.time_delta_pct, p.time_low_pct, p.time_high_pct)}">{interval(p.time_low_pct, p.time_high_pct)} · per run</span>
+      {:else}
+        <span class="rt-v rt-none">Not run</span>
+      {/if}
+    </div>
+    {/if}
     <div>
       <span class="rt-k">Guards</span>
       {#if hasGuards}
