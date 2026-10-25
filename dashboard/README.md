@@ -4,7 +4,7 @@ An [Evidence](https://evidence.dev) project. Each page is a Markdown file with S
 
 | Page | File | Data |
 |---|---|---|
-| Proposals (home) | `pages/index.md` | Example: `sources/mock/proposals.csv`. Cards sorted with "in review" first. Each card has the targeted-behaviour and credit differences with intervals, the guard proxies, and a link to the pull request. |
+| Proposals (home) | `pages/index.md` | Real when `analysis/proposals/` has a `proposal.json`, else the example rows in `sources/mock/proposals.csv`. Cards sorted with "in review" first. Each card has the targeted-behaviour and credit differences with intervals, the guard proxies, and a link to the pull request. See "Proposal cards". |
 | Proposal | `pages/proposals/[proposal_id].md` | Example proposal row. Tabs: Overview (overlay files, diff, rollback), Evidence (intervals, and for a cost proposal two real `pro-baseline1` sessions), Replay, shown as "Pipeline check" for the example proposal (real step strip of one ansible session, and the proxies of its test forks read from Tiger, so it shows that forks run, not that a change works). |
 | Runs | `pages/runs.md` | Real: per job and arm, trials, credits (mean and median), assistant turns, test behaviour from primitives (test runs, whole-suite runs, long test runs), timeouts, and the proxies. Then the proxies and credits of checkpoint forks. |
 | Sessions | `pages/sessions/index.md` | Real: `primitives_sessions` joined to `replay_runs`, with test behaviour from `primitives_calls`. Job filter, sortable table, one detail page per session (`pages/sessions/[session_id].md`). |
@@ -17,6 +17,21 @@ The top bar (`pages/+layout.svelte`) links Proposals, Runs, Sessions, and Monito
 The mock columns follow `analysis/proposals/<id>/proposal.json` (`proposal_id`, `failure_type`, `change_type`, `pr_url`) plus the Tiger summary fields. Checkpoint forks show as "Diagnosis only", with proxy counts and no interval. The page never reads review decisions from `runs/reviews/` yet. The `review_decision` column is a mock until a source exists.
 
 Labeled "example data" on a page means a mockup until Kate's proposals and diagnoses exist.
+
+## Proposal cards
+
+`proposal_list.py` writes `sources/proposal_list/proposals.csv` (gitignored) on every `./run.sh sources`. It has one row per `analysis/proposals/<id>/proposal.json`, plus the overlay file list and its diff. With no proposal the file holds one empty row and the pages show the mock rows with an "Example data" label.
+
+A candidate job in `runs/jobs/` names the proposal in `arm.path`. Its control job is `<name>-control` when the candidate job is `<name>-candidate`, else the one control job with the same `task_ids`. A proposal with no such pair is "Drafted" and has no numbers.
+
+The numbers come from `sources/tiger/proposal_runs.sql`: the `final` step-0 rows of the view `replay_runs` (no `passed`, no `grader`) joined to `primitives_calls`. `components/proposals.js` computes the card in the browser, like `report.py`: paired by task, percentile bootstrap over tasks (10,000 resamples, fixed seed).
+
+- Incidence of the target behaviour. Per run, `signal_whole_suite_tests` is true when a call has a `test_runner`, `path_arg_count` 0, and `duration_s` over 60, as in `SIGNALS` in `recorder/replay/report.py`. A run without primitives is left out. The card shows the paired difference in percentage points with its interval, and the counts per arm. Add a signal in `SIGNALS` of `components/proposals.js` and as a column in `proposal_runs.sql`. A target with no signal shows "Not measured".
+- Credits. Paired difference of mean log credits per task, shown as a percent. A run that the timeout killed is left out.
+- Guards. Repo tests count runs with status `ok` that regress a test. The acceptance check counts runs that failed at the start and did not error.
+- Status. A `pr_url` makes it "In review". Jobs with results and no `pr_url` make it "Replay". The rest is "Drafted". Shipped and rejected wait for `runs/reviews/`.
+
+Set `PROPOSALS` and `JOBS` to other directories to test with a throwaway proposal.
 
 ## Run
 
@@ -37,6 +52,8 @@ npm install            # Node 18 or later; tested on Node 24
 - Do not put a backslash or `{n}` in the SQL of a page. Evidence reads it as a JavaScript template and the page fails with a 500 error.
 - Evidence reads a fence it does not know, such as `diff`, as a SQL query. The diff view uses `diff2html` instead.
 - A change to `evidence.config.yaml` needs a restart.
+- `run.sh preview` fails with `unknown or unexpected option: --port` (tested 2026-10-24). Serve `build/` with `python3 -m http.server` instead.
+- Evidence writes no table for an empty CSV and keeps the old one, so `run.sh sources` deletes `.evidence/template/static/data/proposal_list` first.
 - The diff view ignores Evidence's dark theme, which is one reason the theme is light only.
 - The layout hides the query boxes on every load. Remove the `onMount` line in `pages/+layout.svelte` to show them in dev.
 - `@evidence-dev/csv` reads `sources/mock/`. It must stay in `evidence.config.yaml` under `datasources`.

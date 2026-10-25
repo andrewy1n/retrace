@@ -24,14 +24,17 @@
     <Chip label={status.label} tone={status.tone} />
     <span class="rt-tag">{p.target}</span>
     <span class="rt-tag">{CHANGE[p.change_type] ?? p.change_type}</span>
-    <span class="rt-tag">{p.sessions} sessions</span>
+    <span class="rt-tag">{p.sessions} {p.example ? 'sessions' : 'candidate runs'}</span>
   </div>
   <h3><a href="/proposals/{p.proposal_id}">{p.title}</a></h3>
   <p class="rt-summary">{p.summary}</p>
   <div class="rt-metrics">
     <div>
       <span class="rt-k">{p.target_metric}</span>
-      {#if final}
+      {#if final && !has(p.inc_delta_pp)}
+        <span class="rt-v rt-none">Not measured</span>
+        <span class="rt-s">{p.signal_defined ? 'No run has primitives in Tiger yet' : 'No incidence signal is defined for this target'}</span>
+      {:else if final}
         <span class="rt-v">{signed(p.inc_delta_pp)} pp</span>
         <span class="rt-s">{interval(p.inc_low_pp, p.inc_high_pp)} · {share(p.inc_arm_k, p.inc_arm_n)} runs, control {share(p.inc_base_k, p.inc_base_n)}</span>
       {:else if diagnosis}
@@ -45,7 +48,7 @@
       <span class="rt-k">Credits per run</span>
       {#if final && has(p.credits_delta_pct)}
         <span class="rt-v">{signed(p.credits_delta_pct)}%</span>
-        <span class="rt-s">{interval(p.credits_low_pct, p.credits_high_pct)} · held-out</span>
+        <span class="rt-s">{interval(p.credits_low_pct, p.credits_high_pct)} · {p.example ? 'held-out' : 'step 0'}</span>
       {:else}
         <span class="rt-v rt-none">Not run</span>
       {/if}

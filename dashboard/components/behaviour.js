@@ -8,6 +8,7 @@ export function behaviourVerdict(p) {
       ? { label: 'Cheaper', tone: 'ok' }
       : { label: 'No clear saving', tone: 'muted' };
   }
+  if (!has(p.inc_delta_pp)) return { label: 'Behaviour not measured', tone: 'muted' };
   if (p.inc_high_pp < 0) return { label: 'Cuts the behaviour', tone: 'ok' };
   if (p.inc_low_pp > 0) return { label: 'Adds the behaviour', tone: 'bad' };
   return { label: 'No clear change', tone: 'muted' };

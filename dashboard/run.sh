@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 # Usage: dashboard/run.sh sources | dev | live | build | preview
 # live is dev plus a `sources` run every REFRESH seconds (default 30). Reload the browser to see new data.
+# PROPOSALS and JOBS override the proposal and job directories that proposal_list.py scans.
 # Reads TIGER_DASHBOARD_URL (read-only role) from the repo .env and passes it to Evidence as environment variables.
 set -euo pipefail
 cd "$(dirname "$0")"
+refresh() {
+  python3 -I proposal_list.py ${PROPOSALS:+--proposals "$PROPOSALS"} ${JOBS:+--jobs "$JOBS"}
+  rm -rf .evidence/template/static/data/proposal_list
+  npx evidence sources
+}
 set -a; . ../.env; set +a
 eval "$(python3 -I - <<'PY'
 import os, shlex
@@ -16,10 +22,10 @@ PY
 )"
 unset TIGER_DASHBOARD_URL TIGER_DATABASE_URL TIGER_ANALYSIS_URL FACTORY_API_KEY VULTR_API_KEY
 case "${1:-}" in
-  sources) exec npx evidence sources ;;
+  sources) refresh ;;
   dev) exec npx evidence dev --port "${PORT:-3100}" ;;
   live)
-    ( while sleep "${REFRESH:-30}"; do npx evidence sources > /dev/null 2>&1 || true; done ) &
+    ( while sleep "${REFRESH:-30}"; do refresh > /dev/null 2>&1 || true; done ) &
     trap 'kill $!' EXIT
     npx evidence dev --port "${PORT:-3100}" ;;
   build) exec npx evidence build ;;

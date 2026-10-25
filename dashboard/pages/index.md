@@ -5,42 +5,27 @@ hide_title: true
 full_width: true
 ---
 
-```sql kpi
-select
-  sum(case when status = 'in_review' then 1 else 0 end)::int as in_review,
-  sum(case when status = 'shipped' then 1 else 0 end)::int as shipped,
-  sum(case when status in ('drafted', 'replay') then 1 else 0 end)::int as in_progress,
-  sum(case when status = 'rejected' then 1 else 0 end)::int as rejected
-from mock.proposals
+```sql mock_rows
+select * from mock.proposals
 ```
 
-```sql best_cut
-select title, target_metric, inc_delta_pp, inc_low_pp, inc_high_pp, inc_arm_k, inc_arm_n, inc_base_k, inc_base_n
-from mock.proposals
-where evidence_role = 'final' and inc_high_pp < 0
-order by inc_delta_pp limit 1
+```sql plist
+select * from proposal_list.proposals where proposal_id <> ''
 ```
 
-```sql best_saving
-select title, credits_delta_pct, credits_low_pct, credits_high_pct
-from mock.proposals
-where evidence_role = 'final' and credits_high_pct < 0
-order by credits_delta_pct limit 1
-```
-
-```sql proposals
-select *,
-  case status when 'in_review' then 1 when 'replay' then 2 when 'drafted' then 3 when 'shipped' then 4 else 5 end as rank
-from mock.proposals
-order by rank, proposal_id
+```sql pruns
+select * from tiger.proposal_runs
 ```
 
 <script>
-  import { signed, interval } from '../components/format.js';
-  $: k = Array.from(kpi ?? [])[0] ?? {};
-  $: g = Array.from(best_cut ?? [])[0];
-  $: s = Array.from(best_saving ?? [])[0];
-  $: list = Array.from(proposals ?? []);
+  import { signed, interval, has } from '../components/format.js';
+  import { buildProposals, statusRank } from '../components/proposals.js';
+  $: real = buildProposals(plist, pruns);
+  $: example = real.length === 0;
+  $: list = (example ? Array.from(mock_rows ?? []).map((m) => ({ ...m, example: true })) : real).slice().sort((a, b) => statusRank(a.status) - statusRank(b.status) || a.proposal_id.localeCompare(b.proposal_id));
+  $: count = (...s) => list.filter((p) => s.includes(p.status)).length;
+  $: g = list.filter((p) => p.evidence_role === 'final' && has(p.inc_high_pp) && p.inc_high_pp < 0).sort((a, b) => a.inc_delta_pp - b.inc_delta_pp)[0];
+  $: s = list.filter((p) => p.evidence_role === 'final' && has(p.credits_high_pct) && p.credits_high_pct < 0).sort((a, b) => a.credits_delta_pct - b.credits_delta_pct)[0];
   $: queue = list.filter((p) => p.status === 'in_review');
   $: rest = list.filter((p) => p.status !== 'in_review');
 </script>
@@ -50,12 +35,14 @@ order by rank, proposal_id
   <p>Harness changes drafted from behaviour and cost patterns. Each one has replay evidence on agent behaviour and cost, and a pull request.</p>
 </div>
 
-<div class="rt-example">Example data. These proposals are fixtures in <code>sources/mock/proposals.csv</code>. Tiger summaries replace them when real proposals exist.</div>
+{#if example}
+  <div class="rt-example">Example data. These proposals are fixtures in <code>sources/mock/proposals.csv</code>. Real proposals replace them when <code>analysis/proposals/</code> has one.</div>
+{/if}
 
 <div class="rt-kpis">
-  <div class="rt-kpi rt-attn"><span class="rt-k">Waiting for review</span><span class="rt-big">{k.in_review ?? 0}</span><span class="rt-s">Decide in the pull request</span></div>
-  <div class="rt-kpi"><span class="rt-k">Shipped</span><span class="rt-big">{k.shipped ?? 0}</span><span class="rt-s">{k.rejected ?? 0} rejected</span></div>
-  <div class="rt-kpi"><span class="rt-k">In progress</span><span class="rt-big">{k.in_progress ?? 0}</span><span class="rt-s">Drafted or in replay</span></div>
+  <div class="rt-kpi rt-attn"><span class="rt-k">Waiting for review</span><span class="rt-big">{count("in_review")}</span><span class="rt-s">Decide in the pull request</span></div>
+  <div class="rt-kpi"><span class="rt-k">Shipped</span><span class="rt-big">{count("shipped")}</span><span class="rt-s">{count("rejected")} rejected</span></div>
+  <div class="rt-kpi"><span class="rt-k">In progress</span><span class="rt-big">{count("drafted", "replay")}</span><span class="rt-s">Drafted or in replay</span></div>
   <div class="rt-kpi">
     <span class="rt-k">Largest behaviour cut</span>
     {#if g}

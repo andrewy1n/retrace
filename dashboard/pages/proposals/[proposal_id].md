@@ -5,8 +5,16 @@ hide_title: true
 full_width: true
 ---
 
-```sql p
+```sql mock_row
 select * from mock.proposals where proposal_id = '${params.proposal_id}'
+```
+
+```sql plist
+select * from proposal_list.proposals where proposal_id <> ''
+```
+
+```sql pruns
+select * from tiger.proposal_runs
 ```
 
 ```sql tl
@@ -56,7 +64,7 @@ order by position
   import 'diff2html/bundles/css/diff2html.min.css';
   import { STATUS, CHANGE, has, intervalChart, repoText, accText } from '../../../components/format.js';
   import { behaviourVerdict, share } from '../../../components/behaviour.js';
-
+  import { buildProposals, taskTable } from '../../../components/proposals.js';
   const patch = `--- a/.factory/hooks.json
 +++ b/.factory/hooks.json
 @@ -0,0 +1,14 @@
@@ -87,19 +95,24 @@ order by position
      sys.exit(2)
 +sys.exit(0)`;
   const patches = { 'block-test-edits': patch };
-  const diffFor = (id) => patches[id] ? diffToHtml(patches[id], { drawFileList: false, matching: 'lines', outputFormat: 'line-by-line', colorScheme: 'light' }) : null;
+  const diffFor = (text) => text ? diffToHtml(text, { drawFileList: false, matching: 'lines', outputFormat: 'line-by-line', colorScheme: 'light' }) : null;
 
-  $: row = Array.from(p ?? [])[0];
+  $: id = $page.params.proposal_id;
+  $: real = buildProposals(plist, pruns);
+  $: example = real.length === 0;
+  $: row = example ? Array.from(mock_row ?? []).map((m) => ({ ...m, example: true }))[0] : real.find((r) => r.proposal_id === id);
   $: status = row ? (STATUS[row.status] ?? { label: row.status, tone: 'muted' }) : null;
   $: v = row ? behaviourVerdict(row) : null;
   $: final = row?.evidence_role === 'final';
   $: diagnosis = row?.evidence_role === 'diagnosis';
   $: files = row?.overlay_files ? row.overlay_files.split(';') : [];
-  $: diffHtml = row ? diffFor(row.proposal_id) : null;
+  $: diffHtml = row ? diffFor(example ? patches[row.proposal_id] : row.patch) : null;
   $: incChart = final ? intervalChart(row.inc_delta_pp, row.inc_low_pp, row.inc_high_pp, 'pp') : null;
   $: guards = row ? [has(row.guard_repo) ? `Repo tests: ${row.guard_repo}.` : null, has(row.guard_acceptance) ? `Acceptance check: ${row.guard_acceptance}.` : null].filter(Boolean) : [];
   $: creditChart = final && has(row.credits_delta_pct) ? intervalChart(row.credits_delta_pct, row.credits_low_pct, row.credits_high_pct, '%') : null;
   $: rank = row ? ['guardrail_hook', 'skill', 'tool', 'custom_droid', 'setting', 'rule'].indexOf(row.change_type) : -1;
+
+  $: taskRows = row?.runs ? taskTable(row.runs, row.signal_column) : [];
 
   const colors = { read: '#a1a1aa', search: '#7c93b3', edit: '#c7843b', test: '#3f7f5f', vcs: '#8d6fa8' };
 
@@ -213,15 +226,17 @@ order by position
     </div>
   </div>
 
-  <div class="rt-example">Example data. This proposal is a fixture in <code>sources/mock/proposals.csv</code>.</div>
+  {#if example}
+    <div class="rt-example">Example data. This proposal is a fixture in <code>sources/mock/proposals.csv</code>.</div>
+  {/if}
 
   <Tabs id=view>
     <Tab label="Overview">
       <div class="rt-facts">
         <div class="rt-fact"><span class="rt-k">Target</span><span class="rt-v">{row.target}</span><span class="rt-s">{row.kind === 'cost' ? 'Cost pattern' : 'Failure group'}</span></div>
-        <div class="rt-fact"><span class="rt-k">Sessions</span><span class="rt-v">{row.sessions}</span><span class="rt-s">Severity {row.severity}</span></div>
+        <div class="rt-fact"><span class="rt-k">{example ? 'Sessions' : 'Runs'}</span><span class="rt-v">{row.sessions}</span><span class="rt-s">{example ? `Severity ${row.severity}` : 'Candidate runs'}</span></div>
         <div class="rt-fact"><span class="rt-k">Change</span><span class="rt-v">{CHANGE[row.change_type] ?? row.change_type}</span><span class="rt-s">Rank {rank + 1} of 6</span></div>
-        <div class="rt-fact"><span class="rt-k">Result</span><span class="rt-v">{v.label}</span><span class="rt-s">{final ? 'Held-out, step 0' : diagnosis ? 'Checkpoint forks' : 'No replay yet'}</span></div>
+        <div class="rt-fact"><span class="rt-k">Result</span><span class="rt-v">{v.label}</span><span class="rt-s">{final ? (example ? 'Held-out, step 0' : 'Step 0') : diagnosis ? 'Checkpoint forks' : 'No replay yet'}</span></div>
       </div>
 
       <h2 class="rt-h2">The change</h2>
@@ -239,7 +254,7 @@ order by position
 
     <Tab label="Evidence">
       {#if final}
-        <h2 class="rt-h2">Held-out result</h2>
+        <h2 class="rt-h2">{example ? 'Held-out result' : 'Step-0 result'}</h2>
         <p class="rt-tab-note">{row.setup}.</p>
         <h3 class="rt-h3">{row.target_metric}</h3>
         <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} runs. Control: {share(row.inc_base_k, row.inc_base_n)} runs. A negative difference means the change cuts the behaviour.</p>
@@ -262,7 +277,7 @@ order by position
         <p>This proposal has no replay job. A small group uses monitoring plus rollback.</p>
       {/if}
 
-      {#if row.kind === 'cost'}
+      {#if example && row.kind === 'cost'}
         <h2 class="rt-h2">Reference sessions</h2>
         <p class="rt-tab-note">Real sessions from <code>pro-baseline1</code>. They show the cost pattern, not this proposal's result.</p>
         <h3 class="rt-h3">Tool calls in the most expensive session</h3>
@@ -272,8 +287,8 @@ order by position
       {/if}
     </Tab>
 
-    <Tab label={row.proposal_id === 'block-test-edits' ? 'Pipeline check' : 'Replay'}>
-      {#if row.proposal_id === 'block-test-edits'}
+    <Tab label={example && row.proposal_id === 'block-test-edits' ? 'Pipeline check' : 'Replay'}>
+      {#if example && row.proposal_id === 'block-test-edits'}
         <p class="rt-tab-note">Example data. This tab checks that the fork pipeline runs. It does not show that the change works.</p>
         <h2 class="rt-h2">Steps of the recorded session</h2>
         <p class="rt-tab-note">One real ansible session. Each box is one tool call. A dashed outline marks a step where the forks started.</p>
@@ -326,8 +341,19 @@ order by position
   {/each}
 </div>
 <p class="note">{forkRows.length} forks in Tiger. The planned run is 12: 2 steps × 3 fork arms × 2 reruns. The recorded run has 1 run per step.</p>
+      {:else if !example && final}
+        <p class="rt-tab-note">{row.pairs}. One row per task and arm. A run counts when it has primitives in Tiger.</p>
+        <DataTable data={taskRows} rows=50 emptySet=pass emptyMessage="No run yet.">
+          <Column id=task title="Task" />
+          <Column id=arm title="Arm" />
+          <Column id=runs title="Runs" />
+          <Column id=signal title="Runs with the behaviour" />
+          <Column id=credits title="Credits, mean" fmt=num0 />
+          <Column id=repo title="Repo tests" />
+          <Column id=acc title="Acceptance" />
+        </DataTable>
       {:else}
-        <p>No replay diagnosis for this proposal.</p>
+        <p>No replay for this proposal.</p>
       {/if}
     </Tab>
   </Tabs>

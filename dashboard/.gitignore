@@ -8,3 +8,4 @@ static/data
 .vscode/settings.json
 .env
 .evidence/meta
+sources/proposal_list/proposals.csv
