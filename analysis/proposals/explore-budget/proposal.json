@@ -2,5 +2,6 @@
   "proposal_id": "explore-budget",
   "cost_pattern": "calls_before_first_edit",
   "change_type": "guardrail_hook",
-  "path": "analysis/proposals/explore-budget"
+  "path": "analysis/proposals/explore-budget",
+  "pr_url": "https://github.com/andrewy1n/retrace/pull/2"
 }
