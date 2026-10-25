@@ -4,15 +4,28 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="base.css">
 <style>
+  .n { display: flex; align-items: center; min-height: 22px; }
+  .k { margin-left: auto; font-family: Inter, system-ui, sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; border-radius: 999px; padding: 1px 9px; }
+  .k.agent { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+  .k.code { border: 1px solid var(--loop-edge); color: var(--accent-ink); background: #fff; }
+  .k.tool { border: 1px solid var(--accent); color: var(--accent); background: #fff; }
+  .k.person { border: 1px solid var(--oracle-edge); color: var(--muted); background: #fff; }
+  .card.agent { background: #e9f1fc; border-color: var(--accent); box-shadow: inset 5px 0 0 var(--accent); }
+  .head { display: flex; align-items: center; }
+  .key { margin-left: auto; display: flex; gap: 18px; font-size: 14px; color: var(--muted); align-items: center; }
+  .key span { display: inline-flex; align-items: center; gap: 7px; }
+  .key .k { margin: 0; }
   .loop { background: var(--loop); border: 1.5px solid var(--loop-edge); border-radius: 20px; padding: 22px 24px 20px; margin-top: 28px; }
   .grid { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr; grid-template-rows: auto 30px auto; margin-top: 14px; }
   .grid .card { min-height: 128px; }
+  .card.tool { border: 1.5px dashed var(--accent); box-shadow: none; }
+  .card.tool .n { letter-spacing: .08em; }
   .ar { display: flex; align-items: center; justify-content: center; color: var(--faint); }
   .signals { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .chip { font-size: 14px; background: #fff; border: 1px solid var(--loop-edge); color: var(--accent-ink); border-radius: 999px; padding: 4px 11px; }
   .lbl { font-size: 14px; color: var(--muted); margin-right: 4px; }
   .drop { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr; height: 34px; }
-  .drop .ar { grid-column: 1; }
+  .drop .ar { grid-column: 3; }
   .gate { background: var(--gate); border: 1.5px solid var(--gate-edge); border-radius: 16px; padding: 14px 20px; display: flex; gap: 18px; align-items: baseline; }
   .wall { display: flex; align-items: center; gap: 12px; margin: 16px 0 14px; color: var(--warm); font-size: 15px; font-weight: 600; }
   .wall .bar { flex: 1; border-top: 2px dashed var(--gate-edge); }
@@ -27,22 +40,23 @@
   <div class="sub">The loop finds and tests a fix with signals a production team already has. The benchmark grader checks the frozen fix once, from outside the loop.</div>
 
   <div class="loop">
-    <div class="tag">Improvement loop</div>
+    <div class="head"><div class="tag">Improvement loop</div>
+      <div class="key"><span><span class="k agent">agent</span>a model reasons</span><span><span class="k code">code</span>deterministic</span><span><span class="k tool">tool</span>an agent calls it</span></div></div>
     <div class="grid">
-      <div class="card"><div class="n">01</div><div class="t">Record</div><div class="d">Droid runs a task. Git snapshot after every tool call.</div></div>
+      <div class="card"><div class="n">01<span class="k code">code</span></div><div class="t">Record</div><div class="d">A hook records each Droid run and snapshots every tool call.</div></div>
       <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M1 7h17M13 2l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="n">02</div><div class="t">Primitives</div><div class="d">Facts per tool call. No code, no tool output.</div></div>
+      <div class="card"><div class="n">02<span class="k code">code</span></div><div class="t">Primitives</div><div class="d">Facts per tool call. No code, no tool output.</div></div>
       <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M1 7h17M13 2l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="n">03</div><div class="t">Features</div><div class="d">Code over primitives. Kept only if it predicts cost on unseen tasks.</div></div>
+      <div class="card"><div class="n">03<span class="k code">code</span></div><div class="t">Features</div><div class="d">Code over primitives. Kept only if it predicts cost on unseen tasks.</div></div>
 
       <div></div><div></div><div></div><div></div>
-      <div class="ar"><svg width="14" height="22" viewBox="0 0 14 22"><path d="M7 1v17M2 13l5 6 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ar" style="gap:10px"><svg width="14" height="24" viewBox="0 0 14 24"><path d="M7 1v22M2 6l5-5 5 5M2 18l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:13px;color:var(--muted)">new features</span></div>
 
-      <div class="card"><div class="n">06</div><div class="t">Propose</div><div class="d">A <code>.factory/</code> overlay: hook, skill, droid, setting, or rule.</div></div>
+      <div class="card tool"><div class="n"><span style="visibility:hidden">00</span><span class="k tool">tool</span></div><div class="t">Replay</div><div class="d">Rewind to a cited step. Fork with the draft installed. A quick check.</div></div>
+      <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M5 2L1 7l4 5M17 2l4 5-4 5M1 7h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="card agent"><div class="n">05<span class="k agent">agent</span></div><div class="t">Propose</div><div class="d">An agent drafts a <code>.factory/</code> overlay and tests it with replay.</div></div>
       <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M21 7H4M9 2L3 7l6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="n">05</div><div class="t">Replay</div><div class="d">Rewind to a cited step. Fork with the fix installed.</div></div>
-      <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M21 7H4M9 2L3 7l6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="n">04</div><div class="t">Diagnose</div><div class="d">An agent explains costly sessions and cites the tool calls.</div></div>
+      <div class="card agent"><div class="n">04<span class="k agent">agent</span></div><div class="t">Diagnose</div><div class="d">An agent explains costly sessions, cites the tool calls, and proposes new features.</div></div>
     </div>
     <div class="signals"><span class="lbl">Signals</span><span class="chip">traces</span><span class="chip">snapshots</span><span class="chip">primitives</span><span class="chip">repo's own tests</span><span class="chip">credits</span></div>
   </div>
@@ -59,11 +73,11 @@
   <div class="oracle">
     <div class="tag grey">Validation, outside the loop</div>
     <div class="row3">
-      <div class="card"><div class="t">Fresh runs</div><div class="d">Fix vs unmodified Droid, from step 0, on repos the loop never saw.</div></div>
+      <div class="card"><div class="n"><span class="k code">code</span></div><div class="t">Fresh runs</div><div class="d">Fix vs unmodified Droid, from step 0, on repos the loop never saw.</div></div>
       <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M1 7h17M13 2l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="t">Grader</div><div class="d">SWE-bench Pro tests score each run. Counts, n, intervals.</div></div>
+      <div class="card"><div class="n"><span class="k code">code</span></div><div class="t">Grader</div><div class="d">SWE-bench Pro tests score each run. Counts, n, intervals.</div></div>
       <div class="ar"><svg width="22" height="14" viewBox="0 0 22 14"><path d="M1 7h17M13 2l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card"><div class="t">Review</div><div class="d">A person reads the evidence and decides whether to adopt the fix.</div></div>
+      <div class="card"><div class="n"><span class="k person">person</span></div><div class="t">Review</div><div class="d">A person reads the evidence and decides whether to adopt the fix.</div></div>
     </div>
   </div>
 </div>

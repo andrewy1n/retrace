@@ -32,14 +32,14 @@ Systems that do evaluate their changes, such as DSPy [3], GEPA [4], the Darwin G
 | Record | Droid runs a task. A hook takes a git snapshot after every tool call. | `recorder/capture/` |
 | Primitives | Each tool call becomes deterministic facts: class, duration, exit code, files, output size, position, repeats. No command text and no tool output. | `recorder/capture/primitives.py` |
 | Features | Code over primitives and snapshots. A discovery step proposes new features, and a feature is kept only if it predicts credits on tasks it was not fit on. | `analysis/features/` |
-| Diagnose | An agent explains the expensive sessions from the kept features and cites tool call ids. | `analysis/features/diagnose.py` |
-| Replay | Rewind a recorded session to a cited step, restore its snapshot, and fork it with a fix installed. Forks are diagnosis only. | `recorder/replay/` |
-| Propose | The fix is an overlay under `.factory/`: a hook, skill, custom droid, setting, or `AGENTS.md` rule. | `analysis/proposals/` |
+| Diagnose | An agent explains the expensive sessions from the kept features, cites tool call ids, and proposes new features for code to score. | `analysis/features/diagnose.py` |
+| Propose | An agent drafts the fix as an overlay under `.factory/`: a hook, skill, custom droid, setting, or `AGENTS.md` rule. It tests each draft with replay. | `analysis/proposals/` |
+| Replay (tool) | The proposing agent calls it to check a draft. It rewinds a recorded session to a cited step, restores its snapshot, and forks it with the draft installed. Forks are diagnosis only. | `recorder/replay/` |
 | Validate | Freeze the fix, pre-register the claim, and run fix and control fresh from step 0 on held-out repos and a regression set. | `recorder/replay/run_final.sh`, `recorder/replay/report.py` |
 
 ![Replay: rewind a session and fork it](docs/devpost/replay.png)
 
-The system has three parts. A Vultr x86 worker runs Droid in the benchmark images and grades the patches. Git and Tiger Data hold the evidence. Analysis is plain Python feature code, an analysis droid, Droid SDK replay forks, and a shell-hook overlay that ships as a pull request. Analysis and the dashboard read the evidence through roles that cannot see pass/fail.
+The system has three parts. A Vultr x86 worker runs Droid in the benchmark images and grades the patches. Git and Tiger Data hold the evidence. Analysis is plain Python feature code and an analysis droid. The droid calls replay, a Droid SDK tool, to check a draft overlay on recorded sessions. The overlay is a shell hook that ships as a pull request. Analysis and the dashboard read the evidence through roles that cannot see pass/fail.
 
 ![Retrace architecture](docs/devpost/architecture.png)
 

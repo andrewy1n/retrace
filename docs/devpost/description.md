@@ -17,10 +17,10 @@ Retrace is a system for improving coding agent harnesses. It finds where an agen
 1. **Record.** Retrace runs Factory Droid on real tasks. Every tool call gets a git snapshot of the repo.
 2. **Extract primitives.** Each tool call becomes a set of deterministic facts: tool type, command class, duration, exit code, files touched, output size, position, and whether it repeats an earlier call. Primitives hold no command text and no tool output.
 3. **Find features.** Features are code over primitives and snapshots. Some catch failures, such as weakened tests, skipped verification, loops, and reverted edits. Others catch waste, such as re-reads and large tool outputs. A discovery agent proposes new features from the sessions that current features do not explain. Code promotes a feature only if it predicts cost on tasks it was not fit on.
-4. **Diagnose.** An agent explains the expensive sessions from the promoted features and cites the exact tool calls.
-5. **Replay.** Retrace rewinds a recorded session to any tool call, restores the repo snapshot, and forks the session with a candidate fix installed. This shows whether a cited step causes the cost.
-6. **Propose.** The fix is a small overlay under `.factory/`: a guardrail hook, a skill, a custom droid, a setting, or an `AGENTS.md` rule, ranked in that order.
-7. **Validate.** The fix is frozen, and the claim is pre-registered in git. Then the fix runs fresh from step 0 against unmodified Droid. It runs on held-out tasks from unseen repos and on a regression set. Every result reports counts, sample size, and an interval.
+4. **Diagnose.** An agent explains the expensive sessions from the promoted features and cites the exact tool calls. It also proposes new features, which code scores before keeping them.
+5. **Propose.** An agent drafts the fix as a small overlay under `.factory/`: a guardrail hook, a skill, a custom droid, a setting, or an `AGENTS.md` rule, ranked in that order. It tests each draft with replay, a tool it can call.
+   - **Replay (tool).** Retrace rewinds a recorded session to any tool call, restores the repo snapshot, and forks the session with the draft installed. This is a quick check of whether a cited step causes the cost. It is diagnosis, not final evidence.
+6. **Validate.** The fix is frozen, and the claim is pre-registered in git. Then the fix runs fresh from step 0 against unmodified Droid. It runs on held-out tasks from unseen repos and on a regression set. Every result reports counts, sample size, and an interval.
 
 ![Replay: rewind a session and fork it](https://raw.githubusercontent.com/andrewy1n/retrace/a210e03d2898cd2a2b1538ef3ffebb55a7c22aa5/docs/devpost/replay.png)
 

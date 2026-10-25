@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="base.css">
 <style>
-  .stage { position: relative; width: 864px; height: 900px; margin-top: 26px; }
+  .stage { position: relative; width: 864px; height: 916px; margin-top: 26px; }
   .stage svg { position: absolute; inset: 0; overflow: visible; }
   .band { position: absolute; left: 0; width: 864px; border-radius: 20px; border: 1.5px solid var(--line); }
   .band.worker { background: var(--oracle); border-color: var(--oracle-edge); }
@@ -56,9 +56,9 @@
   <div class="stage">
     <div class="band worker" style="top:0; height:300px"><div class="tag">Vultr x86 worker</div></div>
     <div class="band state" style="top:364px; height:196px"><div class="tag">Shared state</div></div>
-    <div class="band analysis" style="top:616px; height:284px"><div class="tag">How the analysis is built</div></div>
+    <div class="band analysis" style="top:616px; height:300px"><div class="tag">How the analysis is built</div></div>
 
-    <svg viewBox="0 0 864 900" width="864" height="900">
+    <svg viewBox="0 0 864 916" width="864" height="916">
       <defs>
         <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M1 1.5L8 5L1 8.5" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
         <marker id="w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M1 1.5L8 5L1 8.5" fill="none" stroke="#d9772f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
@@ -75,6 +75,11 @@
         <path d="M200 614V544"/>
         <path d="M480 542V654"/>
         <path d="M700 542V654"/>
+        <path d="M270 698H290"/>
+        <path d="M290 716H270"/>
+        <path d="M382 762V790"/>
+        <path d="M440 790V762"/>
+        <path d="M290 844H270"/>
       </g>
       <g fill="none" stroke="#d9772f" stroke-width="2" marker-end="url(#w)">
         <path d="M340 302V402"/>
@@ -106,7 +111,7 @@
       <div class="d">Fresh container. Gets the patch only. Runs the task's tests.</div>
     </div>
 
-    <div class="lab" style="left:68px; top:322px">remote.sh submit<br>job, overlay</div>
+    <div class="lab" style="left:68px; top:322px">remote.sh submit<br>replay job, overlay</div>
     <div class="lab" style="left:208px; top:322px">remote.sh fetch<br>traces, primitives</div>
     <div class="lab warm" style="left:348px; top:322px">remote.sh fetch<br>results, pass/fail</div>
     <div class="lab" style="left:508px; top:322px">tiger_sink<br>primitives</div>
@@ -143,23 +148,26 @@
     </div>
     <div class="st" style="left:292px; top:656px">
       <div class="h"><span class="t">Analysis droid</span><span class="chip2 tech">droid exec</span></div>
-      <div class="d">Runs <code>claude-opus-5-5</code> in Droid. Reads condensed derivation transcripts.</div>
+      <div class="d"><code>claude-opus-5-5</code> in Droid. Reads transcripts, proposes features, drafts overlays, and calls replay.</div>
     </div>
-    <div class="st" style="left:18px; top:776px">
-      <div class="h"><span class="t">Replay forks</span><span class="chip2 tech">droid sdk</span></div>
-      <div class="d"><code>@factory/droid-sdk</code> resumes a session, rewinds to a message, and restores its git snapshot.</div>
-    </div>
-    <div class="st" style="left:292px; top:776px">
+    <div class="st" style="left:18px; top:792px">
       <div class="h"><span class="t">Overlay and ship</span><span class="chip2 tech">shell</span></div>
       <div class="d">POSIX shell hooks in <code>.factory/</code>. Frozen by sha256. <code>ship_pr.py</code> opens the pull request.</div>
     </div>
+    <div class="st" style="left:292px; top:792px">
+      <div class="h"><span class="t">Replay tool</span><span class="chip2 tech">droid sdk</span></div>
+      <div class="d">Quick check for a draft. Rewinds a session to a cited step and forks it with the overlay.</div>
+    </div>
+
+    <div class="lab" style="left:350px; top:766px">job</div>
+    <div class="lab" style="left:452px; top:766px">result</div>
 
     <div class="box" style="left:584px; top:656px; width:262px; height:104px">
       <div class="t">Dashboard</div>
       <div class="d">Evidence app on Postgres. Reads the <code>replay_runs</code> view. Shows no grader data.</div>
     </div>
 
-    <div class="box" style="left:584px; top:776px; width:262px; height:104px">
+    <div class="box" style="left:584px; top:792px; width:262px; height:104px">
       <div class="t">Review</div>
       <div class="d">A pull request holds the overlay and the frozen report. A person decides.</div>
     </div>
