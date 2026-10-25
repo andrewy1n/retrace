@@ -24,6 +24,8 @@ Retrace is a system for improving coding agent harnesses. It finds where an agen
 
 ![Replay: rewind a session and fork it](https://raw.githubusercontent.com/andrewy1n/retrace/a210e03d2898cd2a2b1538ef3ffebb55a7c22aa5/docs/devpost/replay.png)
 
+![Retrace architecture](https://raw.githubusercontent.com/andrewy1n/retrace/1d8d381df53281c86fc545887d44a68c8fdc022a/docs/devpost/architecture.png)
+
 A person reviews the evidence and decides whether to adopt the fix. The dashboard lists each proposal with its effect on the targeted behaviour, the credit change, and a guard from the repo's own tests.
 
 ### The rule that keeps it honest
