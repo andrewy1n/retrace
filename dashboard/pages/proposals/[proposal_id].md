@@ -407,67 +407,17 @@ order by position
         {#each forkSets as set}
           <h2 class="rt-h2">Rewind to a step and rerun</h2>
           <p class="rt-tab-note">A recorded session had made {set.at} calls and not yet edited anything. We rewound it to call {set.at}, restored the repository as it was at that point, and ran it again: {set.branches.filter((b) => b.arm === 'control').length} times as it was (baseline) and {set.branches.filter((b) => b.arm === 'candidate').length} times with the change installed. The first {set.at} calls are the same in every run.</p>
-          <div class="prefix">
-            <div class="plabel">Calls 0 to {set.at - 1}, kept from the recording</div>
-            <div class="strip">
-              {#each set.prefix as c}
-                <div class="chip {kind(c)} locked" title="{c.tool_name} {c.command_class}"><small>{c.position}</small>{c.label}</div>
-              {/each}
-            </div>
-          </div>
-          <div class="divider">Rewound here, at call {set.at}. Same task, same repository state, same conversation.</div>
-          {#each set.branches as b}
-            <div class="run">
-              <div class="runhead">
-                <b>{labelOf(b)}</b>
-                <span>first edit at call {b.firstEdit}{b.credits ? ` · ${Number(b.credits).toLocaleString('en-US', { maximumFractionDigits: 0 })} credits` : ''}</span>
-              </div>
-              <div class="strip">
-                {#each b.after as c}
-                  <div class="chip {kind(c)}" class:cp={c.command_class === 'edit' && c.position === b.firstEdit} class:blocked={c.blocked} title="{c.tool_name} {c.command_class}{c.blocked ? ', stopped by the change' : ''}">
-                    <small>{c.position}</small>{c.blocked ? 'blocked' : c.label}
-                  </div>
-                {/each}
-              </div>
-            </div>
-          {/each}
-          <div class="legend">
-            <span><i style="background:#e8eff8;border-color:#9bb5d6"></i>Edit</span>
-            <span><i style="background:#fbf1dc;border-color:#d9b765"></i>Execute</span>
-            <span><i style="background:#f4f4f5;border-color:#d4d4d8"></i>Read / Search</span>
-            <span><i style="border:1.5px dashed #27272a"></i>First edit</span>
-            <span><i style="background:#fbe4e1;border-color:#d98a80"></i>Call stopped by the change</span>
-          </div>
+          <BranchGraph prefix={set.prefix} at={set.at} branches={set.branches.map((b) => ({ arm: b.arm, label: labelOf(b), calls: b.after, firstEdit: b.firstEdit, credits: b.credits }))} startLabel="Rewound at call {set.at}" />
         {/each}
         <h2 class="rt-h2">Tool calls, run by run</h2>
-        <p class="rt-tab-note">Each box is one tool call, in order. A dashed outline marks the first edit. The task opens on the largest gap in calls before the first edit.</p>
+        <p class="rt-tab-note">Every run starts from the same task. Each dot is one tool call, in order. The task opens on the largest gap in calls before the first edit.</p>
         <label class="pick">Task
           <select bind:value={selTask}>
             {#each taskIds as t}<option value={t}>{t.replace(/^instance_(.+?)-([0-9a-f]{8})[0-9a-f]{32}.*$/, '$1-$2')}</option>{/each}
           </select>
         </label>
-        {#each viewRuns as r}
-          <div class="run">
-            <div class="runhead">
-              <b>{r.arm === 'control' ? 'Baseline' : 'With change'}, run {r.trial}</b>
-              <span>{firstEdit(sessions.get(r.session_id))} calls before the first edit · {Number(r.cost_credits).toLocaleString('en-US', { maximumFractionDigits: 0 })} credits</span>
-              <a href="/sessions/{r.session_id}">Open session →</a>
-            </div>
-            <div class="strip">
-              {#each sessions.get(r.session_id) as c}
-                <div class="chip {kind(c)}" class:cp={c.command_class === 'edit' && c.position === firstEdit(sessions.get(r.session_id))} title="{c.tool_name} {c.command_class}">
-                  <small>{c.position}</small>{c.label}
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/each}
-        <div class="legend">
-          <span><i style="background:#e8eff8;border-color:#9bb5d6"></i>Edit</span>
-          <span><i style="background:#fbf1dc;border-color:#d9b765"></i>Execute</span>
-          <span><i style="background:#f4f4f5;border-color:#d4d4d8"></i>Read / Search</span>
-          <span><i style="border:1.5px dashed #27272a"></i>First edit</span>
-        </div>
+        <BranchGraph at={0} startLabel="Start of the task" branches={viewRuns.map((r) => ({ arm: r.arm, label: (r.arm === 'control' ? 'Baseline' : 'With change') + ', run ' + r.trial, calls: sessions.get(r.session_id), firstEdit: firstEdit(sessions.get(r.session_id)), credits: r.cost_credits }))} />
+        <p class="rt-tab-note">{#each viewRuns as r}<a href="/sessions/{r.session_id}">{r.arm === 'control' ? 'Baseline' : 'With change'}, run {r.trial}: every call →</a>{' '}{/each}</p>
         <h2 class="rt-h2">All tasks</h2>
         <p class="rt-tab-note">Baseline against with change, one row per task. A run counts when its tool calls were recorded.</p>
         <DataTable data={taskRows} rows=50 emptySet=pass emptyMessage="No run yet.">
