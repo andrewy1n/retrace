@@ -182,3 +182,97 @@ def test_diagnosis_results_without_passed_do_not_enter_agreement():
     diag = {"task_id": "x", "evidence_role": "diagnosis", "tool_call_id": "t", "proxies": {"repo_tests": repo_tests(0)}}
     n, _ = report.agreement_row("A", "repo_tests", [diag], Path("."))
     assert n == 0
+
+
+def call(position, cls, runner=None, **extra):
+    return {"position": position, "command_class": cls, "test_runner": runner, "path_arg_count": 0, "duration_s": 1, **extra}
+
+
+def write_prim(prim, session, *calls):
+    prim.mkdir(exist_ok=True)
+    (prim / f"{session}.json").write_text(json.dumps({"calls": list(calls)}))
+
+
+def run_report(tmp_path, arms, *extra):
+    out = tmp_path / "out.md"
+    args = ["--group", "g", "--results", str(tmp_path / "res"), "--out", str(out), *extra]
+    for a in arms:
+        args += ["--arm", a]
+    report.main(args)
+    return out.read_text()
+
+
+def test_tests_after_last_edit_ignores_failed_edits_and_counts_later_tests():
+    calls = [call(0, "edit"), call(1, "test", "pytest"), call(2, "edit"), call(3, "edit", is_error=True),
+             call(4, "test", "pytest"), call(5, "test", "pytest")]
+    assert report.tests_after_last_edit(calls) == 2
+    assert report.skipped_verification(calls) is False
+    assert report.skipped_verification(calls[:3]) is True
+    assert report.tests_after_last_edit([call(0, "read")]) is None
+    assert report.skipped_verification([call(0, "read")]) is None
+
+
+def test_signal_difference_is_paired_by_task_with_mcnemar(tmp_path):
+    prim = tmp_path / "prim"
+    write_job(tmp_path / "res", "a", [result(t, 1, True, 10) for t in "xyz"])
+    write_job(tmp_path / "res", "c", [result(t, 1, True, 10) for t in "xyz"])
+    for t in "xyz":
+        write_prim(prim, f"s-{t}-1", call(0, "test", "pytest", duration_s=90))
+    text = run_report(tmp_path, ["A=a", "C=c"], "--signal", "whole_suite_tests", "--primitives", str(prim))
+    assert "whole_suite_tests incidence difference (C minus A)" in text
+    assert "over 3 tasks with primitives in both arms: +0.0 points" in text
+    assert "Only C: 0. Exact McNemar p = 1.000" in text
+    assert "Bootstrap intervals rest on 3 tasks" in text
+
+
+def test_signal_difference_counts_tasks_where_only_one_arm_shows_it(tmp_path):
+    prim = tmp_path / "prim"
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10, session_id="sa")])
+    write_job(tmp_path / "res", "c", [result("x", 1, True, 10, session_id="sc")])
+    write_prim(prim, "sa", call(0, "test", "pytest", duration_s=90))
+    write_prim(prim, "sc", call(0, "test", "pytest", duration_s=5))
+    text = run_report(tmp_path, ["A=a", "C=c"], "--signal", "whole_suite_tests", "--primitives", str(prim))
+    assert "-100.0 points" in text
+    assert "Tasks where only A shows whole_suite_tests in some run: 1. Only C: 0." in text
+
+
+def test_arm_row_counts_runs_without_primitives(tmp_path):
+    prim = tmp_path / "prim"
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10), result("y", 1, True, 10)])
+    write_prim(prim, "s-x-1", call(0, "test", "pytest", duration_s=90))
+    text = run_report(tmp_path, ["A=a"], "--signal", "whole_suite_tests", "--primitives", str(prim))
+    assert "1 of 1 (100.0%; 20.7% to 100.0%, 1 without primitives)" in text
+
+
+def test_verification_section_reports_skipped_runs_and_mean_tests(tmp_path):
+    prim = tmp_path / "prim"
+    write_job(tmp_path / "res", "a", [result(t, 1, True, 10) for t in "xyz"])
+    write_prim(prim, "s-x-1", call(0, "edit"), call(1, "test", "pytest"), call(2, "test", "pytest"))
+    write_prim(prim, "s-y-1", call(0, "edit"))
+    write_prim(prim, "s-z-1", call(0, "read"))
+    text = run_report(tmp_path, ["A=a"], "--primitives", str(prim))
+    assert "| A | 3 | 2 | 1 of 2 (50.0%; 9.5% to 90.5%) | 1.00 |" in text
+
+
+def test_credit_ratio_prints_na_when_every_trial_timed_out(tmp_path):
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10, timed_out=True)])
+    write_job(tmp_path / "res", "c", [result("x", 1, True, 10, timed_out=True)])
+    text = run_report(tmp_path, ["A=a", "C=c"])
+    assert "ratio C to A: n/a (95% interval n/a to n/a) over 0 tasks" in text
+
+
+def test_trial_filter_that_leaves_an_arm_empty_is_refused(tmp_path):
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10)])
+    with pytest.raises(SystemExit, match="no results left"):
+        run_report(tmp_path, ["A=a@2"])
+
+
+def test_unknown_control_is_refused(tmp_path):
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10)])
+    with pytest.raises(SystemExit, match="not an arm"):
+        run_report(tmp_path, ["A=a"], "--control", "Z")
+
+
+def test_setup_lists_the_checkout_shas(tmp_path):
+    write_job(tmp_path / "res", "a", [result("x", 1, True, 10, repo_sha="abcdef0123456789")])
+    assert "(`repo_sha`): abcdef012345." in run_report(tmp_path, ["A=a"])

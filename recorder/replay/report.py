@@ -10,6 +10,8 @@ Rates carry Wilson 95% intervals over trials. Paired differences compare tasks t
 a task's pass value is the share of its trials that pass, and its credit value is the mean log credits of its
 trials that the timeout did not kill. Intervals are percentile bootstraps over tasks with a fixed seed.
 The proxy agreement section compares each proxy with the grader on trials the proxy can judge.
+--signal adds the hard signal as an arm column and a paired incidence difference per task, from the primitives.
+The verification section counts test commands after each run's last successful edit, from the primitives.
 Proxies read `proxies` in the result and the last test call in runs/primitives (--primitives).
 """
 import argparse
@@ -26,11 +28,24 @@ BOOTSTRAPS = 10000
 SEED = 20261024
 
 
-def whole_suite_tests(call, min_seconds=60):
-    return call["test_runner"] is not None and call["path_arg_count"] == 0 and (call["duration_s"] or 0) > min_seconds
+def whole_suite_tests(calls, min_seconds=60):
+    return any(c["test_runner"] is not None and c["path_arg_count"] == 0 and (c["duration_s"] or 0) > min_seconds
+               for c in calls)
 
 
-SIGNALS = {"whole_suite_tests": whole_suite_tests}
+def tests_after_last_edit(calls):
+    edits = [c["position"] for c in calls if c.get("command_class") == "edit" and not c.get("is_error")]
+    if not edits:
+        return None
+    return sum(c["test_runner"] is not None for c in calls if c["position"] > max(edits))
+
+
+def skipped_verification(calls):
+    n = tests_after_last_edit(calls)
+    return None if n is None else n == 0
+
+
+SIGNALS = {"whole_suite_tests": whole_suite_tests, "skipped_verification": skipped_verification}
 
 
 def wilson(k, n, z=1.96):
@@ -74,6 +89,8 @@ def load_arm(spec, results_dir):
             if r["evidence_role"] != "final":
                 sys.exit(f"{f.name} is a {r['evidence_role']} result, not final evidence")
             results.append(r)
+    if not results:
+        sys.exit(f"no results left in {spec}")
     return results
 
 
@@ -93,22 +110,25 @@ def task_log_credits(rs):
     return sum(logs) / len(logs) if logs else None
 
 
-def run_has_signal(r, primitives_dir, signal):
+def run_calls(r, primitives_dir):
     if not r.get("session_id"):
         return None
     path = primitives_dir / f"{r['session_id']}.json"
     if not path.exists():
         return None
-    return any(signal(c) for c in json.loads(path.read_text())["calls"])
+    return json.loads(path.read_text())["calls"]
+
+
+def run_has_signal(r, primitives_dir, signal):
+    calls = run_calls(r, primitives_dir)
+    return None if calls is None else signal(calls)
 
 
 def last_test_exit(r, primitives_dir):
-    if not r.get("session_id"):
+    calls = run_calls(r, primitives_dir)
+    if calls is None:
         return None
-    path = primitives_dir / f"{r['session_id']}.json"
-    if not path.exists():
-        return None
-    runs = [c for c in json.loads(path.read_text())["calls"] if c.get("test_runner")]
+    runs = [c for c in calls if c.get("test_runner")]
     if not runs or runs[-1].get("exit_code") is None:
         return None
     return runs[-1]["exit_code"] == 0
@@ -200,11 +220,32 @@ def arm_row(name, results, primitives_dir, signal):
         seen = [f for f in flags if f is not None]
         hit = sum(seen)
         slo, shi = wilson(hit, len(seen))
-        line += f" {hit} of {len(seen)} ({pct(hit / len(seen) if seen else math.nan)}; {pct(slo)} to {pct(shi)}) |"
+        missing = f", {n - len(seen)} without primitives" if len(seen) < n else ""
+        line += f" {hit} of {len(seen)} ({pct(hit / len(seen) if seen else math.nan)}; {pct(slo)} to {pct(shi)}{missing}) |"
     return line
 
 
-def paired_lines(control, other, cname, oname):
+def verification_lines(arms, primitives_dir):
+    out = ["## Verification after the last edit", "",
+           "Runs with a successful edit call. A run skips verification when no test command follows its last edit.", "",
+           "| Arm | Runs with primitives | Runs with an edit | Skipped verification (95% Wilson) | Test commands after the last edit, mean |",
+           "|---|---|---|---|---|"]
+    for name, rs in arms.items():
+        calls = [c for c in (run_calls(r, primitives_dir) for r in rs) if c is not None]
+        counts = [n for n in map(tests_after_last_edit, calls) if n is not None]
+        skipped = sum(n == 0 for n in counts)
+        lo, hi = wilson(skipped, len(counts))
+        mean = f"{sum(counts) / len(counts):.2f}" if counts else "n/a"
+        rate = pct(skipped / len(counts)) if counts else "n/a"
+        out.append(f"| {name} | {len(calls)} | {len(counts)} | {skipped} of {len(counts)} ({rate}; {pct(lo)} to {pct(hi)}) | {mean} |")
+    return out
+
+
+def ratio(x):
+    return "n/a" if math.isnan(x) else f"{math.exp(x):.3f}"
+
+
+def paired_lines(control, other, cname, oname, primitives_dir=None, signal=None, signal_name=None):
     ct, ot = by_task(control), by_task(other)
     common = sorted(set(ct) & set(ot))
     out = [f"### {oname} against {cname}", "", f"Tasks in both arms: {len(common)}. Left out: {len(set(ct) ^ set(ot))}.", ""]
@@ -217,7 +258,20 @@ def paired_lines(control, other, cname, oname):
     logs = [(task_log_credits(ct[t]), task_log_credits(ot[t])) for t in common]
     logs = [(c, o) for c, o in logs if c is not None and o is not None]
     m, lo, hi = bootstrap_mean([o - c for c, o in logs])
-    out.append(f"- Credits, geometric-mean ratio {oname} to {cname}: {math.exp(m):.3f} (95% interval {math.exp(lo):.3f} to {math.exp(hi):.3f}) over {len(logs)} tasks.")
+    out.append(f"- Credits, geometric-mean ratio {oname} to {cname}: {ratio(m)} (95% interval {ratio(lo)} to {ratio(hi)}) over {len(logs)} tasks.")
+    if signal:
+        flags = {(t, arm): [f for f in (run_has_signal(r, primitives_dir, signal) for r in rs) if f is not None]
+                 for t in common for arm, rs in (("c", ct[t]), ("o", ot[t]))}
+        both = [t for t in common if flags[t, "c"] and flags[t, "o"]]
+        diffs = [sum(flags[t, "o"]) / len(flags[t, "o"]) - sum(flags[t, "c"]) / len(flags[t, "c"]) for t in both]
+        m, lo, hi = bootstrap_mean(diffs)
+        only_c = sum(any(flags[t, "c"]) and not any(flags[t, "o"]) for t in both)
+        only_o = sum(any(flags[t, "o"]) and not any(flags[t, "c"]) for t in both)
+        out.append(f"- {signal_name} incidence difference ({oname} minus {cname}), share of a task's runs, over {len(both)} tasks with primitives in both arms: "
+                   f"{100 * m:+.1f} points (95% interval {100 * lo:+.1f} to {100 * hi:+.1f}).")
+        out.append(f"- Tasks where only {cname} shows {signal_name} in some run: {only_c}. Only {oname}: {only_o}. Exact McNemar p = {mcnemar_exact(only_c, only_o):.3f}.")
+    if len(common) < 10:
+        out.append(f"- Bootstrap intervals rest on {len(common)} tasks. With fewer than 10 tasks they say little.")
     return out
 
 
@@ -237,6 +291,8 @@ def main(argv=None):
         name, _, spec = a.partition("=")
         arms[name] = load_arm(spec, args.results)
     control = args.control or next(iter(arms))
+    if control not in arms:
+        sys.exit(f"--control {control} is not an arm")
     everything = [r for rs in arms.values() for r in rs]
     models = {r["model"] for r in everything}
     versions = {r["droid_version"] for r in everything}
@@ -248,6 +304,7 @@ def main(argv=None):
              "## Setup", "",
              f"- Model: {models.pop()}. Droid: {versions.pop()}. Grader: {', '.join(sorted({r['grader'] for r in everything}))}.",
              f"- Arms: {'; '.join(f'{n} = {s}' for n, s in (a.split('=', 1) for a in args.arm))}.",
+             f"- Checkout (`repo_sha`): {', '.join(sorted({r.get('repo_sha', 'unrecorded')[:12] for r in everything}))}.",
              f"- Control: {control}. Trials killed by the timeout are counted apart and left out of credits.", "",
              "## Arms", "",
              "| Arm | Tasks | Trials | Passed | Pass rate (95% Wilson) | Timed out | Credits | Credits per trial |" + (f" {args.signal} runs |" if signal else ""),
@@ -256,8 +313,9 @@ def main(argv=None):
     lines += ["", "## Paired differences", ""]
     for name, rs in arms.items():
         if name != control:
-            lines += paired_lines(arms[control], rs, control, name) + [""]
-    lines += [""] + agreement_lines(arms, args.primitives)
+            lines += paired_lines(arms[control], rs, control, name, args.primitives, signal, args.signal) + [""]
+    lines += verification_lines(arms, args.primitives) + [""]
+    lines += agreement_lines(arms, args.primitives)
     text = "\n".join(lines) + "\n"
     if args.out:
         args.out.write_text(text, newline="\n")
