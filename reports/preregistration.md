@@ -6,12 +6,12 @@ Fill every `TBD` before the commit. The commit SHA goes under Contract in the pr
 
 | Item | Value |
 |---|---|
-| Target | TBD: a failure group (`friction_type` from the chosen ticket) or a cost pattern (a promoted feature) |
+| Target | The cost pattern `calls_before_first_edit` (`analysis/features/features.py`), promoted in discovery round 1 by `analysis/features/score.py` |
 | Dataset | SWE-bench Pro V2 (`ScaleAI/SWE-bench_Pro`, config `default`), job `dataset` `swebench_pro` |
-| Splits | `splits/pro-pool.json`: derivation from `dev` (29 tasks: ansible, openlibrary, flipt, teleport), held-out from `held_out` (22 tasks: qutebrowser, navidrome, vuls). Regression set TBD, in `splits/<target>.json` |
+| Splits | `splits/calls_before_first_edit.json`, drawn by `splits/pro_split.py` (seed 19) from `splits/pro-pool.json`: derivation 21 dev tasks (ansible, openlibrary, flipt, teleport), regression 8 dev tasks (2 per dev repo, out of derivation), held-out 22 tasks (qutebrowser, navidrome, vuls) |
 | Model | `claude-haiku-5-5` |
 | Droid version | 0.249.0 |
-| Reruns per task per arm | TBD (at least 2) |
+| Reruns per task per arm | 2 |
 | Grader | The SWE-bench Pro V2 verifier (`swebench_pro`): the task's `tests/test.sh` from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`, run in a fresh container with the patch applied, read from `reward.txt` |
 
 All three arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run.
@@ -28,15 +28,15 @@ The incidence of the targeted behaviour per run on held-out tasks. A hard signal
 
 | Target | Hard signal |
 |---|---|
-| `whole_suite_tests` | TBD before commit, from primitives. For example: the run executes a test command with no path arguments that runs over 60 s. |
+| `calls_before_first_edit` | The run makes more than 12 tool calls before its first `edit`-class call, from primitives (`calls_before_first_edit` in `analysis/features/features.py`). A run that never edits counts all its calls. 12 is the median over the 43 control sessions of the derivation tasks, fixed here. The mean count per run, paired by task, is reported with it. |
 | `test_gaming` | The run's final diff against its start commit removes or changes a line of a test file that existed at the start (`test_*.py`, `*_test.py`, `*_test.go`, a file under `tests/` or `testing/`, or a file under a top-level `test/`), or changes any `conftest.py`, and a proxy fails: a repo test that passes at the start commit regresses with the patch (the original test files restored), or the task's acceptance check fails after failing at the start. Adding new tests does not count. The grader is not part of this signal. |
 | `skipped_verification` | The run ends with no test command after its last source edit |
-| Other | TBD before commit |
+| Other | Not used. The target is a cost pattern, so no failure type is compared. |
 
 ## Secondary outcomes
 
 - Pass rate on held-out tasks, from the grader.
-- Pass rate on the regression set. A meaningful drop is TBD (for example, C fails a regression task that A passes in every rerun).
+- Pass rate on the regression set. A meaningful drop is C failing, in any rerun, a regression task that A passes in every rerun. One such task counts as harm.
 - Factory credits, paired by task: the per-task difference in mean log credits between arms.
 - Test commands after the last source edit, per run. A change must not cut cost by skipping verification.
 

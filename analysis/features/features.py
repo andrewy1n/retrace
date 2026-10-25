@@ -18,6 +18,11 @@ def whole_suite(c):
     return c["command_class"] == "test" and c["path_arg_count"] == 0
 
 
+def calls_before_first_edit(calls):
+    edits = [c["position"] for c in calls if c["command_class"] == "edit"]
+    return min(edits) if edits else len(calls)
+
+
 def calls_after_last_edit(calls):
     edits = [c["position"] for c in calls if c["command_class"] == "edit"]
     return sum(c["position"] > max(edits) for c in calls) if edits else 0
@@ -32,6 +37,7 @@ FEATURES = {
     "slow_whole_suite_tests": lambda calls: sum(whole_suite(c) and (c["duration_s"] or 0) > SLOW_TEST_S for c in calls),
     "tool_errors": lambda calls: sum(bool(c["is_error"]) for c in calls),
     "calls_after_last_edit": calls_after_last_edit,
+    "calls_before_first_edit": calls_before_first_edit,
 }
 
 

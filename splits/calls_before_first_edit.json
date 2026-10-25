@@ -1,5 +1,5 @@
 {
-  "group": "draft",
+  "group": "calls_before_first_edit",
   "drawn": "2026-10-24",
   "seed": 19,
   "source": "splits/pro-pool.json (seed 13). Regression is 2 dev tasks per repo from a seeded shuffle within each repo, and leaves derivation. Held-out is the pool's held_out list.",
