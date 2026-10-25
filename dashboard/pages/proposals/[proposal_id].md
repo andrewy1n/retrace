@@ -17,6 +17,13 @@ select * from proposal_list.proposals where proposal_id <> ''
 select * from tiger.proposal_runs
 ```
 
+```sql rcalls
+select c.session_id, c.position, c.tool_name, c.command_class, coalesce(c.test_runner, c.tool_name) as label
+from tiger.calls c
+where c.session_id in (select session_id from tiger.proposal_runs)
+order by c.session_id, c.position
+```
+
 ```sql tl
 select position, tool_name, command_class, test_runner, duration_s, is_error, output_tokens_est
 from tiger.calls
@@ -146,6 +153,22 @@ order by position
 
   const sessionLabel = 'ansible d33bed, trial 1';
   const checkpoints = { toolu_01Pm3ZNrBCDtHNUh83ovCqeC: 'Step 10', toolu_016dLe3d1iqCZzTGPkUnoaXN: 'Step 17' };
+  let selTask = '';
+  const bySession = (calls) => {
+    const m = new Map();
+    for (const c of calls) { if (!m.has(c.session_id)) m.set(c.session_id, []); m.get(c.session_id).push(c); }
+    return m;
+  };
+  const firstEdit = (cs) => { const e = cs.find((c) => c.command_class === 'edit'); return e ? e.position : cs.length; };
+  $: sessions = bySession(Array.from(rcalls ?? []));
+  $: taskIds = [...new Set((row?.runs ?? []).map((r) => r.task_id))].sort();
+  $: gap = (t) => {
+    const mean = (arm) => { const xs = (row?.runs ?? []).filter((r) => r.task_id === t && r.arm === arm && sessions.has(r.session_id)).map((r) => firstEdit(sessions.get(r.session_id))); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0; };
+    return mean('control') - mean('candidate');
+  };
+  $: if (!selTask && taskIds.length && sessions.size) selTask = [...taskIds].sort((a, b) => gap(b) - gap(a))[0];
+  $: viewRuns = (row?.runs ?? []).filter((r) => r.task_id === selTask && sessions.has(r.session_id))
+    .sort((a, b) => (a.arm === b.arm ? a.trial - b.trial : a.arm === 'control' ? -1 : 1));
   const kind = (c) => c.command_class === 'edit' ? 'edit' : c.tool_name === 'Execute' ? 'exec' : 'read';
 
   const arms = [
@@ -181,6 +204,11 @@ order by position
   .chip.edit { background: #e8eff8; border-color: #9bb5d6; }
   .chip.exec { background: #fbf1dc; border-color: #d9b765; }
   .chip.cp { outline: 1.5px dashed #27272a; outline-offset: 2px; }
+  .pick { display: block; margin: 8px 0 16px; font-size: 13px; color: #52525b; }
+  .pick select { margin-left: 8px; padding: 4px 8px; font-size: 13px; }
+  .run { margin: 16px 0; }
+  .runhead { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; font-size: 13px; }
+  .runhead span { color: #71717a; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #52525b; }
   .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; border: 1px solid; vertical-align: -1px; }
   .matrix { display: grid; grid-template-columns: 160px repeat(4, 1fr); gap: 6px; align-items: center; font-size: 13px; max-width: 900px; }
@@ -342,6 +370,36 @@ order by position
 </div>
 <p class="note">{forkRows.length} forks in Tiger. The planned run is 12: 2 steps × 3 fork arms × 2 reruns. The recorded run has 1 run per step.</p>
       {:else if !example && final}
+        <h2 class="rt-h2">Tool calls, run by run</h2>
+        <p class="rt-tab-note">Each box is one tool call, in order. A dashed outline marks the first edit. The task opens on the largest gap in calls before the first edit.</p>
+        <label class="pick">Task
+          <select bind:value={selTask}>
+            {#each taskIds as t}<option value={t}>{t.replace(/^instance_(.+?)-([0-9a-f]{8})[0-9a-f]{32}.*$/, '$1-$2')}</option>{/each}
+          </select>
+        </label>
+        {#each viewRuns as r}
+          <div class="run">
+            <div class="runhead">
+              <b>{r.arm === 'control' ? 'Baseline' : 'With change'}, run {r.trial}</b>
+              <span>{firstEdit(sessions.get(r.session_id))} calls before the first edit · {Number(r.cost_credits).toLocaleString('en-US', { maximumFractionDigits: 0 })} credits</span>
+              <a href="/sessions/{r.session_id}">Open session →</a>
+            </div>
+            <div class="strip">
+              {#each sessions.get(r.session_id) as c}
+                <div class="chip {kind(c)}" class:cp={c.command_class === 'edit' && c.position === firstEdit(sessions.get(r.session_id))} title="{c.tool_name} {c.command_class}">
+                  <small>{c.position}</small>{c.label}
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/each}
+        <div class="legend">
+          <span><i style="background:#e8eff8;border-color:#9bb5d6"></i>Edit</span>
+          <span><i style="background:#fbf1dc;border-color:#d9b765"></i>Execute</span>
+          <span><i style="background:#f4f4f5;border-color:#d4d4d8"></i>Read / Search</span>
+          <span><i style="border:1.5px dashed #27272a"></i>First edit</span>
+        </div>
+        <h2 class="rt-h2">All tasks</h2>
         <p class="rt-tab-note">{row.pairs}. One row per task and arm. A run counts when it has primitives in Tiger.</p>
         <DataTable data={taskRows} rows=50 emptySet=pass emptyMessage="No run yet.">
           <Column id=task title="Task" />
