@@ -1,0 +1,1 @@
+{"PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "sh -c 'echo fired >> /retrace/test-overlay-hook.log'"}]}]}
