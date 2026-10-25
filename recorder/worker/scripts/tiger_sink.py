@@ -19,7 +19,7 @@ REPO = Path(os.environ.get("RETRACE_REPO", ROOT / "repo"))
 RESULT_KEY = ("job_id", "task_id", "checkpoint", "arm", "trial")
 RESULT_COLUMNS = RESULT_KEY + (
     "session_id", "tool_call_id", "model", "droid_version", "stop_mode",
-    "passed", "grader", "evidence_role", "cost_credits", "timed_out", "proxies",
+    "passed", "grader", "evidence_role", "cost_credits", "timed_out", "proxies", "repo_sha",
 )
 SESSION_KEY = ("session_id",)
 SESSION_COLUMNS = SESSION_KEY + (

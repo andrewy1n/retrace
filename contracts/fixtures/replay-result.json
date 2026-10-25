@@ -10,6 +10,7 @@
   "trial": 1,
   "evidence_role": "diagnosis",
   "cost_credits": 0.4,
+  "repo_sha": "28f37e6c0000000000000000000000000000beef",
   "timed_out": false,
   "proxies": {
     "repo_tests": {

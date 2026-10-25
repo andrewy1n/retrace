@@ -29,6 +29,7 @@ SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
 MODEL="$(jq -r .model "$JOB")"
 ARM="$(jq -r .arm.kind "$JOB")"
 CANDIDATE="$(jq -r '.arm.path // ""' "$JOB")"
+REPO_SHA="$(cat "$ROOT/runs/$JOB_ID/repo_sha" 2>/dev/null || true)"
 SID="$(jq -r .session_id "$JOB")"
 TRACE="$REPO/runs/traces/$SID.json"
 SESS="${RETRACE_SESSIONS:-$ROOT/sessions}/$SID"
@@ -144,7 +145,8 @@ COST="$(jq -r '.cost_credits // empty' "$OUT/fork.json" 2>/dev/null || true)"
 jq -n --arg v "$DROID_VERSION" --argjson cost "${COST:-0}" --argjson rc "$rc" --arg failed "$FAILED" \
   --arg msg "$(<"$OUT/continuation.md")" --arg model "$(jq -r '.model // ""' "$OUT/fork.json" 2>/dev/null || true)" \
   --arg fork "$(jq -r '.successor_session_id // ""' "$OUT/fork.json" 2>/dev/null || true)" \
-  --argjson timed_out "$(jq '.timed_out // false' "$OUT/fork.json" 2>/dev/null || echo false)" \
+  --argjson timed_out "$(jq '.timed_out // false' "$OUT/fork.json" 2>/dev/null || echo false)" --arg sha "$REPO_SHA" \
   '{droid_version: $v, cost_credits: $cost, droid_exit: $rc, timed_out: $timed_out, successor_session_id: $fork, continuation: $msg}
-   + (if $model != "" then {model: $model} else {} end) + (if $failed != "" then {failed: $failed} else {} end)' > "$OUT/meta.json"
+   + (if $model != "" then {model: $model} else {} end) + (if $failed != "" then {failed: $failed} else {} end)
+   + (if $sha != "" then {repo_sha: $sha} else {} end)' > "$OUT/meta.json"
 [[ -z "$FAILED" ]] || { echo "[$IID/$TCID#$TRIAL] FAILED: $FAILED" >&2; exit 1; }

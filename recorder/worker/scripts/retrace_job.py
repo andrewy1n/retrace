@@ -112,6 +112,8 @@ def collect(job_path, trial, only=None):
             print(f"warning: {task} {cp} trial {trial}: no proxies.json, result has no proxies", file=sys.stderr)
         if "timed_out" in meta:
             result["timed_out"] = meta["timed_out"]
+        if meta.get("repo_sha"):
+            result["repo_sha"] = meta["repo_sha"]
         session_id = f"{job_id}-{task}-{trial}"
         if cp == "step0" and (REPO / "runs" / "traces" / f"{session_id}.json").exists():
             result["session_id"] = session_id
