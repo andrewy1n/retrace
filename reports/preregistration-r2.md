@@ -56,3 +56,7 @@ Discovery round 2 tested 2 candidates. Neither target passes the out-of-task pro
 | `large_root_searches` | `analysis/proposals/root-search-limit` | The run has at least 1 search call over the whole repo (primitives `files` is `["."]`) whose `output_tokens_est` is over 2,000 (`large_root_searches` in `recorder/replay/report.py`). The count is reported with it. |
 
 `shell_error_streak` comes from a Droid 0.249.0 defect, not from the model: in an image without `ps`, every foreground `Execute` call is reported as killed by SIGKILL (root `AGENTS.md`, Environment). 4 of the 8 qutebrowser held-out images lack `ps`, and none of the navidrome or vuls images. The image property was read before any candidate run. It reads no outcome. The `shell-fallback` report also gives each result on the held-out tasks whose image lacks `ps`, as a secondary breakdown.
+
+### Amendment 2, 2026-10-25: 3 held-out tasks have Alpine images
+
+Found when arm A ran, before any candidate result on these tasks existed. 3 tasks of `splits/pro-heldout2.json` (`vuls-e1fab805`, `vuls-ef2be3d6`, `navidrome-66b74c81`) have Alpine (musl) images. The glibc Droid binary does not start there (`exec /usr/local/bin/droid: no such file or directory`), so no arm can produce a result on them. They leave every comparison, as the Alpine teleport tasks left the pool in round 1. The held-out comparison has 21 tasks: 8 qutebrowser, 7 navidrome, 6 vuls. The decision reads no outcome, since these trials wrote no result.

