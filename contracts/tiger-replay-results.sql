@@ -27,4 +27,10 @@ create table replay_results (
 );
 
 grant select, insert, update on replay_results to retrace_worker;
-grant select on replay_results to retrace_dashboard;
+
+create view replay_runs as
+  select job_id, task_id, checkpoint, arm, trial, session_id, tool_call_id, model, droid_version, stop_mode,
+         evidence_role, cost_credits, timed_out, proxies, repo_sha, worker_id, artifact_key, recorded_at
+  from replay_results;
+
+grant select on replay_runs to retrace_dashboard;

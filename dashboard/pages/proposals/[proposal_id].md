@@ -36,6 +36,13 @@ where evidence_role = 'diagnosis'
 order by checkpoint, arm, trial
 ```
 
+```sql rec
+select position, tool_call_id, command_class
+from tiger.calls
+where session_id = 'pro-baseline1-instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59-1'
+order by position
+```
+
 ```sql strip
 select position, tool_call_id, tool_name, command_class, test_runner, coalesce(test_runner, tool_name) as label
 from tiger.calls
@@ -47,7 +54,8 @@ order by position
 <script>
   import { html as diffToHtml } from 'diff2html';
   import 'diff2html/bundles/css/diff2html.min.css';
-  import { STATUS, CHANGE, has, signed, interval, verdict, intervalChart, repoText, accText } from '../../../components/format.js';
+  import { STATUS, CHANGE, has, intervalChart, repoText, accText } from '../../../components/format.js';
+  import { behaviourVerdict, share } from '../../../components/behaviour.js';
 
   const patch = `--- a/.factory/hooks.json
 +++ b/.factory/hooks.json
@@ -83,12 +91,13 @@ order by position
 
   $: row = Array.from(p ?? [])[0];
   $: status = row ? (STATUS[row.status] ?? { label: row.status, tone: 'muted' }) : null;
-  $: v = row ? verdict(row) : null;
+  $: v = row ? behaviourVerdict(row) : null;
   $: final = row?.evidence_role === 'final';
   $: diagnosis = row?.evidence_role === 'diagnosis';
   $: files = row?.overlay_files ? row.overlay_files.split(';') : [];
   $: diffHtml = row ? diffFor(row.proposal_id) : null;
-  $: passChart = final ? intervalChart(row.delta_pp, row.ci_low_pp, row.ci_high_pp, 'pp') : null;
+  $: incChart = final ? intervalChart(row.inc_delta_pp, row.inc_low_pp, row.inc_high_pp, 'pp') : null;
+  $: guards = row ? [has(row.guard_repo) ? `Repo tests: ${row.guard_repo}.` : null, has(row.guard_acceptance) ? `Acceptance check: ${row.guard_acceptance}.` : null].filter(Boolean) : [];
   $: creditChart = final && has(row.credits_delta_pct) ? intervalChart(row.credits_delta_pct, row.credits_low_pct, row.credits_high_pct, '%') : null;
   $: rank = row ? ['guardrail_hook', 'skill', 'tool', 'custom_droid', 'setting', 'rule'].indexOf(row.change_type) : -1;
 
@@ -136,6 +145,12 @@ order by position
     { step: 'Step 10', id: 'toolu_01Pm3Z…', checkpoint: 'toolu_01Pm3ZNrBCDtHNUh83ovCqeC' },
     { step: 'Step 17', id: 'toolu_016dLe…', checkpoint: 'toolu_016dLe3d1iqCZzTGPkUnoaXN' }
   ];
+  $: recRows = Array.from(rec ?? []);
+  $: after = (checkpoint) => {
+    const at = recRows.find((c) => c.tool_call_id === checkpoint);
+    const rest = at ? recRows.filter((c) => c.position > at.position) : [];
+    return { calls: rest.length, tests: rest.filter((c) => c.command_class === 'test').length };
+  };
   $: forkRows = Array.from(forks ?? []);
   $: cellOf = (checkpoint, key) => forkRows.filter((f) => f.checkpoint === checkpoint && f.arm === key);
   $: armRows = (key) => forkRows.filter((f) => f.arm === key);
@@ -210,7 +225,7 @@ order by position
       </div>
 
       <h2 class="rt-h2">The change</h2>
-      <p>The runner copies this overlay onto the task checkout. It stays out of the graded patch.</p>
+      <p>The runner copies this overlay onto the task checkout. It stays out of the agent's patch.</p>
       <ul class="rt-files">
         {#each files as f}<li>{`analysis/proposals/${row.proposal_id}/${f}`}</li>{/each}
       </ul>
@@ -225,18 +240,23 @@ order by position
     <Tab label="Evidence">
       {#if final}
         <h2 class="rt-h2">Held-out result</h2>
-        <p class="rt-tab-note">{row.setup}. With change {row.arm_k}/{row.arm_n}, control {row.base_k}/{row.base_n}.</p>
-        <h3 class="rt-h3">Pass rate difference</h3>
-        <ECharts config={passChart} height=110px />
+        <p class="rt-tab-note">{row.setup}.</p>
+        <h3 class="rt-h3">{row.target_metric}</h3>
+        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} runs. Control: {share(row.inc_base_k, row.inc_base_n)} runs. A negative difference means the change cuts the behaviour.</p>
+        <ECharts config={incChart} height=110px />
         {#if creditChart}
-          <h3 class="rt-h3">Credits per trial difference</h3>
+          <h3 class="rt-h3">Credits per run difference</h3>
           <ECharts config={creditChart} height=110px />
         {/if}
-        <h3 class="rt-h3">Regression set</h3>
-        <p>{has(row.regression) ? `${row.regression}. Good past sessions, including legitimate test edits.` : 'Not run.'}</p>
+        <h3 class="rt-h3">Guards</h3>
+        {#each guards as g}<p>{g}</p>{:else}<p>Not run.</p>{/each}
       {:else if diagnosis}
         <h2 class="rt-h2">Diagnosis only</h2>
-        <p>{row.setup}. Forks with the {row.proxy.toLowerCase()} passing: with change {row.proxy_arm}, control {row.proxy_base}. Forks have no pass or fail. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
+        <p class="rt-tab-note">{row.setup}.</p>
+        <h3 class="rt-h3">{row.target_metric}</h3>
+        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} forks. Control: {share(row.inc_base_k, row.inc_base_n)} forks. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
+        <h3 class="rt-h3">Guards</h3>
+        {#each guards as g}<p>{g}</p>{:else}<p>Not run.</p>{/each}
       {:else}
         <h2 class="rt-h2">No replay yet</h2>
         <p>This proposal has no replay job. A small group uses monitoring plus rollback.</p>
@@ -254,7 +274,7 @@ order by position
 
     <Tab label={row.proposal_id === 'block-test-edits' ? 'Pipeline check' : 'Replay'}>
       {#if row.proposal_id === 'block-test-edits'}
-        <p class="rt-tab-note">Example data. This tab checks that the fork pipeline runs. It does not show that the change fixes a failure. The forks start from a session that passed, so there was no failure to fix.</p>
+        <p class="rt-tab-note">Example data. This tab checks that the fork pipeline runs. It does not show that the change works.</p>
         <h2 class="rt-h2">Steps of the recorded session</h2>
         <p class="rt-tab-note">One real ansible session. Each box is one tool call. A dashed outline marks a step where the forks started.</p>
 <div class="strip">
@@ -273,9 +293,9 @@ order by position
         <h2 class="rt-h2">Fork results</h2>
 <div class="key">
   <b>How to read this.</b> Each row is a step where forks started. Each column is an arm.
-  A fork has no pass or fail. A cell shows two proxies per fork. Repo tests count tests that passed at the start and fail with the patch.
+  A cell shows two proxies per fork. Repo tests count tests that passed at the start and fail with the patch.
   The acceptance check counts only when it failed at the start.
-  The recorded run is the original session, a final trial graded by the dataset grader.
+  The recorded run is the original session. Its cell counts the tool calls after the step.
 </div>
 <div class="matrix">
   <div></div>
@@ -284,7 +304,7 @@ order by position
     <div><b>{r.step}</b><div class="note">{r.id}</div></div>
     {#each arms as a}
       {#if a.key === null}
-        <div class="cell">Passed</div>
+        <div class="cell">{after(r.checkpoint).calls} tool calls after this step<br />{after(r.checkpoint).tests} test runs</div>
       {:else if cellOf(r.checkpoint, a.key).length}
         <div class="cell">
           {#each cellOf(r.checkpoint, a.key) as f}

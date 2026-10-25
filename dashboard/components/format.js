@@ -39,7 +39,7 @@ export function verdict(p) {
   if (p.evidence_role === 'diagnosis') return { label: 'Diagnosis only', tone: 'info' };
   if (p.kind === 'cost') {
     return p.credits_high_pct < 0
-      ? { label: 'Cheaper, pass rate unchanged', tone: 'ok' }
+      ? { label: 'Cheaper', tone: 'ok' }
       : { label: 'No clear saving', tone: 'muted' };
   }
   if (p.ci_low_pp > 0) return { label: 'Beats control', tone: 'ok' };

@@ -14,15 +14,15 @@ select
 from mock.proposals
 ```
 
-```sql best_gain
-select title, delta_pp, ci_low_pp, ci_high_pp, arm_k, arm_n, base_k, base_n
+```sql best_cut
+select title, target_metric, inc_delta_pp, inc_low_pp, inc_high_pp, inc_arm_k, inc_arm_n, inc_base_k, inc_base_n
 from mock.proposals
-where evidence_role = 'final' and kind = 'failure' and ci_low_pp > 0
-order by delta_pp desc limit 1
+where evidence_role = 'final' and inc_high_pp < 0
+order by inc_delta_pp limit 1
 ```
 
 ```sql best_saving
-select title, credits_delta_pct, credits_low_pct, credits_high_pct, arm_n
+select title, credits_delta_pct, credits_low_pct, credits_high_pct
 from mock.proposals
 where evidence_role = 'final' and credits_high_pct < 0
 order by credits_delta_pct limit 1
@@ -38,7 +38,7 @@ order by rank, proposal_id
 <script>
   import { signed, interval } from '../components/format.js';
   $: k = Array.from(kpi ?? [])[0] ?? {};
-  $: g = Array.from(best_gain ?? [])[0];
+  $: g = Array.from(best_cut ?? [])[0];
   $: s = Array.from(best_saving ?? [])[0];
   $: list = Array.from(proposals ?? []);
   $: queue = list.filter((p) => p.status === 'in_review');
@@ -47,7 +47,7 @@ order by rank, proposal_id
 
 <div class="rt-page-head">
   <h1>Proposals</h1>
-  <p>Harness changes drafted from failure and cost patterns. Each one has replay evidence and a pull request.</p>
+  <p>Harness changes drafted from behaviour and cost patterns. Each one has replay evidence on agent behaviour and cost, and a pull request.</p>
 </div>
 
 <div class="rt-example">Example data. These proposals are fixtures in <code>sources/mock/proposals.csv</code>. Tiger summaries replace them when real proposals exist.</div>
@@ -57,10 +57,10 @@ order by rank, proposal_id
   <div class="rt-kpi"><span class="rt-k">Shipped</span><span class="rt-big">{k.shipped ?? 0}</span><span class="rt-s">{k.rejected ?? 0} rejected</span></div>
   <div class="rt-kpi"><span class="rt-k">In progress</span><span class="rt-big">{k.in_progress ?? 0}</span><span class="rt-s">Drafted or in replay</span></div>
   <div class="rt-kpi">
-    <span class="rt-k">Best held-out gain</span>
+    <span class="rt-k">Largest behaviour cut</span>
     {#if g}
-      <span class="rt-big">{signed(g.delta_pp)} pp</span>
-      <span class="rt-s">{interval(g.ci_low_pp, g.ci_high_pp)} · {g.arm_k}/{g.arm_n} vs {g.base_k}/{g.base_n} · {g.title}</span>
+      <span class="rt-big">{signed(g.inc_delta_pp)} pp</span>
+      <span class="rt-s">{interval(g.inc_low_pp, g.inc_high_pp)} · {g.target_metric.toLowerCase()} · {g.title}</span>
     {:else}
       <span class="rt-big">None yet</span><span class="rt-s">No interval excludes zero</span>
     {/if}
@@ -69,7 +69,7 @@ order by rank, proposal_id
     <span class="rt-k">Best credit saving</span>
     {#if s}
       <span class="rt-big">{signed(s.credits_delta_pct)}%</span>
-      <span class="rt-s">{interval(s.credits_low_pct, s.credits_high_pct)} per trial · {s.title}</span>
+      <span class="rt-s">{interval(s.credits_low_pct, s.credits_high_pct)} per run · {s.title}</span>
     {:else}
       <span class="rt-big">None yet</span><span class="rt-s">No interval excludes zero</span>
     {/if}

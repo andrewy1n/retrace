@@ -16,15 +16,13 @@ from tiger.sessions where session_id = '${params.session_id}'
 <BigValue data={head} value=factory_credits fmt=num0 title="Credits" />
 <BigValue data={head} value=assistant_turns title="Turns" />
 
-{#if Array.from(head ?? [])[0]?.evidence_role === 'final'}
-  <BigValue data={head} value=passed title="Passed" />
-{:else}
-  <BigValue data={head} value=repo_summary title="Repo tests" />
-  <BigValue data={head} value=acc_summary title="Acceptance" />
-{/if}
+<BigValue data={head} value=test_runs title="Test runs" />
+<BigValue data={head} value=whole_suite_runs title="Whole-suite runs" />
+<BigValue data={head} value=repo_summary title="Repo tests" />
+<BigValue data={head} value=acc_summary title="Acceptance" />
 
 ```sql calls
-select position, tool_name, command_class, test_runner, duration_s, is_error, output_tokens_est
+select position, tool_name, command_class, test_runner, path_arg_count, duration_s, is_error, exit_code, output_tokens_est
 from tiger.calls
 where session_id = '${params.session_id}'
 order by position

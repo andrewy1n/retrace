@@ -9,8 +9,9 @@
 
   const links = [
     { href: '/', label: 'Proposals', match: (p) => p === '/' || p.startsWith('/proposals') },
-    { href: '/results', label: 'Results', match: (p) => p.startsWith('/results') },
-    { href: '/sessions', label: 'Sessions', match: (p) => p.startsWith('/sessions') }
+    { href: '/runs', label: 'Runs', match: (p) => p.startsWith('/runs') },
+    { href: '/sessions', label: 'Sessions', match: (p) => p.startsWith('/sessions') },
+    { href: '/monitoring', label: 'Monitoring', match: (p) => p.startsWith('/monitoring') }
   ];
   $: path = $page.url.pathname;
   onMount(() => showQueries.set(false));
