@@ -13,14 +13,14 @@ select distinct job_id from tiger.sessions order by job_id
 ```sql summary
 select
   count(*) as sessions,
-  avg(case when passed then 1.0 when passed is false then 0.0 end) as pass_rate,
+  avg(case when evidence_role = 'final' and passed then 1.0 when evidence_role = 'final' and passed is false then 0.0 end) as pass_rate,
   sum(factory_credits) as credits
 from tiger.sessions
 where job_id in ${inputs.job.value}
 ```
 
 <BigValue data={summary} value=sessions title="Sessions" />
-<BigValue data={summary} value=pass_rate fmt=pct1 title="Pass rate" />
+<BigValue data={summary} value=pass_rate fmt=pct1 title="Pass rate (final trials)" />
 <BigValue data={summary} value=credits fmt=num0 title="Factory credits" />
 
 ```sql by_job
@@ -37,7 +37,11 @@ order by 1, 2
 select
   case when length(session_id) > 50 then regexp_replace(replace(session_id, 'instance_', ''), '-([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])[0-9a-f]+(-v[0-9a-f]+)?(-[0-9])$', '-\\1\\3') else session_id end as session_id,
   case when length(task_id) > 50 then regexp_replace(replace(task_id, 'instance_', ''), '-([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])[0-9a-f]+(-v[0-9a-f]+)?$', '-\\1') else task_id end as task_id,
-  job_id, trial::int as trial, assistant_turns, tool_calls, factory_credits, passed,
+  job_id, trial::int as trial, assistant_turns, tool_calls, factory_credits,
+  case when evidence_role = 'final' then passed::varchar end as passed,
+  case when repo_status = 'ok' then repo_regressed::int::varchar || ' regressed of ' || repo_passing_at_start::int::varchar
+       when repo_status = 'no_tests' then 'no tests' when repo_status = 'error' then 'error' end as repo_tests,
+  case when acc_status is not null then acc_status || ' (' || acc_at_start || ' at start)' end as acceptance,
   '/sessions/' || session_id as link
 from tiger.sessions
 where job_id in ${inputs.job.value}
@@ -52,5 +56,7 @@ order by factory_credits desc
   <Column id=assistant_turns />
   <Column id=tool_calls />
   <Column id=factory_credits fmt=num0 />
-  <Column id=passed />
+  <Column id=passed title="Passed (final)" />
+  <Column id=repo_tests title="Repo tests" />
+  <Column id=acceptance />
 </DataTable>

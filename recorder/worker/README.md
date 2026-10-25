@@ -4,7 +4,7 @@ One x86_64 VM runs `droid exec` inside the official SWE-bench Verified or SWE-be
 
 Files:
 - `cloud-init.yaml`: user data for the VM (generated, do not hand-edit)
-- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `grade_pro.sh`, `pro_task.sh`, `retrace_job.py`, `tiger_sink.py`: installed to `/opt/retrace/`
+- `scripts/prepull.sh`, `run_job.sh`, `run_trial.sh`, `grade.sh`, `grade_pro.sh`, `pro_task.sh`, `retrace_job.py`, `tiger_sink.py`, `proxies.sh`, `repo_tests.py`: installed to `/opt/retrace/`
 - `../replay/run_checkpoint.sh`, `docker-droid.sh`, `restore.sh`, `fork.mjs`, `package.json`, `package-lock.json`: installed to `/opt/retrace/replay/`. They run `checkpoint` jobs.
 - `build_cloud_init.py`: regenerates `cloud-init.yaml` after you edit a script
 
@@ -83,7 +83,7 @@ python -m swebench.harness.run_evaluation \
   --predictions_path /opt/retrace/runs/<job_id>/eval-t<trial>/predictions.jsonl \
   --max_workers N --run_id t<trial>-<timestamp> --report_dir /opt/retrace/runs/<job_id>/eval-t<trial>
 ```
-Then `retrace_job.py collect` writes `runs/results/<job_id>/<task>-step0-<arm>-<trial>.json` and validates it against `contracts/replay-result.schema.json`. A trial with an empty patch is a fail. A trial with a patch but no grader report writes no result, and `grade.sh` exits 1.
+Then `grade.sh` runs `proxies.sh` for each finished trial (see "Proxies" below). A `proxies.sh` failure sets exit code 1 but does not stop grading. Then `retrace_job.py collect` writes `runs/results/<job_id>/<task>-step0-<arm>-<trial>.json` and validates it against `contracts/replay-result.schema.json`. A trial with an empty patch is a fail. A trial with a patch but no grader report writes no result, and `grade.sh` exits 1.
 
 Use `SWE-bench/SWE-bench_Verified`, not `princeton-nlp/SWE-bench_Verified`. swebench 5.x needs the `image`, `eval_script` and `log_parser` columns. The princeton-nlp copy lacks them, and loading it fails with `KeyError: 'image'` (tested). Every grade run gets a fresh eval id, and a re-grade overwrites the result files.
 
@@ -105,7 +105,7 @@ An existing VM does not rerun cloud-init. Update it by hand:
 cd /opt/retrace/repo && git pull
 mkdir -p /opt/retrace/replay && cd recorder/replay
 cp run_checkpoint.sh docker-droid.sh restore.sh fork.mjs package.json package-lock.json /opt/retrace/replay/
-cp ../worker/scripts/run_job.sh ../worker/scripts/grade.sh ../worker/scripts/retrace_job.py /opt/retrace/
+cp ../worker/scripts/{run_job.sh,grade.sh,retrace_job.py,tiger_sink.py,proxies.sh,repo_tests.py} /opt/retrace/
 cd /opt/retrace/replay && npm ci --omit=dev
 ```
 Then pull the image and run one fork:
@@ -124,11 +124,24 @@ grade.sh ~/fork1.json 1
 - A `hint` arm sends its `text` as the message. A `control` or `candidate` arm sends the job's `continuation` text, which the schema requires. A `candidate` arm copies `<repo>/<arm.path>/.factory` and `AGENTS.md` into `/testbed` before the session resumes.
 - `run_job.sh` runs `tool_call_ids` x `reruns` under the same budget rule as a `step0` job. `DROID_TIMEOUT` (default 1800 s) interrupts the turn, and `meta.json` gets `timed_out: true` with the credits of the interrupted turn.
 - A trial whose rewind or run fails gets `failed` in `meta.json`. `run_job.sh` runs it again on the next call. `grade.sh` writes no result for it and exits 1.
-- `grade.sh` grades each (tool_call_id, trial) as its own evaluation, up to `max_workers` at once. Results have `evidence_role: "diagnosis"` and `tool_call_id`. `model` is the model the fork reported.
+- `grade.sh` does not grade a `checkpoint` job. It runs `proxies.sh` for each finished (tool_call_id, trial), up to `max_workers` at once. Results have `evidence_role: "diagnosis"`, `tool_call_id`, and `proxies`. They have no `passed` and no `grader`. `model` is the model the fork reported.
 - `meta.json` and `fork.json` hold the successor session id, the continuation text, token counts, and `cost_credits` of the fork alone. The successor session sits in `factory-sessions/`.
 - No trace is written for a fork.
 
-Dev machines with another CPU cannot run the amd64 images with a Bun-built `droid`: it crashes under QEMU. For a local check, set `RETRACE_IMAGE` (for example `ghcr.io/epoch-research/swe-bench.eval.arm64.<instance_id>:latest`), `RETRACE_PLATFORM=linux/arm64`, and `RETRACE_DROID` to a Linux arm64 `droid` binary. Such a run does not grade.
+Dev machines with another CPU cannot run the amd64 images with a Bun-built `droid`: it crashes under QEMU. For a local check, set `RETRACE_IMAGE` (for example `ghcr.io/epoch-research/swe-bench.eval.arm64.<instance_id>:latest`), `RETRACE_PLATFORM=linux/arm64`, and `RETRACE_DROID` to a Linux arm64 `droid` binary. Such a run does not grade and has no proxies.
+
+## Proxies
+
+`proxies.sh` computes the `proxies` field of a result from a trial's patch. It never reads the dataset's tests, test lists, or gold patch.
+```bash
+proxies.sh <job.json> <task_id> <art_dir>
+# → <art_dir>/proxies.json
+```
+- `<art_dir>` is the trial directory that holds `patch.diff` and `meta.json`: `runs/<job_id>/<task>/<trial>` for a `step0` job, `runs/<job_id>/<task>/<tool_call_id>/<trial>` for a `checkpoint` job.
+- It exits 0 whenever it wrote `proxies.json`. A proxy that fails has status `error` inside the file. A non-zero exit means a usage error or no file.
+- `repo_tests` and `acceptance` are described in `recorder/AGENTS.md` and in `contracts/replay-result.schema.json`. `repo_tests.py` is the helper behind `repo_tests`.
+- `grade.sh` runs it for every finished trial, then `retrace_job.py collect` copies `proxies.json` into the result. A missing `proxies.json` gives a warning and a result without `proxies`.
+- Run it by hand to re-compute one trial. Then run `retrace_job.py collect <job.json> <trial>` again.
 
 ## SWE-bench Pro
 
@@ -233,7 +246,7 @@ tiger_sink.py primitives /opt/retrace/repo/runs/primitives      # all primitives
 ```
 On the dev machine, set `RETRACE_REPO=$PWD RETRACE_ROOT=$PWD` first, as for `retrace_job.py`.
 
-`grade.sh` runs `tiger_sink.py results` after each successful `collect`. It skips the step when `TIGER_DATABASE_URL` is unset. Primitives are not sent by `grade.sh`. Run `tiger_sink.py primitives` by hand.
+`grade.sh` runs `tiger_sink.py results` after each successful `collect`. It writes `passed` and `grader` as NULL for a `checkpoint` trial, and `proxies` as jsonb. It skips the step when `TIGER_DATABASE_URL` is unset. Primitives are not sent by `grade.sh`. Run `tiger_sink.py primitives` by hand.
 
 Each upsert replaces the row with the same key. A primitives session that gets fewer calls on a re-run keeps its old extra call rows, because the role has no delete grant.
 

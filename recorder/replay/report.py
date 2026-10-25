@@ -9,6 +9,8 @@ Every result must be a step-0 `final` result, and all arms must share one model 
 Rates carry Wilson 95% intervals over trials. Paired differences compare tasks that every arm in the pair ran:
 a task's pass value is the share of its trials that pass, and its credit value is the mean log credits of its
 trials that the timeout did not kill. Intervals are percentile bootstraps over tasks with a fixed seed.
+The proxy agreement section compares each proxy with the grader on trials the proxy can judge.
+Proxies read `proxies` in the result and the last test call in runs/primitives (--primitives).
 """
 import argparse
 import json
@@ -100,6 +102,88 @@ def run_has_signal(r, primitives_dir, signal):
     return any(signal(c) for c in json.loads(path.read_text())["calls"])
 
 
+def last_test_exit(r, primitives_dir):
+    if not r.get("session_id"):
+        return None
+    path = primitives_dir / f"{r['session_id']}.json"
+    if not path.exists():
+        return None
+    runs = [c for c in json.loads(path.read_text())["calls"] if c.get("test_runner")]
+    if not runs or runs[-1].get("exit_code") is None:
+        return None
+    return runs[-1]["exit_code"] == 0
+
+
+def repo_tests_pass(r):
+    p = (r.get("proxies") or {}).get("repo_tests")
+    return p["regressed"] == 0 if p and p["status"] == "ok" else None
+
+
+def acceptance_pass(r):
+    p = (r.get("proxies") or {}).get("acceptance")
+    return p["status"] == "pass" if p and p["at_start"] == "fail" and p["status"] != "error" else None
+
+
+def combined_pass(r):
+    a, b = repo_tests_pass(r), acceptance_pass(r)
+    return None if a is None or b is None else a and b
+
+
+PROXIES = {
+    "repo_tests": lambda r, d: repo_tests_pass(r),
+    "acceptance": lambda r, d: acceptance_pass(r),
+    "last_test_exit": last_test_exit,
+    "combined": lambda r, d: combined_pass(r),
+}
+
+
+def cohen_kappa(a, b, c, d):
+    n = a + b + c + d
+    if n == 0:
+        return math.nan
+    chance = ((a + b) * (a + c) + (c + d) * (b + d)) / n ** 2
+    if chance == 1:
+        return math.nan
+    return ((a + d) / n - chance) / (1 - chance)
+
+
+def agreement_row(arm, proxy, results, primitives_dir):
+    a = b = c = d = 0
+    for r in results:
+        if r.get("evidence_role") != "final" or "passed" not in r:
+            continue
+        guess = PROXIES[proxy](r, primitives_dir)
+        if guess is None:
+            continue
+        a += guess and r["passed"]
+        b += guess and not r["passed"]
+        c += not guess and r["passed"]
+        d += not guess and not r["passed"]
+    n = a + b + c + d
+    total = sum(r.get("evidence_role") == "final" and "passed" in r for r in results)
+    lo, hi = wilson(a + d, n)
+    plo, phi = wilson(a, a + b)
+    kappa = cohen_kappa(a, b, c, d)
+    agree = pct((a + d) / n) if n else "n/a"
+    prec = pct(a / (a + b)) if a + b else "n/a"
+    return n, (f"| {arm} | {proxy} | {n} | {total - n} | {a} | {b} | {c} | {d} | {agree} ({pct(lo)} to {pct(hi)}) | "
+               f"{'n/a' if math.isnan(kappa) else f'{kappa:.2f}'} | {prec} ({pct(plo)} to {pct(phi)}) |")
+
+
+def agreement_lines(arms, primitives_dir):
+    groups = list(arms.items())
+    if len(groups) > 1:
+        groups.append(("all", [r for rs in arms.values() for r in rs]))
+    rows = [(n, row) for name, rs in groups for p in PROXIES for n, row in [agreement_row(name, p, rs, primitives_dir)]]
+    out = ["## Proxy agreement", "",
+           "Agreement with the dataset grader on final trials. For verification only; the improvement loop never reads it.", ""]
+    if not any(n for n, _ in rows):
+        return out + ["No final trial has proxies."]
+    out += ["| Arm | Proxy | Usable | Excluded | Proxy pass, grader pass | Proxy pass, grader fail | Proxy fail, grader pass | Proxy fail, grader fail | Agreement (95% Wilson) | Kappa | Precision of proxy pass (95% Wilson) |",
+            "|---|---|---|---|---|---|---|---|---|---|---|"]
+    return out + [row for _, row in rows]
+
+
 def pct(x):
     return "n/a" if math.isnan(x) else f"{100 * x:.1f}%"
 
@@ -173,6 +257,7 @@ def main(argv=None):
     for name, rs in arms.items():
         if name != control:
             lines += paired_lines(arms[control], rs, control, name) + [""]
+    lines += [""] + agreement_lines(arms, args.primitives)
     text = "\n".join(lines) + "\n"
     if args.out:
         args.out.write_text(text, newline="\n")

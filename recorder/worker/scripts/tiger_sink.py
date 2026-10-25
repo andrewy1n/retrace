@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import psycopg
+from psycopg.types.json import Jsonb
 from jsonschema import Draft202012Validator
 
 ROOT = Path(os.environ.get("RETRACE_ROOT", "/opt/retrace"))
@@ -18,7 +19,7 @@ REPO = Path(os.environ.get("RETRACE_REPO", ROOT / "repo"))
 RESULT_KEY = ("job_id", "task_id", "checkpoint", "arm", "trial")
 RESULT_COLUMNS = RESULT_KEY + (
     "session_id", "tool_call_id", "model", "droid_version", "stop_mode",
-    "passed", "grader", "evidence_role", "cost_credits", "timed_out",
+    "passed", "grader", "evidence_role", "cost_credits", "timed_out", "proxies",
 )
 SESSION_KEY = ("session_id",)
 SESSION_COLUMNS = SESSION_KEY + (
@@ -64,6 +65,8 @@ def write_result(cur, path):
     result = load(path, "replay-result")
     row = {c: result.get(c) for c in RESULT_COLUMNS}
     row["checkpoint"] = result.get("tool_call_id", "step0")
+    if row["proxies"] is not None:
+        row["proxies"] = Jsonb(row["proxies"])
     cur.execute(RESULT_SQL, row)
 
 

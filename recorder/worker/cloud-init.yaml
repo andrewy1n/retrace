@@ -331,17 +331,18 @@ write_files:
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
-      # Grade a step0 or checkpoint job and write one result file per trial. A swebench_verified job (default) goes
-      # through the official SWE-bench harness. A swebench_pro job goes through the task's own verifier from the
-      # SWE-bench Pro harness (grade_pro.sh), one fresh container per trial, <max_workers> at once.
+      # Finish a job and write one result file per trial. A step0 job gets the dataset grader plus proxies. A checkpoint job
+      # gets proxies only and is never graded. A swebench_verified job (default) goes through the official SWE-bench harness.
+      # A swebench_pro job goes through the task's own verifier from the SWE-bench Pro harness (grade_pro.sh), one fresh
+      # container per trial, <max_workers> at once. proxies.sh writes proxies.json in each trial directory.
       #
       # Usage: /opt/retrace/grade.sh <job.json> [max_workers=8] [trial]
       # Results: $RETRACE_REPO/runs/results/<job_id>/<task_id>-<step0 or tool_call_id>-<arm>-<trial>.json
       # The harness takes one prediction per instance. A step0 job grades each trial number as one evaluation run.
-      # A checkpoint job grades each (tool_call_id, trial) as its own run, with max_workers=1, <max_workers> runs at once.
+      # A checkpoint job runs proxies.sh for each (tool_call_id, trial), <max_workers> at once.
       set -euo pipefail
 
-      [[ $# -ge 1 ]] || { sed -n '2,8p' "$0"; exit 1; }
+      [[ $# -ge 1 ]] || { sed -n '2,11p' "$0"; exit 1; }
       JOB="$(realpath "$1")"; WORKERS="${2:-8}"; ONLY="${3:-}"
       ROOT="${RETRACE_ROOT:-/opt/retrace}"
       PY="$ROOT/venv/bin/python"
@@ -355,26 +356,16 @@ write_files:
 
       if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
         TASK="$(jq -r .task_id "$REPO/runs/traces/$(jq -r .session_id "$JOB").json")"
-        grade_one() {
-          local cp="$1" t="$2" art="$RUNS/$TASK/$1/$2" eval_dir="$RUNS/eval-$1-t$2"
+        proxies_one() {
+          local art="$RUNS/$TASK/$1/$2"
           [[ -f "$art/meta.json" ]] && ! jq -e .failed "$art/meta.json" >/dev/null || return 0
-          if [[ "$SUITE" == swebench_pro ]]; then
-            "$ROOT/grade_pro.sh" "$TASK" "$art/patch.diff" "$eval_dir/$TASK"
-            return
-          fi
-          mkdir -p "$eval_dir"; cd "$eval_dir"
-          { cat "$art/pred.json"; echo; } > predictions.jsonl
-          [[ -s "$art/patch.diff" ]] || return 0
-          "$PY" -m swebench.harness.run_evaluation \
-            --dataset_name "${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}" \
-            --predictions_path predictions.jsonl --max_workers 1 \
-            --run_id "$cp-t$t-$(date +%Y%m%d%H%M%S)" --report_dir "$eval_dir"
+          "$ROOT/proxies.sh" "$JOB" "$TASK" "$art"
         }
-        export -f grade_one
-        export RUNS TASK PY ROOT SUITE SWEBENCH_DATASET
+        export -f proxies_one
+        export RUNS TASK ROOT JOB
         for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
           [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
-          jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'grade_one "$@"' _ {} "$t" \
+          jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'proxies_one "$@"' _ {} "$t" \
             || failed=1
           "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
         done
@@ -385,6 +376,13 @@ write_files:
         exit 0
       fi
 
+      step0_proxies() {
+        local t="$1" task
+        for task in $(jq -r '.task_ids[]' "$JOB"); do
+          [[ -f "$RUNS/$task/$t/meta.json" ]] && ! jq -e .failed "$RUNS/$task/$t/meta.json" >/dev/null && echo "$task"
+        done | xargs -r -P "$WORKERS" -I{} "$ROOT/proxies.sh" "$JOB" {} "$RUNS/{}/$t" || failed=1
+      }
+
       for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
         [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
         EVAL_DIR="$RUNS/eval-t$t"
@@ -393,6 +391,7 @@ write_files:
           for task in $(jq -r '.task_ids[]' "$JOB"); do
             [[ -f "$RUNS/$task/$t/meta.json" ]] && echo "$task"
           done | xargs -r -P "$WORKERS" -I{} "$ROOT/grade_pro.sh" {} "$RUNS/{}/$t/patch.diff" "$EVAL_DIR/{}" || failed=1
+          step0_proxies "$t"
           "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
           if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
             "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
@@ -413,6 +412,7 @@ write_files:
           --max_workers "$WORKERS" \
           --run_id "t$t-$(date +%Y%m%d%H%M%S)" \
           --report_dir "$EVAL_DIR"
+        step0_proxies "$t"
         "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || { failed=1; continue; }
         if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
           "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
@@ -559,7 +559,7 @@ write_files:
               return
           task = load_trace(job["session_id"])["task_id"]
           for cp in [only] if only else job["tool_call_ids"]:
-              yield task, cp, runs / task / cp / str(trial), runs / f"eval-{cp}-t{trial}"
+              yield task, cp, runs / task / cp / str(trial), None
 
 
       def graded(job, eval_dir, task):
@@ -584,12 +584,13 @@ write_files:
               if meta.get("failed"):
                   problems.append(f"{task} {cp}: trial failed: {meta['failed']}")
                   continue
-              passed = graded(job, eval_dir, task)
-              if passed is None and not (art / "patch.diff").read_text().strip():
-                  passed = False
-              elif passed is None:
-                  problems.append(f"{task} {cp}: no grader report")
-                  continue
+              if cp == "step0":
+                  passed = graded(job, eval_dir, task)
+                  if passed is None and not (art / "patch.diff").read_text().strip():
+                      passed = False
+                  elif passed is None:
+                      problems.append(f"{task} {cp}: no grader report")
+                      continue
               result = {
                   "job_id": job_id,
                   "task_id": task,
@@ -598,13 +599,19 @@ write_files:
                   "droid_version": meta["droid_version"],
                   "stop_mode": job["stop_mode"],
                   "trial": trial,
-                  "passed": passed,
-                  "grader": "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench",
                   "evidence_role": "final" if cp == "step0" else "diagnosis",
                   "cost_credits": meta["cost_credits"],
               }
-              if cp != "step0":
+              if cp == "step0":
+                  result["passed"] = passed
+                  result["grader"] = "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench"
+              else:
                   result["tool_call_id"] = cp
+              proxies_file = art / "proxies.json"
+              if proxies_file.exists():
+                  result["proxies"] = json.loads(proxies_file.read_text())
+              else:
+                  print(f"warning: {task} {cp} trial {trial}: no proxies.json, result has no proxies", file=sys.stderr)
               if "timed_out" in meta:
                   result["timed_out"] = meta["timed_out"]
               session_id = f"{job_id}-{task}-{trial}"
@@ -612,7 +619,8 @@ write_files:
                   result["session_id"] = session_id
               check(result, "replay-result")
               (out_dir / f"{task}-{cp}-{kind}-{trial}.json").write_text(json.dumps(result, indent=2) + "\n")
-              print(f"{task} {cp} trial {trial}: {'pass' if passed else 'fail'}")
+              outcome = "collected" if cp != "step0" else "pass" if passed else "fail"
+              print(f"{task} {cp} trial {trial}: {outcome}")
           if problems:
               sys.exit("; ".join(problems))
 
@@ -642,6 +650,7 @@ write_files:
       from pathlib import Path
 
       import psycopg
+      from psycopg.types.json import Jsonb
       from jsonschema import Draft202012Validator
 
       ROOT = Path(os.environ.get("RETRACE_ROOT", "/opt/retrace"))
@@ -650,7 +659,7 @@ write_files:
       RESULT_KEY = ("job_id", "task_id", "checkpoint", "arm", "trial")
       RESULT_COLUMNS = RESULT_KEY + (
           "session_id", "tool_call_id", "model", "droid_version", "stop_mode",
-          "passed", "grader", "evidence_role", "cost_credits", "timed_out",
+          "passed", "grader", "evidence_role", "cost_credits", "timed_out", "proxies",
       )
       SESSION_KEY = ("session_id",)
       SESSION_COLUMNS = SESSION_KEY + (
@@ -696,6 +705,8 @@ write_files:
           result = load(path, "replay-result")
           row = {c: result.get(c) for c in RESULT_COLUMNS}
           row["checkpoint"] = result.get("tool_call_id", "step0")
+          if row["proxies"] is not None:
+              row["proxies"] = Jsonb(row["proxies"])
           cur.execute(RESULT_SQL, row)
 
 
@@ -726,6 +737,636 @@ write_files:
 
 
       main()
+  - path: /opt/retrace/proxies.sh
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env bash
+      # Compute the proxies of one trial's patch in fresh containers from the task image. The proxies use only what a
+      # production system has: the repo's own tests (repo_tests) and the task's frozen acceptance check (acceptance).
+      #
+      # Usage: /opt/retrace/proxies.sh <job.json> <task_id> <art_dir>
+      # Reads <art_dir>/patch.diff (may be empty) and <art_dir>/start_commit. Writes <art_dir>/proxies.json, the `proxies`
+      # object of contracts/replay-result.schema.json. `acceptance` appears when $RETRACE_REPO/runs/acceptance/<task_id>/check.json exists.
+      # Optional: PROXY_TIMEOUT (seconds per run, default 900), RETRACE_REPO, PRO_TASKS (see pro_task.sh), RETRACE_IMAGE
+      #        and RETRACE_PLATFORM (as in run_checkpoint.sh).
+      # The start run of repo_tests and the start run of the acceptance check are cached in
+      # /opt/retrace/runs/<job_id>/proxy-cache/<task_id>/. Exits 0 once proxies.json is written, even when a proxy has status error.
+      # It never reads the task's tests/ or solution/, the dataset's test lists, or a gold patch.
+      set -euo pipefail
+
+      [[ $# -eq 3 ]] || { sed -n '2,12p' "$0"; exit 1; }
+      JOB="$(realpath "$1")"; IID="$2"; ART="$(realpath "$3")"
+      HERE="$(dirname "$(realpath "$0")")"
+      ROOT="${RETRACE_ROOT:-/opt/retrace}"
+      REPO="${RETRACE_REPO:-$ROOT/repo}"
+      PY="$ROOT/venv/bin/python"
+      [[ -x "$PY" ]] || PY=python3
+      TOOL="$HERE/repo_tests.py"
+      DATASET="${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}"
+      TIMEOUT="${PROXY_TIMEOUT:-900}"
+      # shellcheck source=pro_task.sh
+      source "$HERE/pro_task.sh"
+
+      [[ -f "$JOB" ]] || { echo "[$IID] no job file $JOB" >&2; exit 1; }
+      [[ -f "$ART/start_commit" ]] || { echo "[$IID] no start_commit in $ART" >&2; exit 1; }
+      START="$(<"$ART/start_commit")"
+      JOB_ID="$(jq -r .job_id "$JOB")"
+      SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
+
+      WORK="$(mktemp -d)"
+      CACHE="$ROOT/runs/$JOB_ID/proxy-cache/$IID"
+      mkdir -p "$CACHE" 2>/dev/null || { CACHE="$WORK/cache"; mkdir -p "$CACHE"; }
+      PATCH="$ART/patch.diff"
+      [[ -f "$PATCH" ]] || { : > "$WORK/empty.diff"; PATCH="$WORK/empty.diff"; }
+
+      BASE="retrace-proxy-${JOB_ID}-${IID}-$$"
+      BASE="${BASE//[^A-Za-z0-9_.-]/-}"
+      BASE="${BASE:0:90}"
+      BASE="${BASE,,}"
+      TAGS=(tree start patched accstart accpatched)
+      # shellcheck disable=SC2329  # invoked via trap
+      cleanup() {
+        for t in "${TAGS[@]}"; do docker rm -f "$BASE-$t" >/dev/null 2>&1 || true; done
+        rm -rf "$WORK"
+      }
+      trap cleanup EXIT
+
+      IMAGE=""
+      WORKDIR=""
+      ENVPRE=""
+      if [[ "$SUITE" != swebench_pro ]]; then
+        WORKDIR=/testbed
+        ENVPRE='source /opt/miniconda3/bin/activate testbed >/dev/null 2>&1; '
+      fi
+      [[ -z "$WORKDIR" && -f "$CACHE/workdir.txt" ]] && WORKDIR="$(<"$CACHE/workdir.txt")"
+      DEADLINE=0
+      RUN_SECONDS=0
+
+      resolve_image() {
+        if [[ -n "${RETRACE_IMAGE:-}" ]]; then
+          IMAGE="$RETRACE_IMAGE"
+        elif [[ "$SUITE" == swebench_pro ]]; then
+          IMAGE="$(pro_image "$IID")" || return 1
+        elif [[ -s "$CACHE/image.txt" ]]; then
+          IMAGE="$(<"$CACHE/image.txt")"
+        else
+          IMAGE="$("$PY" - "$DATASET" "$IID" <<'PY'
+      import sys
+      from datasets import load_dataset
+      name, iid = sys.argv[1:3]
+      print(next(r for r in load_dataset(name, split="test") if r["instance_id"] == iid)["image"])
+      PY
+          )" || return 1
+          echo "$IMAGE" > "$CACHE/image.txt"
+        fi
+        [[ -n "$IMAGE" ]]
+      }
+
+      fresh() {
+        local name="$BASE-$1"
+        docker rm -f "$name" >/dev/null 2>&1 || true
+        docker run -d --name "$name" --platform "${RETRACE_PLATFORM:-linux/amd64}" "$IMAGE" sleep infinity >/dev/null || return 1
+        if [[ -z "$WORKDIR" ]]; then
+          WORKDIR="$(pro_workdir "$name")"
+          [[ -n "$WORKDIR" ]] || return 1
+          echo "$WORKDIR" > "$CACHE/workdir.txt"
+        fi
+      }
+
+      drop() { docker rm -f "$BASE-$1" >/dev/null 2>&1 || true; }
+
+      run_limited() {
+        local left=$((DEADLINE - SECONDS))
+        (( left > 0 )) || return 124
+        timeout "$left" "$@"
+      }
+
+      apply_patch() {
+        [[ -s "$PATCH" ]] || return 0
+        docker cp "$PATCH" "$1:/tmp/replay.patch" >/dev/null || return 1
+        docker exec -w "$WORKDIR" "$1" bash -c 'git apply --verbose /tmp/replay.patch || git apply --3way /tmp/replay.patch || patch --fuzz=3 -p1 -i /tmp/replay.patch' \
+          > "$WORK/apply-${1##*-}.log" 2>&1
+      }
+
+      restore_tests() {
+        docker exec -w "$WORKDIR" "$1" git checkout "$START" -- "${RESTORE[@]}" || return 1
+        (( ${#GO_DIRS[@]} )) || return 0
+        docker exec -w "$WORKDIR" "$1" bash -c 'start=$1; shift; shopt -s nullglob
+          for d; do for f in "$d"/*_test.go; do f="${f#./}"; git cat-file -e "$start:$f" 2>/dev/null || rm -f "$f"; done; done' _ "$START" "${GO_DIRS[@]}"
+      }
+
+      list_tree() {
+        local tree="$CACHE/tree-$START.txt"
+        [[ -s "$tree" ]] || {
+          fresh tree || return 1
+          docker exec -w "$WORKDIR" "$BASE-tree" git -c core.quotePath=false ls-tree -r --name-only "$START" > "$tree.$$" || return 1
+          drop tree
+          mv "$tree.$$" "$tree"
+        }
+        TREE="$tree"
+      }
+
+      # Runs the selected tests in a fresh container and writes their outcomes to $3. Mode patched applies the patch first.
+      test_run() {
+        local tag="$1" mode="$2" out="$3" c="$BASE-$1" rc=0 t0=$SECONDS i=0 row
+        local parse=()
+        mkdir -p "$out"
+        DEADLINE=$((SECONDS + TIMEOUT))
+        fresh "$tag" || return 1
+        docker exec -w "$WORKDIR" "$c" git cat-file -e "$START^{commit}" || return 1
+        if [[ "$mode" == patched ]]; then
+          apply_patch "$c" || return 1
+          restore_tests "$c" || return 1
+        fi
+        if (( ${#PY_FILES[@]} )); then
+          run_limited docker exec -w "$WORKDIR" "$c" bash -c "$ENVPRE"'py=$(command -v python || command -v python3)
+            exec "$py" -m pytest -p no:cacheprovider -q --junitxml=/tmp/junit.xml "$@"' _ "${PY_FILES[@]}" \
+            > "$out/pytest.log" 2>&1 || rc=$?
+          [[ "$rc" -ne 124 ]] || { drop "$tag"; return 1; }
+          docker cp "$c:/tmp/junit.xml" "$out/junit.xml" >/dev/null 2>&1 || true
+          parse+=(--junit "$out/junit.xml")
+        fi
+        for row in "${GO_ROWS[@]}"; do
+          mapfile -t pkgs < <(jq -r '.pkgs[]' <<< "$row")
+          rc=0
+          run_limited docker exec -w "$WORKDIR/$(jq -r .module <<< "$row")" "$c" bash -c \
+            'go test -json -count=1 "$@" > "/tmp/go-'"$i"'.json" 2> "/tmp/go-'"$i"'.err"' _ "${pkgs[@]}" || rc=$?
+          [[ "$rc" -ne 124 ]] || { drop "$tag"; return 1; }
+          docker cp "$c:/tmp/go-$i.json" "$out/go-$i.json" >/dev/null 2>&1 || true
+          parse+=(--go "$out/go-$i.json")
+          i=$((i + 1))
+        done
+        drop "$tag"
+        "$PY" "$TOOL" parse "${parse[@]}" > "$out/outcomes.json" || return 1
+        RUN_SECONDS=$((SECONDS - t0))
+      }
+
+      write_repo_tests() {
+        "$PY" "$TOOL" report --selection "$WORK/selection.json" "$@" > "$RT_JSON.tmp" && mv "$RT_JSON.tmp" "$RT_JSON"
+      }
+
+      repo_tests_proxy() {
+        local cached="" patched_seconds=0 start_seconds=0
+        list_tree || return 1
+        "$PY" "$TOOL" select --patch "$PATCH" --tree "$TREE" > "$WORK/selection.json" || return 1
+        if [[ "$(jq '.selected | length' "$WORK/selection.json")" -eq 0 ]]; then
+          write_repo_tests
+          return 0
+        fi
+        mapfile -t PY_FILES < <(jq -r '.python[]' "$WORK/selection.json")
+        mapfile -t GO_DIRS < <(jq -r '.go_dirs[]' "$WORK/selection.json")
+        mapfile -t GO_ROWS < <(jq -c '.go_runs[]' "$WORK/selection.json")
+        mapfile -t RESTORE < <(jq -r '.restore[]' "$WORK/selection.json")
+        cached="$CACHE/$(jq -r .key "$WORK/selection.json").json"
+        # Any failure below leaves the default error result.
+        write_repo_tests --error
+        resolve_image || return 1
+
+        if [[ -f "$cached" ]]; then
+          jq .outcomes "$cached" > "$WORK/start.json"
+          start_seconds="$(jq .seconds "$cached")"
+        else
+          test_run start start "$WORK/start" || return 1
+          start_seconds="$RUN_SECONDS"
+          cp "$WORK/start/outcomes.json" "$WORK/start.json"
+          jq -n --slurpfile o "$WORK/start.json" --argjson s "$start_seconds" '{outcomes: $o[0], seconds: $s}' > "$cached.$$"
+          mv "$cached.$$" "$cached"
+        fi
+
+        if [[ -s "$PATCH" ]]; then
+          test_run patched patched "$WORK/patched" || return 1
+          patched_seconds="$RUN_SECONDS"
+          cp "$WORK/patched/outcomes.json" "$WORK/patched.json"
+        else
+          cp "$WORK/start.json" "$WORK/patched.json"
+        fi
+        write_repo_tests --start "$WORK/start.json" --patched "$WORK/patched.json" --seconds "$((start_seconds + patched_seconds))"
+      }
+
+      # Sets ACC_STATUS to pass, fail, or error. Mode patched applies the patch before the check files are written.
+      acceptance_run() {
+        local tag="$1" mode="$2" c="$BASE-$1" rc=0 t0=$SECONDS f
+        ACC_STATUS=error
+        DEADLINE=$((SECONDS + TIMEOUT))
+        fresh "$tag" || return 0
+        docker exec -w "$WORKDIR" "$c" git cat-file -e "$START^{commit}" || return 0
+        if [[ "$mode" == patched ]]; then
+          apply_patch "$c" || return 0
+        fi
+        for f in "${ACC_FILES[@]}"; do
+          docker exec "$c" mkdir -p "$(dirname "$WORKDIR/$f")" || return 0
+          docker cp "$ACC_DIR/files/$f" "$c:$WORKDIR/$f" >/dev/null || return 0
+        done
+        docker cp "$WORK/acceptance.sh" "$c:/tmp/acceptance.sh" >/dev/null || return 0
+        run_limited docker exec -w "$WORKDIR" "$c" bash -c "$ENVPRE"'bash /tmp/acceptance.sh' > "$WORK/acceptance-$tag.log" 2>&1 || rc=$?
+        drop "$tag"
+        RUN_SECONDS=$((SECONDS - t0))
+        case "$rc" in
+          0) ACC_STATUS=pass ;;
+          124) ACC_STATUS=error ;;
+          *) ACC_STATUS=fail ;;
+        esac
+      }
+
+      write_acceptance() {
+        "$PY" "$TOOL" acceptance --sha "$ACC_SHA" --at-start "$1" --status "$2" ${3:+--seconds "$3"} > "$ACC_JSON"
+      }
+
+      acceptance_proxy() {
+        local cached at_start seconds=0 check
+        ACC_SHA="$(sha256sum "$ACC_DIR/check.json" | cut -d' ' -f1)"
+        write_acceptance error error
+        check="$("$PY" "$TOOL" check "$ACC_DIR/check.json")" || return 1
+        ACC_SHA="$(jq -r .sha256 <<< "$check")"
+        jq -r .command <<< "$check" > "$WORK/acceptance.sh"
+        mapfile -t ACC_FILES < <(jq -r '.files[]' <<< "$check")
+        write_acceptance error error
+        resolve_image || return 1
+
+        cached="$CACHE/acceptance-$ACC_SHA.json"
+        if [[ -f "$cached" ]]; then
+          at_start="$(jq -r .at_start "$cached")"
+          seconds="$(jq .seconds "$cached")"
+        else
+          acceptance_run accstart start
+          at_start="$ACC_STATUS"
+          seconds="$RUN_SECONDS"
+          [[ "$at_start" == error ]] || jq -n --arg a "$at_start" --argjson s "$seconds" '{at_start: $a, seconds: $s}' > "$cached"
+        fi
+        acceptance_run accpatched patched
+        write_acceptance "$at_start" "$ACC_STATUS" "$((seconds + RUN_SECONDS))"
+      }
+
+      RT_JSON="$WORK/repo_tests.json"
+      echo '{"status":"error","selected":[]}' > "$RT_JSON"
+      ACC_DIR="$REPO/runs/acceptance/$IID"
+      ACC_JSON=""
+      [[ ! -f "$ACC_DIR/check.json" ]] || ACC_JSON="$WORK/acceptance.json"
+
+      repo_tests_proxy || echo "[$IID] repo_tests proxy stopped early" >&2
+      [[ -z "$ACC_JSON" ]] || acceptance_proxy || echo "[$IID] acceptance proxy stopped early" >&2
+
+      "$PY" "$TOOL" merge --repo-tests "$RT_JSON" ${ACC_JSON:+--acceptance "$ACC_JSON"} > "$ART/proxies.json.tmp"
+      mv "$ART/proxies.json.tmp" "$ART/proxies.json"
+      echo "[$IID] proxies: repo_tests $(jq -r .repo_tests.status "$ART/proxies.json")${ACC_JSON:+, acceptance $(jq -r .acceptance.status "$ART/proxies.json")}"
+  - path: /opt/retrace/repo_tests.py
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env python3
+      """Pure logic behind proxies.sh: the repo-test and acceptance proxies of one trial's patch.
+
+        repo_tests.py select --patch PATCH --tree TREE
+        repo_tests.py parse [--junit FILE]... [--go FILE]...
+        repo_tests.py compare START.json PATCHED.json
+        repo_tests.py report --selection SEL.json [--start START.json --patched PATCHED.json] [--seconds N] [--error]
+        repo_tests.py check CHECK.json
+        repo_tests.py acceptance --sha SHA --at-start STATUS --status STATUS [--seconds N]
+        repo_tests.py merge --repo-tests FILE [--acceptance FILE]
+
+      TREE lists the repo paths at the start commit, one per line. Every subcommand prints JSON on stdout.
+      A failure prints one line on stderr and exits 1. The output of `merge` is the `proxies` object of a replay result.
+      Standard library only.
+      """
+      import argparse
+      import codecs
+      import hashlib
+      import json
+      import posixpath
+      import sys
+      import xml.etree.ElementTree as ET
+
+      PYTHON_CAP = 10
+      GO_CAP = 5
+      SEVERITY = {"pass": 0, "skip": 1, "fail": 2, "error": 3}
+      STATUSES = ("pass", "fail", "error")
+
+
+      def unquote(token):
+          if len(token) >= 2 and token[0] == token[-1] == '"':
+              raw = codecs.decode(token[1:-1], "unicode_escape")
+              try:
+                  return raw.encode("latin-1").decode("utf-8")
+              except (UnicodeEncodeError, UnicodeDecodeError):
+                  return raw
+          return token
+
+
+      def header_path(text, strip_prefix):
+          token = unquote(text.split("\t")[0].rstrip())
+          if token == "/dev/null":
+              return None
+          if strip_prefix and token[:2] in ("a/", "b/"):
+              return token[2:]
+          return token
+
+
+      def edited_paths(patch):
+          paths = []
+          in_header = True
+          for line in patch.splitlines():
+              if line.startswith("diff --git "):
+                  in_header = True
+              elif line.startswith("@@"):
+                  in_header = False
+              elif in_header:
+                  for prefix, strip in (("--- ", True), ("+++ ", True), ("rename from ", False), ("rename to ", False)):
+                      if line.startswith(prefix):
+                          path = header_path(line[len(prefix):], strip)
+                          if path and path not in paths:
+                              paths.append(path)
+          return paths
+
+
+      def is_test_file(path):
+          parts = path.split("/")
+          name = parts[-1]
+          if "tests" in parts[:-1] or "testing" in parts[:-1] or name == "conftest.py":
+              return True
+          if name.endswith(".py") and (name.startswith("test_") or name.endswith("_test.py")):
+              return True
+          return name.endswith("_test.go")
+
+
+      def shared_prefix(a, b):
+          n = 0
+          for x, y in zip(a, b):
+              if x != y:
+                  break
+              n += 1
+          return n
+
+
+      def dir_parts(path):
+          d = posixpath.dirname(path)
+          return d.split("/") if d else []
+
+
+      def select_python(sources, tree):
+          by_name = {}
+          for path in tree:
+              by_name.setdefault(posixpath.basename(path), set()).add(path)
+          ranked = []
+          for src in sources:
+              stem = posixpath.basename(src)[:-3]
+              found = by_name.get(f"test_{stem}.py", set()) | by_name.get(f"{stem}_test.py", set())
+              here = dir_parts(src)
+              ranked.append(sorted(found, key=lambda c: (-shared_prefix(here, dir_parts(c)), c)))
+          chosen = []
+          for rank in range(max((len(r) for r in ranked), default=0)):
+              for candidates in ranked:
+                  if rank < len(candidates) and candidates[rank] not in chosen:
+                      chosen.append(candidates[rank])
+                      if len(chosen) == PYTHON_CAP:
+                          return chosen
+          return chosen
+
+
+      def package_dir(path):
+          return posixpath.dirname(path) or "."
+
+
+      def module_of(directory, module_dirs):
+          parts = [] if directory == "." else directory.split("/")
+          for n in range(len(parts), 0, -1):
+              candidate = "/".join(parts[:n])
+              if candidate in module_dirs:
+                  return candidate
+          return "."
+
+
+      def select_go(sources, tree):
+          test_dirs = {package_dir(p) for p in tree if p.endswith("_test.go")}
+          dirs = []
+          for src in sources:
+              d = package_dir(src)
+              if d in test_dirs and d not in dirs:
+                  dirs.append(d)
+                  if len(dirs) == GO_CAP:
+                      break
+          module_dirs = {package_dir(p) for p in tree if posixpath.basename(p) == "go.mod"}
+          runs = {}
+          for d in dirs:
+              module = module_of(d, module_dirs)
+              rel = posixpath.relpath(d, module)
+              runs.setdefault(module, []).append("." if rel == "." else f"./{rel}")
+          restore = sorted(p for p in tree if p.endswith("_test.go") and package_dir(p) in dirs)
+          return dirs, [{"module": m, "pkgs": pkgs} for m, pkgs in runs.items()], restore
+
+
+      def select(edited, tree):
+          sources = [p for p in edited if not is_test_file(p)]
+          python = select_python([p for p in sources if p.endswith(".py")], tree)
+          go_dirs, go_runs, go_restore = select_go([p for p in sources if p.endswith(".go")], tree)
+          selected = python + go_dirs
+          key = hashlib.sha256("\n".join(sorted(selected)).encode()).hexdigest()
+          return {"selected": selected, "key": key, "python": python, "go_dirs": go_dirs, "go_runs": go_runs,
+                  "restore": python + go_restore}
+
+
+      def merge_outcomes(into, tests):
+          for test_id, outcome in tests.items():
+              current = into.get(test_id)
+              if current is None or SEVERITY[outcome] > SEVERITY[current]:
+                  into[test_id] = outcome
+
+
+      def parse_junit(text):
+          try:
+              root = ET.fromstring(text)
+          except ET.ParseError as e:
+              raise ValueError(f"junit XML does not parse: {e}")
+          tests = {}
+          for case in root.iter("testcase"):
+              tags = {child.tag for child in case}
+              outcome = "error" if "error" in tags else "fail" if "failure" in tags else "skip" if "skipped" in tags else "pass"
+              merge_outcomes(tests, {f"{case.get('classname', '')}::{case.get('name', '')}": outcome})
+          return tests
+
+
+      def parse_gotest(text):
+          events = 0
+          state = {}
+          for line in text.splitlines():
+              try:
+                  event = json.loads(line)
+              except ValueError:
+                  continue
+              if not isinstance(event, dict):
+                  continue
+              events += 1
+              test = event.get("Test")
+              if not test:
+                  continue
+              test_id = f"{event.get('Package', '')}::{test}"
+              action = event.get("Action")
+              if action == "run":
+                  state.setdefault(test_id, "error")
+              elif action in ("pass", "fail", "skip"):
+                  state[test_id] = action
+          if not events:
+              raise ValueError("go test output has no JSON events")
+          return state
+
+
+      def compare(start, patched):
+          passing = [t for t, o in start.items() if o == "pass"]
+          return {
+              "passing_at_start": len(passing),
+              "regressed": sum(1 for t in passing if patched.get(t) in (None, "fail", "error")),
+              "newly_passing": sum(1 for t, o in patched.items() if o == "pass" and start.get(t) != "pass"),
+          }
+
+
+      def repo_tests_object(selection, start=None, patched=None, seconds=None, error=False):
+          selected = selection["selected"]
+          if not selected:
+              return {"status": "no_tests", "selected": []}
+          out = {"status": "error", "selected": selected}
+          if not error and start is not None and patched is not None:
+              out = {"status": "ok", "selected": selected, **compare(start, patched)}
+          if seconds is not None:
+              out["seconds"] = round(seconds, 1)
+          return out
+
+
+      def load_check(raw):
+          if isinstance(raw, str):
+              raw = raw.encode()
+          try:
+              check = json.loads(raw)
+          except ValueError as e:
+              raise ValueError(f"check.json does not parse: {e}")
+          if not isinstance(check, dict):
+              raise ValueError("check.json is not an object")
+          files, command = check.get("files"), check.get("command")
+          if not isinstance(files, list) or not files or not all(isinstance(f, str) and f for f in files):
+              raise ValueError("check.json needs a non-empty list of file paths")
+          for f in files:
+              if f.startswith("/") or ".." in f.split("/"):
+                  raise ValueError(f"check.json file path {f!r} leaves the repo")
+          if not isinstance(command, str) or not command.strip():
+              raise ValueError("check.json needs a command")
+          return {"files": files, "command": command, "sha256": hashlib.sha256(raw).hexdigest()}
+
+
+      def acceptance_object(sha, at_start, status, seconds=None):
+          out = {"status": status, "at_start": at_start, "check_sha256": sha}
+          if seconds is not None:
+              out["seconds"] = round(seconds, 1)
+          return out
+
+
+      def read(path):
+          with open(path, encoding="utf-8", errors="replace") as f:
+              return f.read()
+
+
+      def read_json(path):
+          return json.loads(read(path))
+
+
+      def emit(obj):
+          json.dump(obj, sys.stdout, separators=(",", ":"))
+          sys.stdout.write("\n")
+
+
+      def cmd_select(a):
+          tree = [line.strip() for line in read(a.tree).splitlines() if line.strip()]
+          emit(select(edited_paths(read(a.patch)), tree))
+
+
+      def cmd_parse(a):
+          tests = {}
+          for path in a.junit:
+              merge_outcomes(tests, parse_junit(read(path)))
+          for path in a.go:
+              merge_outcomes(tests, parse_gotest(read(path)))
+          emit(tests)
+
+
+      def cmd_compare(a):
+          emit(compare(read_json(a.start), read_json(a.patched)))
+
+
+      def cmd_report(a):
+          start = read_json(a.start) if a.start else None
+          patched = read_json(a.patched) if a.patched else None
+          emit(repo_tests_object(read_json(a.selection), start, patched, a.seconds, a.error))
+
+
+      def cmd_check(a):
+          with open(a.check, "rb") as f:
+              emit(load_check(f.read()))
+
+
+      def cmd_acceptance(a):
+          emit(acceptance_object(a.sha, a.at_start, a.status, a.seconds))
+
+
+      def cmd_merge(a):
+          out = {"repo_tests": read_json(a.repo_tests)}
+          if a.acceptance:
+              out["acceptance"] = read_json(a.acceptance)
+          emit(out)
+
+
+      def build_parser():
+          p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+          sub = p.add_subparsers(dest="command", required=True)
+
+          s = sub.add_parser("select")
+          s.add_argument("--patch", required=True)
+          s.add_argument("--tree", required=True)
+          s.set_defaults(run=cmd_select)
+
+          s = sub.add_parser("parse")
+          s.add_argument("--junit", action="append", default=[])
+          s.add_argument("--go", action="append", default=[])
+          s.set_defaults(run=cmd_parse)
+
+          s = sub.add_parser("compare")
+          s.add_argument("start")
+          s.add_argument("patched")
+          s.set_defaults(run=cmd_compare)
+
+          s = sub.add_parser("report")
+          s.add_argument("--selection", required=True)
+          s.add_argument("--start")
+          s.add_argument("--patched")
+          s.add_argument("--seconds", type=float)
+          s.add_argument("--error", action="store_true")
+          s.set_defaults(run=cmd_report)
+
+          s = sub.add_parser("check")
+          s.add_argument("check")
+          s.set_defaults(run=cmd_check)
+
+          s = sub.add_parser("acceptance")
+          s.add_argument("--sha", required=True)
+          s.add_argument("--at-start", required=True, choices=STATUSES)
+          s.add_argument("--status", required=True, choices=STATUSES)
+          s.add_argument("--seconds", type=float)
+          s.set_defaults(run=cmd_acceptance)
+
+          s = sub.add_parser("merge")
+          s.add_argument("--repo-tests", required=True)
+          s.add_argument("--acceptance")
+          s.set_defaults(run=cmd_merge)
+          return p
+
+
+      def main(argv=None):
+          args = build_parser().parse_args(argv)
+          try:
+              args.run(args)
+          except (ValueError, OSError) as e:
+              print(f"repo_tests: {e}", file=sys.stderr)
+              return 1
+          return 0
+
+
+      if __name__ == "__main__":
+          sys.exit(main())
   - path: /opt/retrace/replay/run_checkpoint.sh
     permissions: '0755'
     content: |

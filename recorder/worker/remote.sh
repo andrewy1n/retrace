@@ -23,7 +23,7 @@ fetch() {
   local id="$1"
   mkdir -p "$ROOT/runs/results/$id"
   rsync -a -e "ssh ${SSH_OPTS[*]}" "root@$HOST:$WREPO/runs/results/$id/" "$ROOT/runs/results/$id/"
-  jq -r '[.task_id[0:48], (.tool_call_id // "step0"), .arm, .trial, (if .passed then "pass" else "FAIL" end), .cost_credits] | @tsv' \
+  jq -r '[.task_id[0:48], (.tool_call_id // "step0"), .arm, .trial, (if .passed == null then "-" elif .passed then "pass" else "FAIL" end), (.proxies.acceptance.status // "-"), (.proxies.repo_tests.regressed // "-"), .cost_credits] | @tsv' \
     "$ROOT/runs/results/$id"/*.json
   jq -s '"results \(length), passed \(map(select(.passed)) | length), credits \(map(.cost_credits) | add)"' -r "$ROOT/runs/results/$id"/*.json
 }
@@ -66,7 +66,7 @@ case "${1:-}" in
   fetch) [[ $# -eq 2 ]] || { sed -n '2,6p' "$0"; exit 1; }; fetch "$2" ;;
   status) remote 'for s in $(tmux ls -F "#S" 2>/dev/null | grep ^job-); do echo "$s: $(tail -n 1 /root/jobs/${s#job-}.log | cut -c1-160)"; done' ;;
   install)
-    scp -q "${SSH_OPTS[@]}" "$ROOT"/recorder/worker/scripts/{run_job.sh,grade.sh,run_trial.sh,grade_pro.sh,pro_task.sh,prepull.sh,retrace_job.py,tiger_sink.py} "root@$HOST:/opt/retrace/"
+    scp -q "${SSH_OPTS[@]}" "$ROOT"/recorder/worker/scripts/{run_job.sh,grade.sh,run_trial.sh,grade_pro.sh,pro_task.sh,prepull.sh,retrace_job.py,tiger_sink.py,proxies.sh,repo_tests.py} "root@$HOST:/opt/retrace/"
     scp -q "${SSH_OPTS[@]}" "$ROOT"/recorder/replay/{run_checkpoint.sh,docker-droid.sh,restore.sh,fork.mjs} "root@$HOST:/opt/retrace/replay/"
     echo "installed" ;;
   *) sed -n '2,13p' "$0"; exit 1 ;;

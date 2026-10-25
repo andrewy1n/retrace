@@ -57,7 +57,7 @@ def trials(job, trial, only):
         return
     task = load_trace(job["session_id"])["task_id"]
     for cp in [only] if only else job["tool_call_ids"]:
-        yield task, cp, runs / task / cp / str(trial), runs / f"eval-{cp}-t{trial}"
+        yield task, cp, runs / task / cp / str(trial), None
 
 
 def graded(job, eval_dir, task):
@@ -82,12 +82,13 @@ def collect(job_path, trial, only=None):
         if meta.get("failed"):
             problems.append(f"{task} {cp}: trial failed: {meta['failed']}")
             continue
-        passed = graded(job, eval_dir, task)
-        if passed is None and not (art / "patch.diff").read_text().strip():
-            passed = False
-        elif passed is None:
-            problems.append(f"{task} {cp}: no grader report")
-            continue
+        if cp == "step0":
+            passed = graded(job, eval_dir, task)
+            if passed is None and not (art / "patch.diff").read_text().strip():
+                passed = False
+            elif passed is None:
+                problems.append(f"{task} {cp}: no grader report")
+                continue
         result = {
             "job_id": job_id,
             "task_id": task,
@@ -96,13 +97,19 @@ def collect(job_path, trial, only=None):
             "droid_version": meta["droid_version"],
             "stop_mode": job["stop_mode"],
             "trial": trial,
-            "passed": passed,
-            "grader": "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench",
             "evidence_role": "final" if cp == "step0" else "diagnosis",
             "cost_credits": meta["cost_credits"],
         }
-        if cp != "step0":
+        if cp == "step0":
+            result["passed"] = passed
+            result["grader"] = "swebench_pro" if job.get("dataset") == "swebench_pro" else "swebench"
+        else:
             result["tool_call_id"] = cp
+        proxies_file = art / "proxies.json"
+        if proxies_file.exists():
+            result["proxies"] = json.loads(proxies_file.read_text())
+        else:
+            print(f"warning: {task} {cp} trial {trial}: no proxies.json, result has no proxies", file=sys.stderr)
         if "timed_out" in meta:
             result["timed_out"] = meta["timed_out"]
         session_id = f"{job_id}-{task}-{trial}"
@@ -110,7 +117,8 @@ def collect(job_path, trial, only=None):
             result["session_id"] = session_id
         check(result, "replay-result")
         (out_dir / f"{task}-{cp}-{kind}-{trial}.json").write_text(json.dumps(result, indent=2) + "\n")
-        print(f"{task} {cp} trial {trial}: {'pass' if passed else 'fail'}")
+        outcome = "collected" if cp != "step0" else "pass" if passed else "fail"
+        print(f"{task} {cp} trial {trial}: {outcome}")
     if problems:
         sys.exit("; ".join(problems))
 

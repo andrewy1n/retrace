@@ -74,3 +74,111 @@ def test_signal_counts_runs_with_a_whole_suite_call(tmp_path):
     report.main(["--group", "g", "--arm", "A=a", "--signal", "whole_suite_tests", "--results", str(tmp_path / "res"),
                  "--primitives", str(prim), "--out", str(out)])
     assert "1 of 2 (50.0%" in out.read_text()
+
+
+def proxied(task, passed, **proxies):
+    return result(task, 1, passed, 10, proxies=proxies)
+
+
+def repo_tests(regressed, status="ok"):
+    return {"status": status, "selected": ["t.py"], "regressed": regressed}
+
+
+def acceptance(status, at_start="fail"):
+    return {"status": status, "at_start": at_start, "check_sha256": "0" * 64}
+
+
+def agreement(tmp_path, results, prim=None):
+    write_job(tmp_path / "res", "a", results)
+    out = tmp_path / "out.md"
+    args = ["--group", "g", "--arm", "A=a", "--results", str(tmp_path / "res"), "--out", str(out)]
+    if prim:
+        args += ["--primitives", str(prim)]
+    report.main(args)
+    return out.read_text()
+
+
+def test_wilson_interval_for_eight_of_ten():
+    lo, hi = report.wilson(8, 10)
+    assert lo == pytest.approx(0.4902, abs=1e-3)
+    assert hi == pytest.approx(0.9433, abs=1e-3)
+
+
+def test_kappa_known_and_undefined_cases():
+    assert report.cohen_kappa(3, 1, 1, 3) == pytest.approx(0.5)
+    assert math.isnan(report.cohen_kappa(4, 0, 0, 0))
+    assert math.isnan(report.cohen_kappa(0, 0, 0, 0))
+
+
+def test_repo_tests_counts_and_excludes_unjudged_trials(tmp_path):
+    rs = [proxied("a", True, repo_tests=repo_tests(0)), proxied("b", True, repo_tests=repo_tests(0)),
+          proxied("c", False, repo_tests=repo_tests(0)), proxied("d", False, repo_tests=repo_tests(2)),
+          proxied("e", True, repo_tests=repo_tests(1)), proxied("f", True, repo_tests=repo_tests(0, "no_tests")),
+          proxied("g", True, repo_tests=repo_tests(0, "error")), result("h", 1, True, 10)]
+    text = agreement(tmp_path, rs)
+    assert "| A | repo_tests | 5 | 3 | 2 | 1 | 1 | 1 | 60.0% (23.1% to 88.2%) | 0.17 | 66.7% (20.8% to 93.9%) |" in text
+
+
+def test_acceptance_needs_a_failing_start_and_no_error(tmp_path):
+    rs = [proxied("a", True, acceptance=acceptance("pass")), proxied("b", False, acceptance=acceptance("fail")),
+          proxied("c", True, acceptance=acceptance("pass", "pass")), proxied("d", True, acceptance=acceptance("pass", "error")),
+          proxied("e", True, acceptance=acceptance("error"))]
+    text = agreement(tmp_path, rs)
+    assert "| A | acceptance | 2 | 3 | 1 | 0 | 0 | 1 | 100.0% (34.2% to 100.0%) | 1.00 | 100.0% (20.7% to 100.0%) |" in text
+
+
+def test_combined_passes_only_when_both_proxies_pass(tmp_path):
+    rs = [proxied("a", True, repo_tests=repo_tests(0), acceptance=acceptance("pass")),
+          proxied("b", False, repo_tests=repo_tests(0), acceptance=acceptance("fail")),
+          proxied("c", True, repo_tests=repo_tests(1), acceptance=acceptance("pass")),
+          proxied("d", True, repo_tests=repo_tests(0))]
+    text = agreement(tmp_path, rs)
+    assert "| A | combined | 3 | 1 | 1 | 0 | 1 | 1 |" in text
+
+
+def test_last_test_exit_reads_the_last_test_call_with_an_exit_code(tmp_path):
+    prim = tmp_path / "prim"
+    prim.mkdir()
+
+    def calls(*codes):
+        return {"calls": [{"test_runner": "pytest" if code != "run" else None, "exit_code": None if code == "run" else code}
+                          for code in codes]}
+
+    (prim / "s-a-1.json").write_text(json.dumps(calls(1, 0, "run")))
+    (prim / "s-b-1.json").write_text(json.dumps(calls(0, 1)))
+    (prim / "s-c-1.json").write_text(json.dumps(calls("run")))
+    (prim / "s-d-1.json").write_text(json.dumps(calls(0, None)))
+    rs = [result(t, 1, p, 10) for t, p in [("a", True), ("b", True), ("c", True), ("d", True), ("e", True)]]
+    text = agreement(tmp_path, rs, prim)
+    assert "| A | last_test_exit | 2 | 3 | 1 | 0 | 1 | 0 |" in text
+
+
+def test_no_proxies_says_so(tmp_path):
+    text = agreement(tmp_path, [result("a", 1, True, 10)])
+    assert "## Proxy agreement" in text
+    assert "For verification only; the improvement loop never reads it." in text
+    assert "No final trial has proxies." in text
+
+
+def test_undefined_kappa_and_precision_print_na(tmp_path):
+    text = agreement(tmp_path, [proxied("a", True, repo_tests=repo_tests(0)), proxied("b", True, repo_tests=repo_tests(0))])
+    assert "| A | repo_tests | 2 | 0 | 2 | 0 | 0 | 0 | 100.0% (34.2% to 100.0%) | n/a | 100.0% (34.2% to 100.0%) |" in text
+    text = agreement(tmp_path / "x", [proxied("a", False, repo_tests=repo_tests(3))])
+    assert "| A | repo_tests | 1 | 0 | 0 | 0 | 0 | 1 | 100.0% (20.7% to 100.0%) | n/a | n/a (n/a to n/a) |" in text
+
+
+def test_agreement_has_one_row_per_arm_and_an_all_row(tmp_path):
+    write_job(tmp_path, "a", [proxied("x", True, repo_tests=repo_tests(0))])
+    write_job(tmp_path, "c", [proxied("x", False, repo_tests=repo_tests(0))])
+    out = tmp_path / "out.md"
+    report.main(["--group", "g", "--arm", "A=a", "--arm", "C=c", "--results", str(tmp_path), "--out", str(out)])
+    text = out.read_text()
+    assert "| A | repo_tests | 1 |" in text
+    assert "| C | repo_tests | 1 |" in text
+    assert "| all | repo_tests | 2 |" in text
+
+
+def test_diagnosis_results_without_passed_do_not_enter_agreement():
+    diag = {"task_id": "x", "evidence_role": "diagnosis", "tool_call_id": "t", "proxies": {"repo_tests": repo_tests(0)}}
+    n, _ = report.agreement_row("A", "repo_tests", [diag], Path("."))
+    assert n == 0

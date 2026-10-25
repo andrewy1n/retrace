@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Grade a step0 or checkpoint job and write one result file per trial. A swebench_verified job (default) goes
-# through the official SWE-bench harness. A swebench_pro job goes through the task's own verifier from the
-# SWE-bench Pro harness (grade_pro.sh), one fresh container per trial, <max_workers> at once.
+# Finish a job and write one result file per trial. A step0 job gets the dataset grader plus proxies. A checkpoint job
+# gets proxies only and is never graded. A swebench_verified job (default) goes through the official SWE-bench harness.
+# A swebench_pro job goes through the task's own verifier from the SWE-bench Pro harness (grade_pro.sh), one fresh
+# container per trial, <max_workers> at once. proxies.sh writes proxies.json in each trial directory.
 #
 # Usage: /opt/retrace/grade.sh <job.json> [max_workers=8] [trial]
 # Results: $RETRACE_REPO/runs/results/<job_id>/<task_id>-<step0 or tool_call_id>-<arm>-<trial>.json
 # The harness takes one prediction per instance. A step0 job grades each trial number as one evaluation run.
-# A checkpoint job grades each (tool_call_id, trial) as its own run, with max_workers=1, <max_workers> runs at once.
+# A checkpoint job runs proxies.sh for each (tool_call_id, trial), <max_workers> at once.
 set -euo pipefail
 
-[[ $# -ge 1 ]] || { sed -n '2,8p' "$0"; exit 1; }
+[[ $# -ge 1 ]] || { sed -n '2,11p' "$0"; exit 1; }
 JOB="$(realpath "$1")"; WORKERS="${2:-8}"; ONLY="${3:-}"
 ROOT="${RETRACE_ROOT:-/opt/retrace}"
 PY="$ROOT/venv/bin/python"
@@ -23,26 +24,16 @@ failed=0
 
 if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
   TASK="$(jq -r .task_id "$REPO/runs/traces/$(jq -r .session_id "$JOB").json")"
-  grade_one() {
-    local cp="$1" t="$2" art="$RUNS/$TASK/$1/$2" eval_dir="$RUNS/eval-$1-t$2"
+  proxies_one() {
+    local art="$RUNS/$TASK/$1/$2"
     [[ -f "$art/meta.json" ]] && ! jq -e .failed "$art/meta.json" >/dev/null || return 0
-    if [[ "$SUITE" == swebench_pro ]]; then
-      "$ROOT/grade_pro.sh" "$TASK" "$art/patch.diff" "$eval_dir/$TASK"
-      return
-    fi
-    mkdir -p "$eval_dir"; cd "$eval_dir"
-    { cat "$art/pred.json"; echo; } > predictions.jsonl
-    [[ -s "$art/patch.diff" ]] || return 0
-    "$PY" -m swebench.harness.run_evaluation \
-      --dataset_name "${SWEBENCH_DATASET:-SWE-bench/SWE-bench_Verified}" \
-      --predictions_path predictions.jsonl --max_workers 1 \
-      --run_id "$cp-t$t-$(date +%Y%m%d%H%M%S)" --report_dir "$eval_dir"
+    "$ROOT/proxies.sh" "$JOB" "$TASK" "$art"
   }
-  export -f grade_one
-  export RUNS TASK PY ROOT SUITE SWEBENCH_DATASET
+  export -f proxies_one
+  export RUNS TASK ROOT JOB
   for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
-    jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'grade_one "$@"' _ {} "$t" \
+    jq -r '.tool_call_ids[]' "$JOB" | xargs -r -P "$WORKERS" -I{} bash -c 'proxies_one "$@"' _ {} "$t" \
       || failed=1
     "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
   done
@@ -53,6 +44,13 @@ if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
   exit 0
 fi
 
+step0_proxies() {
+  local t="$1" task
+  for task in $(jq -r '.task_ids[]' "$JOB"); do
+    [[ -f "$RUNS/$task/$t/meta.json" ]] && ! jq -e .failed "$RUNS/$task/$t/meta.json" >/dev/null && echo "$task"
+  done | xargs -r -P "$WORKERS" -I{} "$ROOT/proxies.sh" "$JOB" {} "$RUNS/{}/$t" || failed=1
+}
+
 for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
   [[ -z "$ONLY" || "$ONLY" == "$t" ]] || continue
   EVAL_DIR="$RUNS/eval-t$t"
@@ -61,6 +59,7 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     for task in $(jq -r '.task_ids[]' "$JOB"); do
       [[ -f "$RUNS/$task/$t/meta.json" ]] && echo "$task"
     done | xargs -r -P "$WORKERS" -I{} "$ROOT/grade_pro.sh" {} "$RUNS/{}/$t/patch.diff" "$EVAL_DIR/{}" || failed=1
+    step0_proxies "$t"
     "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
     if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
       "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
@@ -81,6 +80,7 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     --max_workers "$WORKERS" \
     --run_id "t$t-$(date +%Y%m%d%H%M%S)" \
     --report_dir "$EVAL_DIR"
+  step0_proxies "$t"
   "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || { failed=1; continue; }
   if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
     "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1

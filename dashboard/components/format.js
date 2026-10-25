@@ -21,6 +21,19 @@ export const signed = (v) => (v > 0 ? '+' : v < 0 ? '-' : '') + Math.abs(Number(
 
 export const interval = (lo, hi) => `[${signed(lo)}, ${signed(hi)}]`;
 
+export function repoText(r) {
+  if (!has(r.repo_status)) return 'repo tests: not run';
+  if (r.repo_status === 'no_tests') return 'repo tests: none found';
+  if (r.repo_status === 'error') return 'repo tests: error';
+  return `repo tests: ${r.repo_regressed} regressed of ${r.repo_passing_at_start}`;
+}
+
+export function accText(r) {
+  if (!has(r.acc_status)) return 'acceptance: not run';
+  if (r.acc_status === 'error') return 'acceptance: error';
+  return `acceptance: ${r.acc_status} (${r.acc_at_start} at start)`;
+}
+
 export function verdict(p) {
   if (!has(p.evidence_role)) return { label: 'No replay yet', tone: 'muted' };
   if (p.evidence_role === 'diagnosis') return { label: 'Diagnosis only', tone: 'info' };
