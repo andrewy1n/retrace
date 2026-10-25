@@ -1,0 +1,16 @@
+{
+  "job_id": "pro-runcheck1-control",
+  "dataset": "swebench_pro",
+  "start": "step0",
+  "task_ids": [
+    "instance_internetarchive__openlibrary-ba3abfb6af6e722185d3715929ab0f3e5a134eed-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+    "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3"
+  ],
+  "arm": {
+    "kind": "control"
+  },
+  "model": "claude-haiku-5-5",
+  "reruns": 1,
+  "stop_mode": "next_user_turn",
+  "budget_credits": 30000
+}

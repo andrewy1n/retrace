@@ -6,7 +6,8 @@
 #        recorder/worker/remote.sh status
 #        recorder/worker/remote.sh install
 # submit  validates the job, copies it (and contracts/ and a candidate directory) to the worker, runs run_job.sh and grade.sh in
-#         tmux session job-<job-id>, waits, then fetches. -d returns after the start; fetch later.
+#         tmux session job-<job-id>, waits, then fetches. -d returns after the start; fetch later. Each result records this
+#         checkout's HEAD as repo_sha, so contracts/ and the candidate directory must have no uncommitted changes.
 # fetch   copies runs/results/<job-id>/ from the worker into this repo and prints one line per result.
 # status  lists the running job sessions and the last log line of each.
 # install copies the runner scripts from this checkout to /opt/retrace on the worker. Do it only when no job runs.
@@ -29,9 +30,13 @@ fetch() {
 }
 
 submit() {
-  local job="$1" detach="$2" par="$3" id arm path sid
+  local job="$1" detach="$2" par="$3" id arm path="" sid sha dirty
   RETRACE_REPO="$ROOT" RETRACE_ROOT="$ROOT" python3 "$ROOT/recorder/worker/scripts/retrace_job.py" validate "$job"
   id="$(jq -r .job_id "$job")"; arm="$(jq -r .arm.kind "$job")"
+  [[ "$arm" != candidate ]] || path="$(jq -r .arm.path "$job")"
+  sha="$(git -C "$ROOT" rev-parse HEAD)"
+  dirty="$(git -C "$ROOT" status --porcelain -- contracts ${path:+"$path"})"
+  [[ -z "$dirty" ]] || { printf 'Commit these first, so repo_sha %s holds what runs:\n%s\n' "$sha" "$dirty" >&2; exit 1; }
   if remote "tmux has-session -t job-$id" 2>/dev/null; then echo "job-$id is already running" >&2; exit 1; fi
   if [[ "$(jq -r .start "$job")" == checkpoint ]]; then
     sid="$(jq -r .session_id "$job")"
@@ -39,13 +44,13 @@ submit() {
       || { echo "The worker has no recorded session or trace for $sid" >&2; exit 1; }
   fi
   if [[ "$arm" == candidate ]]; then
-    path="$(jq -r .arm.path "$job")"
     [[ -d "$ROOT/$path" ]] || { echo "$ROOT/$path does not exist" >&2; exit 1; }
     remote "mkdir -p $WREPO/$path"
     rsync -a --delete -e "ssh ${SSH_OPTS[*]}" "$ROOT/$path/" "root@$HOST:$WREPO/$path/"
   fi
   rsync -a -e "ssh ${SSH_OPTS[*]}" "$ROOT/contracts/" "root@$HOST:$WREPO/contracts/"
   scp -q "${SSH_OPTS[@]}" "$job" "root@$HOST:$WREPO/runs/jobs/$id.json"
+  remote "mkdir -p /opt/retrace/runs/$id && echo $sha > /opt/retrace/runs/$id/repo_sha"
   remote "mkdir -p /root/jobs && tmux new-session -d -s job-$id 'set -a; . /root/.retrace.env; set +a; \
     /opt/retrace/run_job.sh $WREPO/runs/jobs/$id.json $par > /root/jobs/$id.log 2>&1; echo \$? > /root/jobs/$id.run-exit; \
     /opt/retrace/grade.sh $WREPO/runs/jobs/$id.json $par >> /root/jobs/$id.log 2>&1; echo \$? > /root/jobs/$id.grade-exit'"

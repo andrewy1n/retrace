@@ -12,7 +12,7 @@ Fill every `TBD` before the commit. The commit SHA goes under Contract in the pr
 | Model | `claude-haiku-5-5` |
 | Droid version | 0.249.0 |
 | Reruns per task per arm | TBD (at least 2) |
-| Grader | The SWE-bench Pro V2 verifier (`swebench_pro`): the task's `tests/test.sh` from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`, read from `reward.txt` |
+| Grader | The SWE-bench Pro V2 verifier (`swebench_pro`): the task's `tests/test.sh` from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`, run in a fresh container with the patch applied, read from `reward.txt` |
 
 All three arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run.
 

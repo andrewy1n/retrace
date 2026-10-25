@@ -29,6 +29,7 @@ MODEL="$(jq -r .model "$JOB")"
 ARM="$(jq -r .arm.kind "$JOB")"
 HINT="$(jq -r '.arm.text // ""' "$JOB")"
 CANDIDATE="$(jq -r '.arm.path // ""' "$JOB")"
+REPO_SHA="$(cat "$ROOT/runs/$JOB_ID/repo_sha" 2>/dev/null || true)"
 
 OUT="$ROOT/runs/$JOB_ID/$IID/$TRIAL"
 NAME="retrace-${JOB_ID}-${IID}-${TRIAL}"
@@ -141,5 +142,6 @@ fi
 TIMED_OUT=false
 [[ "$rc" -ne 124 ]] || TIMED_OUT=true
 jq -n --arg v "$DROID_VERSION" --argjson cost "${COST:-0}" --argjson rc "$rc" --argjson timed_out "$TIMED_OUT" \
-  --arg sid "$(jq -r '.session_id // ""' "$OUT/droid.json" 2>/dev/null || true)" \
-  '{droid_version: $v, cost_credits: $cost, droid_exit: $rc, timed_out: $timed_out, droid_session_id: $sid}' > "$OUT/meta.json"
+  --arg sid "$(jq -r '.session_id // ""' "$OUT/droid.json" 2>/dev/null || true)" --arg sha "$REPO_SHA" \
+  '{droid_version: $v, cost_credits: $cost, droid_exit: $rc, timed_out: $timed_out, droid_session_id: $sid}
+   + (if $sha != "" then {repo_sha: $sha} else {} end)' > "$OUT/meta.json"

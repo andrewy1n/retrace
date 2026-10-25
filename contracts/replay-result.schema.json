@@ -88,6 +88,11 @@
       "minimum": 0,
       "description": "tokenUsage.factoryCredits for this trial."
     },
+    "repo_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "HEAD of the checkout that submitted the job. remote.sh submit refuses a candidate directory or contracts/ with uncommitted changes, so this commit holds the candidate that ran."
+    },
     "timed_out": {
       "type": "boolean",
       "description": "True when DROID_TIMEOUT killed the run. cost_credits then comes from the session's settings.json and can miss the last turn."
