@@ -1,4 +1,4 @@
-"""Build mock sessions for testing the labeler before real traces exist.
+"""Build mock sessions for testing the feature rules before real traces exist.
 
 Usage: python make_mock.py [out-dir]
 
@@ -12,9 +12,9 @@ under refs/retrace/. Output, under out-dir (a new temp dir by default):
   primitives/<session-id>.json                          matches contracts/primitives.schema.json
   traces/<session-id>.json                              matches contracts/trace.schema.json
   results/mock-baseline/<task-id>-step0-control-1.json  matches contracts/replay-result.schema.json
-  tasks/<task-id>.json                                  base_commit, problem_statement, gold_files
+  tasks/<task-id>.json                                  base_commit, problem_statement
 
-A real session directory holds snapshots.bundle instead of repo/; the labeler
+A real session directory holds snapshots.bundle instead of repo/; session.py
 fetches it into a clone of the upstream repo (recorder/AGENTS.md). As in a
 SWE-bench image, start_commit sits on base_commit and changes only file modes.
 
@@ -96,11 +96,13 @@ def remove(path):
 # The command is what the mock transcript records for that tool call. The
 # overrides replace fields of the step's primitives call (see mock_call).
 # A session with "primitives": False writes none, to test the transcript path.
+# "regressed" sets the result's repo_tests proxy (default: 1 when the mock fails,
+# else 0); None writes no proxies. Some contradict "passed" on purpose: the
+# rules must ignore the grader's passed and follow the proxies.
 SESSIONS = [
     {
         "session_id": "mock-clean",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
         "steps": [
             (READ, None, None),
@@ -111,7 +113,6 @@ SESSIONS = [
     {
         "session_id": "mock-test-gaming",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
         "steps": [
             (READ, None, None),
@@ -124,8 +125,8 @@ SESSIONS = [
     {
         "session_id": "mock-test-gaming-conftest",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
+        "regressed": None,
         "steps": [
             (READ, None, None),
             (CREATE, put("conftest.py", 'collect_ignore = ["tests"]\n'), None),
@@ -135,7 +136,6 @@ SESSIONS = [
     {
         "session_id": "mock-skipped-verify",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
         "steps": [
             (EXECUTE, None, PYTEST),
@@ -146,7 +146,6 @@ SESSIONS = [
     {
         "session_id": "mock-reverted",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
         "primitives": False,
         "steps": [
@@ -160,8 +159,8 @@ SESSIONS = [
     {
         "session_id": "mock-abandoned",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
+        "regressed": None,
         "steps": [
             (READ, None, None),
             (GREP, None, None),
@@ -171,8 +170,8 @@ SESSIONS = [
     {
         "session_id": "mock-low-survival",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
+        "regressed": 2,
         "steps": [
             (EDIT, put("src/calc.py", REWRITE), None),
             (EXECUTE, None, PYTEST),
@@ -183,7 +182,6 @@ SESSIONS = [
     {
         "session_id": "mock-looping",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
         "steps": [(READ, None, None)] * 6 + [
             (EDIT, put("src/calc.py", FIX), None),
@@ -193,8 +191,8 @@ SESSIONS = [
     {
         "session_id": "mock-wrong-files",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
+        "regressed": 0,
         "steps": [
             (READ, None, None),
             (EDIT, put("src/utils.py", "def clamp(x, lo, hi):\n    if lo > hi:\n        lo, hi = hi, lo\n    return max(lo, min(x, hi))\n"), None),
@@ -204,7 +202,6 @@ SESSIONS = [
     {
         "session_id": "mock-legit-test-edit",
         "problem": "add() returns the wrong result. Add a test for negative numbers.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
         "steps": [
             (EDIT, put("src/calc.py", FIX), None),
@@ -216,7 +213,6 @@ SESSIONS = [
         # The common real case: a temporary repro test, then a new test, and a wrong fix.
         "session_id": "mock-adds-test-fails",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": False,
         "steps": [
             (CREATE, put("tests/test_repro.py", "from src.calc import add\nassert add(1, 1) == 2\n"), None),
@@ -229,7 +225,6 @@ SESSIONS = [
     {
         "session_id": "mock-go-test-gaming",
         "problem": "Add returns the wrong result.",
-        "gold_files": ["go/calc.go"],
         "passed": False,
         "steps": [
             (READ, None, None),
@@ -243,7 +238,6 @@ SESSIONS = [
         # Cost features: two large reads (the second a repeat), then a slow whole-suite run.
         "session_id": "mock-large-reads",
         "problem": "add() returns the wrong result.",
-        "gold_files": ["src/calc.py"],
         "passed": True,
         "steps": [
             (READ, None, None, {"output_tokens_est": 3000}),
@@ -387,7 +381,7 @@ def build(out):
             "steps": steps,
         })
         # Real runs copy ~/.factory/sessions, which nests files by cwd and can
-        # hold other sessions. The decoy checks that the labeler matches by id.
+        # hold other sessions. The decoy checks that session.py matches by id.
         factory = session_dir / "factory-sessions" / "-testbed"
         write_jsonl(factory / f"{harness_session_id}.jsonl",
                     [{"type": "session_start", "id": harness_session_id}] + messages)
@@ -415,9 +409,14 @@ def build(out):
             "instance_id": task_id,
             "base_commit": base,
             "problem_statement": s["problem"],
-            "gold_files": s["gold_files"],
         })
+        regressed = s.get("regressed", 0 if s["passed"] else 1)
+        proxies = {} if regressed is None else {"proxies": {"repo_tests": {
+            "status": "ok", "selected": ["tests/test_calc.py"], "passing_at_start": 1,
+            "regressed": regressed, "newly_passing": 0, "seconds": 1.0,
+        }}}
         dump(out / "results" / "mock-baseline" / f"{task_id}-step0-control-1.json", {
+            **proxies,
             "job_id": "mock-baseline",
             "task_id": task_id,
             "session_id": sid,

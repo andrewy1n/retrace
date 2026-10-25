@@ -1,0 +1,13 @@
+{
+  "task_id": "django__django-11292",
+  "dataset": "swebench_verified",
+  "author": "claude-opus-5-5",
+  "inputs": [
+    "instruction",
+    "start_repo"
+  ],
+  "files": [
+    "acceptance_check/test_skip_checks.py"
+  ],
+  "command": "python acceptance_check/test_skip_checks.py"
+}

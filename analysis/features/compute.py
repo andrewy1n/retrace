@@ -1,9 +1,9 @@
-"""Label recorded sessions by the rules in analysis/AGENTS.md.
+"""Compute the session features in analysis/AGENTS.md for recorded sessions.
 
-  python analysis/labeler/label.py --sessions DIR [--tasks DIR] [--repos DIR] [--traces DIR] [--results DIR] [--out DIR] [SESSION_ID ...]
+  python analysis/features/compute.py --sessions DIR [--tasks DIR] [--repos DIR] [--traces DIR] [--results DIR] [--out DIR] [SESSION_ID ...]
 
-With no session ids, it labels every trace in --traces. Labels print to stdout
-unless --out is given; pass --out runs/labels only for real sessions.
+With no session ids, it computes every trace in --traces. Records print to stdout
+unless --out is given; pass --out runs/features only for real sessions.
 """
 
 import argparse
@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from rules import label
+from rules import compute
 from session import DEFAULT_REPOS, load_session
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,7 +35,7 @@ def main(argv=None):
     failed = 0
     for sid in ids:
         try:
-            row = label(load_session(sid, args.traces, args.results, args.sessions, args.tasks, args.repos,
+            row = compute(load_session(sid, args.traces, args.results, args.sessions, args.tasks, args.repos,
                                      args.primitives))
         except Exception as e:  # one bad session should not stop the rest
             print(f"{sid}: {type(e).__name__}: {e}", file=sys.stderr)

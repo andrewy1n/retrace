@@ -1,6 +1,6 @@
 # Recorder and replay
 
-Andrew owns this tree and the dashboard. Kate owns labels, jobs, proposals, and the Tiger schema.
+Andrew owns this tree and the dashboard. Kate owns features, diagnoses, jobs, proposals, and the Tiger schema.
 
 `capture/` is the Droid PostToolUse hook. `replay/` is the runner. Create each directory with its first source file. Claude Code is an optional adapter. Cut the extra example cases first, then this adapter.
 

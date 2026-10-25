@@ -1,11 +1,11 @@
 """Write runs/private/tasks/<task-id>.json for every task that has a trace.
 
-  python analysis/labeler/fetch_tasks.py [--traces DIR] [--out DIR]
+  python analysis/features/fetch_tasks.py [--traces DIR] [--out DIR]
 
-Each file holds instance_id, repo, base_commit, and gold_files: the paths the
-dataset's gold patch touches. The patch text, tests, and problem statement are
-not saved, and neither is any task without a trace, so held-out tasks never
-land on disk. The gold files are for labeling only and never reach the agent.
+Each file holds instance_id, repo, and base_commit, which the snapshot loader
+needs. No other column is read, so nothing the grader uses reaches feature
+computation (the Grader section of AGENTS.md). Tasks without a trace are skipped, so
+held-out tasks never land on disk.
 """
 
 import argparse
@@ -45,16 +45,6 @@ def dataset_rows(dataset):
         offset += PAGE
 
 
-def gold_files(patch):
-    """Paths on the --- a/ and +++ b/ lines, so added and deleted files count too."""
-    paths = []
-    for line in patch.splitlines():
-        for prefix in ("--- a/", "+++ b/"):
-            if line.startswith(prefix) and line[len(prefix):] not in paths:
-                paths.append(line[len(prefix):])
-    return paths
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--traces", type=Path, default=ROOT / "runs" / "traces")
@@ -67,12 +57,7 @@ def main():
     for row in (row for dataset in DATASETS for row in dataset_rows(dataset)):
         if row["instance_id"] not in wanted:
             continue
-        task = {
-            "instance_id": row["instance_id"],
-            "repo": row["repo"],
-            "base_commit": row["base_commit"],
-            "gold_files": gold_files(row["patch"]),
-        }
+        task = {key: row[key] for key in ("instance_id", "repo", "base_commit")}
         (args.out / f"{row['instance_id']}.json").write_text(json.dumps(task, indent=2) + "\n", newline="\n")
         found.add(row["instance_id"])
     missing = sorted(wanted - found)

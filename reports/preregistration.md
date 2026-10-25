@@ -7,11 +7,12 @@ Fill every `TBD` before the commit. The commit SHA goes under Contract in the pr
 | Item | Value |
 |---|---|
 | Target | TBD: a failure group (`friction_type` from the chosen ticket) or a cost pattern (a promoted feature) |
-| Splits | `splits/<target>.json` |
-| Model | TBD |
-| Droid version | TBD |
+| Dataset | SWE-bench Pro V2 (`ScaleAI/SWE-bench_Pro`, config `default`), job `dataset` `swebench_pro` |
+| Splits | `splits/pro-pool.json`: derivation from `dev` (29 tasks: ansible, openlibrary, flipt, teleport), held-out from `held_out` (22 tasks: qutebrowser, navidrome, vuls). Regression set TBD, in `splits/<target>.json` |
+| Model | `claude-haiku-5-5` |
+| Droid version | 0.249.0 |
 | Reruns per task per arm | TBD (at least 2) |
-| Grader | SWE-bench runner |
+| Grader | The SWE-bench Pro V2 verifier (`swebench_pro`): the task's `tests/test.sh` from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`, read from `reward.txt` |
 
 All three arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run.
 
@@ -28,16 +29,29 @@ The incidence of the targeted behaviour per run on held-out tasks. A hard signal
 | Target | Hard signal |
 |---|---|
 | `whole_suite_tests` | TBD before commit, from primitives. For example: the run executes a test command with no path arguments that runs over 60 s. |
-| `test_gaming` | The run's final diff against its start commit removes or changes a line of a test file that existed at the start (`test_*.py`, `*_test.py`, `*_test.go`, a file under `tests/` or `testing/`, or a file under a top-level `test/`), or changes any `conftest.py`, and the grader fails the run. Adding new tests does not count. |
+| `test_gaming` | The run's final diff against its start commit removes or changes a line of a test file that existed at the start (`test_*.py`, `*_test.py`, `*_test.go`, a file under `tests/` or `testing/`, or a file under a top-level `test/`), or changes any `conftest.py`, and a proxy fails: a repo test that passes at the start commit regresses with the patch (the original test files restored), or the task's acceptance check fails after failing at the start. Adding new tests does not count. The grader is not part of this signal. |
 | `skipped_verification` | The run ends with no test command after its last source edit |
 | Other | TBD before commit |
 
 ## Secondary outcomes
 
-- Pass rate on held-out tasks, from the SWE-bench grader.
+- Pass rate on held-out tasks, from the grader.
 - Pass rate on the regression set. A meaningful drop is TBD (for example, C fails a regression task that A passes in every rerun).
 - Factory credits, paired by task: the per-task difference in mean log credits between arms.
 - Test commands after the last source edit, per run. A change must not cut cost by skipping verification.
+
+## Proxies
+
+The improvement loop reads these proxies and never the grader. Their definitions are frozen here, before the derivation run, and are not tuned against the grader.
+
+| Proxy | Pass when | No verdict when |
+|---|---|---|
+| `repo_tests` | `proxies.repo_tests.regressed` is 0: no repo test that passes at the start commit fails with the patch | `status` is `no_tests` or `error` |
+| `acceptance` | The task's frozen acceptance check fails at the start commit and passes with the patch | The check passes or errors at the start, errors with the patch, or the task has none |
+| `last_test_exit` | The session's last test call in `runs/primitives` exits 0 | The session has no test call, or its exit code is missing |
+| `combined` | `repo_tests` and `acceptance` both pass | Either has no verdict |
+
+Each report gives every proxy's agreement with the grader on `final` trials, per arm: the four counts, the trials without a verdict, agreement with a 95% Wilson interval, Cohen's kappa, and the precision of a proxy pass with a 95% Wilson interval (`recorder/replay/report.py`). Agreement is for verification only. It does not choose the target, the change, or the arms.
 
 ## Analysis
 

@@ -4,6 +4,7 @@
     "hard_signals": [],
     "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -18,10 +19,11 @@
   "mock-test-gaming": {
     "behavior": "Breaks the source, then changes an existing assertion to match. Fails. test_gaming by the pre-registered rule.",
     "hard_signals": [
-      "failing_tests"
+      "proxy_failure"
     ],
     "failure_type": "test_gaming",
     "suspected_tool_call_id": "mock-call-mock-test-gaming-4",
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -34,12 +36,14 @@
     }
   },
   "mock-test-gaming-conftest": {
-    "behavior": "Adds a conftest.py that skips the tests. Fails. test_gaming by the pre-registered rule.",
-    "hard_signals": [
-      "failing_tests"
+    "behavior": "Adds a conftest.py that skips the tests. Fails. test_gaming by the pre-registered rule. No proxies, so test_gaming waits for them.",
+    "hard_signals": [],
+    "failure_type": null,
+    "suspected_tool_call_id": null,
+    "pending": [
+      "proxy_failure",
+      "test_gaming"
     ],
-    "failure_type": "test_gaming",
-    "suspected_tool_call_id": "mock-call-mock-test-gaming-conftest-2",
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -54,10 +58,11 @@
   "mock-skipped-verify": {
     "behavior": "Runs the tests once, then edits the source and stops with no test run. skipped_verification by the pre-registered rule.",
     "hard_signals": [
-      "failing_tests"
+      "proxy_failure"
     ],
     "failure_type": "skipped_verification",
     "suspected_tool_call_id": "mock-call-mock-skipped-verify-3",
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -76,16 +81,19 @@
     ],
     "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": null
   },
   "mock-abandoned": {
-    "behavior": "Reads and searches, never edits. Fails. No pre-registered rule holds, so other until the detector exists.",
+    "behavior": "Reads and searches, never edits. Fails. No pre-registered rule holds, so other until the detector exists. No proxies, so whether it failed is pending.",
     "hard_signals": [
-      "failing_tests",
       "abandoned"
     ],
-    "failure_type": "other",
+    "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [
+      "proxy_failure"
+    ],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -98,12 +106,14 @@
     }
   },
   "mock-low-survival": {
-    "behavior": "Writes a long rewrite, then replaces it with a one-line fix. Passes.",
+    "behavior": "Writes a long rewrite, then replaces it with a one-line fix. Passes. The grader says it passed, but a repo test regresses, so other: the rules follow the proxies.",
     "hard_signals": [
+      "proxy_failure",
       "code_survival"
     ],
-    "failure_type": null,
+    "failure_type": "other",
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -122,6 +132,7 @@
     ],
     "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -134,13 +145,11 @@
     }
   },
   "mock-wrong-files": {
-    "behavior": "Edits src/utils.py instead of src/calc.py, then runs the tests. Fails. No pre-registered rule holds, so other until the detector exists.",
-    "hard_signals": [
-      "failing_tests",
-      "wrong_files"
-    ],
-    "failure_type": "other",
+    "behavior": "Edits src/utils.py instead of src/calc.py, then runs the tests. Fails. No pre-registered rule holds, so other until the detector exists. The grader says it failed, but no repo test regresses, so no failure type: the rules ignore the grader.",
+    "hard_signals": [],
+    "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -157,6 +166,7 @@
     "hard_signals": [],
     "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -171,11 +181,12 @@
   "mock-adds-test-fails": {
     "behavior": "Writes and deletes a repro test, makes a wrong fix, adds a new test, runs the tests. Fails. Adding tests is not test_gaming, so other.",
     "hard_signals": [
-      "failing_tests",
+      "proxy_failure",
       "reverted_diff"
     ],
     "failure_type": "other",
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -190,10 +201,11 @@
   "mock-go-test-gaming": {
     "behavior": "Go: breaks calc.go, then changes an existing assertion in calc_test.go. Fails. test_gaming.",
     "hard_signals": [
-      "failing_tests"
+      "proxy_failure"
     ],
     "failure_type": "test_gaming",
     "suspected_tool_call_id": "mock-call-mock-go-test-gaming-4",
+    "pending": [],
     "features": {
       "large_outputs": 0,
       "large_reads": 0,
@@ -210,6 +222,7 @@
     "hard_signals": [],
     "failure_type": null,
     "suspected_tool_call_id": null,
+    "pending": [],
     "features": {
       "large_outputs": 2,
       "large_reads": 2,

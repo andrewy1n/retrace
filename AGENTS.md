@@ -7,10 +7,10 @@ Droid is the primary harness. Claude Code is an optional adapter. `splits/pool.j
 ## Owners
 
 - Andrew: `recorder/capture`, `recorder/replay`, and `dashboard/`. Writes traces, primitives, and replay results. Runs a job he is given. Owns the Droid SDK rewind and fork, the PostToolUse snapshot hook, `droid exec` runs, primitive extraction from the session JSONL and its Tiger table, Factory credit accounting, held-out and regression runs from step 0, and the dashboard page.
-- Kate: `analysis/labeler` and `analysis/proposals`. Writes features, diagnoses, labels, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results, except grader output (see Grader). Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
+- Kate: `analysis/features` and `analysis/proposals`. Writes features, diagnoses, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results, except grader output (see Grader). Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
 - `dashboard/` is an Evidence project with a light theme only (`dashboard/README.md` has the run steps). It is the product view, so it shows no grader data. It reads Tiger summaries through `TIGER_DASHBOARD_URL`, local traces, and `runs/reviews/`. It writes nothing. The pull request is the review surface.
 
-`recorder/capture`, `recorder/replay`, `analysis/labeler`, `analysis/proposals`, and `dashboard/` appear with their first source file.
+`recorder/capture`, `recorder/replay`, `analysis/features`, `analysis/proposals`, and `dashboard/` appear with their first source file.
 
 ## Project doc
 
@@ -45,7 +45,7 @@ Do not add a `CLAUDE.md`. Claude Code reads this file when no `CLAUDE.md` is pre
 - Acceptance check. `runs/acceptance/<task-id>/check.json`, with each file's content under `runs/acceptance/<task-id>/files/<path>`. Fields are `task_id`, `dataset`, `author`, `inputs` (only `instruction` and `start_repo`), `files`, `command` (exit 0 is pass), and `frozen_at`. It is written from the task statement and the start repo only, and frozen before any replay of the task.
 - Proposed change. `analysis/proposals/<id>/proposal.json`. Fields are `proposal_id`, the target as exactly one of `failure_type` or `cost_pattern` (a feature name from `analysis/AGENTS.md`), `change_type`, `path`, and optional `pr_url` (the pull request that ships it, set once it exists). The runner copies `.factory/` and `AGENTS.md` from that directory onto the task checkout and leaves `proposal.json` in this repo.
 
-Features, diagnoses, and labels belong to Kate. Andrew does not read them. He gets them only as replay jobs. The label shape is in `analysis/AGENTS.md`.
+Features and diagnoses belong to Kate. Andrew does not read them. He gets them only as replay jobs. The feature record shape is in `analysis/AGENTS.md`.
 
 ## Harness under test
 
@@ -60,7 +60,7 @@ The harness is the Droid CLI, the model, and the config Droid loads. It has no c
 
 The dataset's grader is the oracle. It is for our own verification only: it shows the impact of a frozen change. The improvement loop runs on signals a production system has, such as traces, primitives, snapshots, the repo's own tests at the start commit, and checks an agent writes from the task statement alone. In production, monitoring and rollback replace the grader.
 
-- Grader output never reaches the loop. Labels, target choice, checkpoint diagnosis, hints, and proposal selection do not read `passed`, the gold patch, the test patch, or the dataset's test lists. This holds for people as well as agents.
+- Grader output never reaches the loop. Features, diagnoses, target choice, checkpoint diagnosis, hints, and proposal selection do not read `passed`, the gold patch, the test patch, or the dataset's test lists. This holds for people as well as agents.
 - The grader scores step-0 held-out and regression trials after the candidate is frozen. People read those results in `reports/` and in the slides. The dashboard never shows them.
 - One frozen run per split. A candidate revised after its held-out or regression results needs new held-out and regression tasks. Otherwise label the result as derived from those tasks.
 - Regression tasks stay out of derivation, like held-out tasks.
@@ -80,15 +80,16 @@ If the biggest failure group is too small to split, widen the task pool before w
 ## Layout
 
 - `runs/primitives/<session-id>.json`
-- `runs/labels/<session-id>.json`
+- `runs/features/<session-id>.json`
+- `runs/diagnoses/`
 - `runs/tickets/<ticket-id>.json`
 - `runs/reviews/<proposal-id>.json`
 - `runs/acceptance/<task-id>/`
-- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/primitives`, `runs/jobs`, `runs/results`, `runs/labels`, `runs/tickets`, `runs/reviews`, and `runs/acceptance` are world-readable.
+- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/primitives`, `runs/jobs`, `runs/results`, `runs/features`, `runs/diagnoses`, `runs/tickets`, `runs/reviews`, and `runs/acceptance` are world-readable.
 - `runs/private/` is gitignored. Private sessions stay there and are not committed.
 - `splits/` holds derivation, held-out, and regression instance ids.
 - `reports/` holds a frozen comparison, including its count, interval, and Factory credits. `recorder/replay/report.py` writes it from `runs/results/` (arms, Wilson and paired bootstrap intervals, McNemar test, credits). `reports/preregistration.md` is committed before the first derivation run.
-- Tiger Data backs the dashboard with session metadata, primitives, features, labels, abstracted citations, replay outcomes, and shipped-change summaries. Raw transcripts and repo contents stay on the machine unless the user opts in.
+- Tiger Data backs the dashboard with session metadata, primitives, features, diagnoses with abstracted citations, replay outcomes, and shipped-change summaries. Raw transcripts and repo contents stay on the machine unless the user opts in.
 
 A proposal directory is an overlay the runner copies onto the task checkout:
 
@@ -112,7 +113,7 @@ Values stay out of git. These facts were checked on 2026-10-24.
 - Keep the worker address in gitignored `retrace.local.json` as `vm_host`. Reach it with `ssh root@<vm_host>` and `~/.ssh/id_ed25519`. SSH does not depend on the API allowlist. `~/.ssh/known_hosts` is hashed, so it does not show the address. On the worker, `/root/.retrace.env` (mode 600) exports `FACTORY_API_KEY` and `TIGER_DATABASE_URL`, so `grade.sh` writes each graded result to Tiger. Source it before `run_job.sh`, and run long jobs in `tmux`. The worker's `/opt/retrace/*.sh` and `retrace_job.py` are copies of `recorder/worker/scripts/`, so reinstall them after a change with `recorder/worker/remote.sh install` when no job runs. `remote.sh submit <job.json>` runs and grades a job on the worker and copies the results back.
 - The dev machine is arm64 (WSL2). The SWE-bench images are amd64 only, so run trials, checkpoint forks, and grading on the x86 worker. `RETRACE_IMAGE`, `RETRACE_PLATFORM`, and `RETRACE_DROID` let `recorder/replay/run_checkpoint.sh` use an Epoch arm64 image for a local check only. Its results are not evidence. The dev machine has Docker, the Droid CLI at `~/.local/bin/droid`, node 24, `gh`, `jq`, and Python with `jsonschema` and `numpy`. It has no `psql`.
 - `recorder/worker/scripts/retrace_job.py` reads schemas from `/opt/retrace/repo`. On the dev machine, run it with `RETRACE_REPO=$PWD RETRACE_ROOT=$PWD`.
-- Copies of worker trials are in `runs/private/sessions/<session-id>/`: `factory-sessions/-testbed/<droid-id>.jsonl` (the transcript), `<droid-id>.settings.json` (session token totals by type), `meta.json`, `droid.json`, `capture/`, `snapshots.bundle`, and `start_commit`. The transcript has a timestamp on every line and `is_error` on every tool result. It has no per-turn token counts. On Pro, `start_commit` equals the dataset `base_commit`, so `snapshots.bundle` needs that commit's parents, two of them when it is a merge. The bundle header lists them on lines that start with `-`. `analysis/labeler/session.py` fetches each one from GitHub by id.
+- Copies of worker trials are in `runs/private/sessions/<session-id>/`: `factory-sessions/-testbed/<droid-id>.jsonl` (the transcript), `<droid-id>.settings.json` (session token totals by type), `meta.json`, `droid.json`, `capture/`, `snapshots.bundle`, and `start_commit`. The transcript has a timestamp on every line and `is_error` on every tool result. It has no per-turn token counts. On Pro, `start_commit` equals the dataset `base_commit`, so `snapshots.bundle` needs that commit's parents, two of them when it is a merge. The bundle header lists them on lines that start with `-`. `analysis/features/session.py` fetches each one from GitHub by id.
 - Factory credits per token, from an exact fit over 80 baseline1 sessions on `claude-haiku-5-5`: 0.2 per output token (thinking included), 0.05 per cache-write token, 0.004 per cache-read token, and about 0.26 per uncached input token.
 - The benchmark is moving to SWE-bench Pro V2 (`ScaleAI/SWE-bench_Pro`, config `default`, 642 tasks, 11 repos). Retrace uses the Python and Go repos: ansible, openlibrary, qutebrowser, flipt, teleport, vuls, navidrome. The dataset has no eval script. Scale's `scaleapi/SWE-bench_Pro-os` ships Harbor tasks under `v2/tasks/<instance_id>/` (`instruction.md`, `tests/test.sh`, `task.toml`). Retrace pins commit `66f92766bba642462d4bbe5479e83f91f9211862`, cloned to `/opt/retrace/swe-bench-pro` on the worker. The prompt is `instruction.md`. The repo is at `/app`. The image is `ghcr.io/scaleapi/swe-bench_pro-v2:<instance_id>`. Grading runs `bash /tests/test.sh` in a fresh container with the patch applied, and reads `reward.txt`. V2 does not use `before_repo_set_cmd`. Droid needs the Factory API, so the agent has network access, and the official no-network protocol does not hold. Details and measurements are in `recorder/worker/README.md`. Gold passes and empty fails on all 56 tasks of `splits/pro-candidates.json` (`splits/pro-gold-check.json`). Those images take 275 GB, 2.1 to 11.9 GB each. A pull takes 30 to 130 s.
 - Pro cost, measured on `pro-baseline1` (50 of 64 trials, `claude-haiku-5-5`, control arm, all 50 pass): 14,025 credits per trial on average, 10,606 median, 70,057 maximum. Mean per repo: ansible 15,188, openlibrary 15,600, flipt 7,435, teleport 22,398 (5 trials). Verified means are 4,436 (baseline1) and 6,309 (baseline2). A Pro session takes 17 to 34 assistant turns on average per repo, against 13 and 16 on Verified.
@@ -120,7 +121,7 @@ Values stay out of git. These facts were checked on 2026-10-24.
 - `run_job.sh` sums `cost_credits` over every finished trial in the job directory and checks that sum only when a trial starts. Trials in flight are not counted. `pro-baseline1` spent 701,253 against a cap of 500,000. Set `budget_credits` above the credits already spent when you re-run a job.
 - `proxies.sh` ran on the worker on 2026-10-24 on four `pro-baseline1` trials, one each from ansible, openlibrary, flipt, and teleport. `repo_tests` selected 1 to 3 test files or packages per trial, found 5 to 113 tests passing at the start commit and 0 regressed, and took 5 to 110 s per trial for both runs. A Python image has `python` on PATH, and a Go image has `go`. The acceptance check gave `fail` at the start commit and `fail` with the patch on one ansible trial, with a throwaway check.
 - Teleport images whose id ends in `-vee9b09fb20c43af7e520f57e9239bbcf46b7113d` are Alpine (musl). The glibc Droid binary fails there with `Error relocating /usr/local/bin/droid: __pthread_key_create: symbol not found`, and the trial writes no result. Three dev tasks of `splits/pro-pool.json` have this suffix. No held-out task has it. One image was checked directly (`teleport-32bcd715`), and the other two failed with the same error.
-- SWE-bench Verified has 500 tasks. The 1 to 4 hour band has 42, and 22 of them are django. `splits/draw_pool.py` and `analysis/labeler/fetch_tasks.py` read it from the Hugging Face datasets-server API.
+- SWE-bench Verified has 500 tasks. The 1 to 4 hour band has 42, and 22 of them are django. `splits/draw_pool.py` and `analysis/features/fetch_tasks.py` read it from the Hugging Face datasets-server API.
 - One `read_doc` result for the project doc is about 540 KB, so the Google Docs connector saves it to a file. Use the Google Workspace skill's `docs_index.py` for positions, and send each edit with the latest `revisionId`. The doc has two tabs: the main tab `t.0` and Architecture `t.kt15rr8inhru`.
 
 ## Unverified

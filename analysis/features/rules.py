@@ -1,4 +1,8 @@
-"""The label rules in analysis/AGENTS.md: six hard signals, then failure type and suspected step."""
+"""The session feature rules in analysis/AGENTS.md: five hard signals, then failure type and suspected step.
+
+No rule reads grader output. Whether a run failed comes from its proxies
+(repo_tests, acceptance), and is unknown when the result has none.
+"""
 
 import re
 from dataclasses import dataclass
@@ -47,8 +51,24 @@ def is_test(path):
     return bool(TEST_FILE.search(path))
 
 
-def failing_tests(s, f):
-    return not s.result["passed"]
+def proxy_fail(s):
+    """True or False from the proxies that ran, or None when none gave a verdict.
+
+    repo_tests fails when a test that passes at the start commit regresses. The
+    acceptance check counts only when it fails at the start commit (its schema).
+    """
+    verdicts = []
+    repo_tests = (s.proxies or {}).get("repo_tests")
+    if repo_tests and repo_tests["status"] == "ok":
+        verdicts.append(repo_tests.get("regressed", 0) > 0)
+    acceptance = (s.proxies or {}).get("acceptance")
+    if acceptance and acceptance["at_start"] == "fail" and acceptance["status"] in ("pass", "fail"):
+        verdicts.append(acceptance["status"] == "fail")
+    return any(verdicts) if verdicts else None
+
+
+def proxy_failure(s, f):
+    return proxy_fail(s) is True
 
 
 def reverted_diff(s, f):
@@ -65,7 +85,7 @@ def reverted_diff(s, f):
 
 
 def abandoned(s, f):
-    return not s.result["passed"] and not f.final_files
+    return not f.final_files  # an empty patch resolves no task
 
 
 def code_survival(s, f):
@@ -85,18 +105,12 @@ def looping(s, f):
     return False
 
 
-def wrong_files(s, f):
-    edits_source = any(not is_test(p) for p in f.final_files)
-    return edits_source and not set(f.final_files) & set(s.gold_files)
-
-
 SIGNALS = {
-    "failing_tests": failing_tests,
+    "proxy_failure": proxy_failure,
     "reverted_diff": reverted_diff,
     "abandoned": abandoned,
     "code_survival": code_survival,
     "looping": looping,
-    "wrong_files": wrong_files,
 }
 
 
@@ -127,34 +141,41 @@ def tested_after(s, steps, last):
 
 
 def failure(s, f):
-    """(failure_type, suspected_tool_call_id), by the ordered rules in analysis/AGENTS.md."""
-    steps = s.trace["steps"]
-    failed = not s.result["passed"]
+    """(failure_type, suspected_tool_call_id, pending), by the ordered rules in analysis/AGENTS.md.
 
-    if failed:
-        start_files = set(blobs(s.repo, s.start_commit))
-        if weakens_tests(s, start_files, f.refs[-1]):
+    pending names the rules that need a proxy verdict the result does not have.
+    """
+    steps = s.trace["steps"]
+    failed = proxy_fail(s)
+    pending = [] if failed is not None else ["proxy_failure"]
+
+    start_files = set(blobs(s.repo, s.start_commit))
+    if weakens_tests(s, start_files, f.refs[-1]):
+        if failed:
             first = next(i for i, ref in enumerate(f.refs[1:]) if weakens_tests(s, start_files, ref))
-            return "test_gaming", steps[first]["tool_call_id"]
+            return "test_gaming", steps[first]["tool_call_id"], pending
+        if failed is None:
+            pending.append("test_gaming")
 
     source_edits = [i for i, files in enumerate(f.step_files) if any(not is_test(p) for p in files)]
     if source_edits:
         last = source_edits[-1]
         if not tested_after(s, steps, last):
-            return "skipped_verification", steps[last]["tool_call_id"]
+            return "skipped_verification", steps[last]["tool_call_id"], pending
 
     if failed:
-        return "other", None  # until the Signals-style detector exists
-    return None, None
+        return "other", None, pending  # until the Signals-style detector exists
+    return None, None, pending
 
 
-def label(s):
+def compute(s):
     f = facts(s)
-    failure_type, suspected = failure(s, f)
+    failure_type, suspected, pending = failure(s, f)
     return {
         "session_id": s.session_id,
         "hard_signals": [name for name, rule in SIGNALS.items() if rule(s, f)],
         "failure_type": failure_type,
         "suspected_tool_call_id": suspected,
+        "pending": pending,
         "features": features(s.primitives),
     }

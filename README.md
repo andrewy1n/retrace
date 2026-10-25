@@ -2,7 +2,7 @@
 
 Replay recorded Droid sessions, and keep a harness change only when it beats a no-hint control. Factory Signals is credited for the friction-ticket ideas. Retrace tests a proposal before it ships.
 
-Andrew owns recording, replay, and the dashboard. Kate owns the labeler, proposals, and the Tiger schema. Claude Code is an optional adapter. The GitHub repository is public. The plan and the pitch are in the [Retrace project doc](https://docs.google.com/document/d/1sAXpAyjByro-vfbUc1EXLp-weLUiXahmg3GEDRCgrrw/edit). Agent instructions are in `AGENTS.md`. The project summary is the Pitch section of the project doc.
+Andrew owns recording, replay, and the dashboard. Kate owns features, diagnoses, proposals, and the Tiger schema. Claude Code is an optional adapter. The GitHub repository is public. The plan and the pitch are in the [Retrace project doc](https://docs.google.com/document/d/1sAXpAyjByro-vfbUc1EXLp-weLUiXahmg3GEDRCgrrw/edit). Agent instructions are in `AGENTS.md`. The project summary is the Pitch section of the project doc.
 
 ## Layout
 
@@ -10,8 +10,8 @@ Andrew owns recording, replay, and the dashboard. Kate owns the labeler, proposa
 | --- | --- |
 | `contracts/` | Trace, friction ticket, replay job, replay result, and proposed change schemas, plus one fixture each |
 | `recorder/` | Droid capture hook and replay runner |
-| `analysis/` | Labeler and `.factory/` proposal directories |
-| `runs/` | Trace indexes, labels, tickets, jobs, results, and reviews |
+| `analysis/` | Feature code and `.factory/` proposal directories |
+| `runs/` | Trace indexes, primitives, features, tickets, jobs, results, and reviews |
 | `splits/` | Derivation, held-out, and regression instance ids |
 | `reports/` | Frozen comparisons |
 

@@ -1,11 +1,14 @@
-"""Load one recorded session for the labeler.
+"""Load one recorded session for feature computation.
 
 A session is spread over four places:
 
   traces/<session-id>.json         steps and snapshot refs (contracts/trace.schema.json)
   results/**/<...>.json            the trial whose session_id matches (contracts/replay-result.schema.json)
   sessions/<session-id>/           start_commit, the snapshots, and factory-sessions/ (recorder/AGENTS.md)
-  tasks/<task-id>.json             repo, base_commit, gold_files (fetch_tasks.py; mocks write their own)
+  tasks/<task-id>.json             repo and base_commit (fetch_tasks.py; mocks write their own)
+
+Grader output never reaches feature computation (the Grader section of AGENTS.md):
+find_result drops the grader's fields, and tasks carry only repo and base_commit.
 """
 
 import json
@@ -23,17 +26,20 @@ COMMAND_KEY = "command"
 # Shared upstream repos for real sessions. Gitignored, like everything under runs/private/.
 DEFAULT_REPOS = Path(__file__).resolve().parents[2] / "runs" / "private" / "repos"
 
+# Fields of a replay result that carry the dataset grader's output. load_session drops them.
+GRADER_FIELDS = ("passed", "grader")
+
 
 @dataclass
 class Session:
     session_id: str
     trace: dict
-    result: dict
+    result: dict  # the replay result without GRADER_FIELDS
     start_commit: str
     repo: Path
     commands: dict  # tool_call_id -> shell command, for Execute calls; empty when primitives exist
-    gold_files: list
     primitives: dict = None  # runs/primitives/<session-id>.json, or None (mocks without one)
+    proxies: dict = None  # the result's proxies (repo_tests, acceptance), or None
 
 
 def open_repo(session_dir, task, repos_dir, needed):
@@ -90,7 +96,7 @@ def find_result(results_dir, session_id):
             matches.append(row)
     if len(matches) != 1:
         raise LookupError(f"{session_id}: expected 1 result with this session_id, found {len(matches)}")
-    return matches[0]
+    return {k: v for k, v in matches[0].items() if k not in GRADER_FIELDS}
 
 
 def find_transcript(session_dir, harness_session_id):
@@ -129,13 +135,14 @@ def load_session(session_id, traces_dir, results_dir, sessions_dir, tasks_dir, r
     primitives = json.loads(prim_file.read_text()) if prim_file and prim_file.exists() else None
     # Primitives classify every call, so the transcript is read only without them.
     commands = {} if primitives else read_commands(find_transcript(session_dir, trace["harness_session_id"]))
+    result = find_result(results_dir, session_id)
     return Session(
         session_id=session_id,
         trace=trace,
-        result=find_result(results_dir, session_id),
+        result=result,
         start_commit=start_commit,
         repo=open_repo(session_dir, task, repos_dir, needed),
         commands=commands,
-        gold_files=task["gold_files"],
         primitives=primitives,
+        proxies=result.get("proxies"),
     )
