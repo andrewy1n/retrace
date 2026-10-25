@@ -12,7 +12,7 @@ We wanted a loop that runs on evidence a production system already has. A trace 
 
 Retrace is a system for improving coding agent harnesses. It finds where an agent fails or wastes money, proposes a harness fix, and validates the fix on repos the agent has never seen.
 
-![How Retrace improves a harness](https://raw.githubusercontent.com/andrewy1n/retrace/a210e03d2898cd2a2b1538ef3ffebb55a7c22aa5/docs/devpost/pipeline.png)
+![How Retrace improves a harness](https://raw.githubusercontent.com/andrewy1n/retrace/23e0a963cb82e2590e6a40250933d56643b1c6eb/docs/devpost/pipeline.png)
 
 1. **Record.** Retrace runs Factory Droid on real tasks. Every tool call gets a git snapshot of the repo.
 2. **Extract primitives.** Each tool call becomes a set of deterministic facts: tool type, command class, duration, exit code, files touched, output size, position, and whether it repeats an earlier call. Primitives hold no command text and no tool output.
@@ -24,7 +24,7 @@ Retrace is a system for improving coding agent harnesses. It finds where an agen
 
 ![Replay: rewind a session and fork it](https://raw.githubusercontent.com/andrewy1n/retrace/a210e03d2898cd2a2b1538ef3ffebb55a7c22aa5/docs/devpost/replay.png)
 
-![Retrace architecture](https://raw.githubusercontent.com/andrewy1n/retrace/1d8d381df53281c86fc545887d44a68c8fdc022a/docs/devpost/architecture.png)
+![Retrace architecture](https://raw.githubusercontent.com/andrewy1n/retrace/23e0a963cb82e2590e6a40250933d56643b1c6eb/docs/devpost/architecture.png)
 
 A person reviews the evidence and decides whether to adopt the fix. The dashboard lists each proposal with its effect on the targeted behaviour, the credit change, and a guard from the repo's own tests.
 
