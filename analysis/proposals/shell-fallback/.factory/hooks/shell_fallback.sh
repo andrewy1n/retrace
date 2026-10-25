@@ -19,10 +19,12 @@ seen=$(grep -oF "$MARK" "$transcript" | wc -l | tr -d ' ')
 # Droid runs the hooks of a batch of parallel calls at once; mkdir lets only one of them block.
 mkdir "${TMPDIR:-/tmp}/shell-fallback-${session:-unknown}-$kills" 2>/dev/null || exit 0
 cat >&2 <<'MSG'
-[shell-fallback] A shell command in this session was killed (SIGKILL). Here such kills tend to
-repeat for every foreground command, even trivial ones, so do not spend calls probing the shell.
-Run this command again with fireAndForget set to true. Redirect its output to a log file under
-/tmp and append the exit code, for example: <command> > /tmp/run.log 2>&1; echo EXIT=$? >> /tmp/run.log
-Then read the log file. If it has no EXIT line yet, the command is still running: read it again.
+[shell-fallback] A shell command in this session was reported as killed (SIGKILL). In an image
+without ps (procps), Droid reports every foreground command this way, even when it ran, so do not
+spend calls probing the shell. Run this command again with fireAndForget set to true. Redirect its
+output to a log file under /tmp and append the exit code, for example:
+<command> > /tmp/run.log 2>&1; echo EXIT=$? >> /tmp/run.log
+Do not write to /dev/null in a background command: Droid refuses it. Then read the log file. If it
+has no EXIT line yet, the command is still running: read it again.
 MSG
 exit 2
