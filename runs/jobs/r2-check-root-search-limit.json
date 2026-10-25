@@ -1,0 +1,19 @@
+{
+  "job_id": "r2-check-root-search-limit",
+  "dataset": "swebench_pro",
+  "start": "step0",
+  "task_ids": [
+    "instance_flipt-io__flipt-15b76cada1ef29cfa56b0fba36754be36243dded",
+    "instance_flipt-io__flipt-ee02b164f6728d3227c42671028c67a4afd36918",
+    "instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+    "instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26"
+  ],
+  "arm": {
+    "kind": "candidate",
+    "path": "analysis/proposals/root-search-limit"
+  },
+  "model": "claude-haiku-5-5",
+  "reruns": 1,
+  "stop_mode": "next_user_turn",
+  "budget_credits": 120000
+}

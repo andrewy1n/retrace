@@ -1,0 +1,6 @@
+{
+  "proposal_id": "root-search-limit",
+  "cost_pattern": "large_root_searches",
+  "change_type": "guardrail_hook",
+  "path": "analysis/proposals/root-search-limit"
+}
