@@ -33,5 +33,5 @@
   "model": "claude-haiku-5-5",
   "reruns": 2,
   "stop_mode": "next_user_turn",
-  "budget_credits": 733333
+  "budget_credits": 916666
 }
