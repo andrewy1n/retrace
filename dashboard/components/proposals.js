@@ -66,8 +66,8 @@ function guardText(control, candidate) {
   const [ak, an] = acc(candidate);
   const [ack, acn] = acc(control);
   return {
-    guard_repo: rn ? `${rk} of ${rn} runs regress repo tests; control ${rck} of ${rcn}` : '',
-    guard_acceptance: an ? `${ak} of ${an} pass; control ${ack} of ${acn}` : ''
+    guard_repo: rn ? `${rk} of ${rn} runs regress repo tests; baseline ${rck} of ${rcn}` : '',
+    guard_acceptance: an ? `${ak} of ${an} pass; baseline ${ack} of ${acn}` : ''
   };
 }
 
@@ -129,7 +129,7 @@ export function buildProposals(list, runs) {
     const cmp = compareArms(control, candidate, signal);
     Object.assign(row, guardText(control, candidate));
     row.paired_tasks = cmp.paired_tasks;
-    row.setup = `Step-0 jobs ${row.pairs}, ${cmp.paired_tasks} paired tasks, ${candidate.length} candidate and ${control.length} control runs, ${candidate[0].model}, paired bootstrap 95% interval over tasks`;
+    row.setup = `${cmp.paired_tasks} tasks, ${candidate.length} runs with the change and ${control.length} baseline runs, ${candidate[0].model}. Ranges are 95% intervals over tasks`;
     if (cmp.arm) {
       row.inc_arm_k = cmp.arm[0];
       row.inc_arm_n = cmp.arm[1];
@@ -172,7 +172,7 @@ export function taskTable(runs, column) {
       const acc = rs.filter(accUsable);
       return {
         task: shortTask(rs[0].task_id),
-        arm: rs[0].arm,
+        arm: rs[0].arm === 'control' ? 'Baseline' : 'With change',
         runs: rs.length,
         signal: seen.length ? `${seen.reduce((a, b) => a + b, 0)} of ${seen.length}` : 'no primitives',
         credits: mean(rs.map((r) => Number(r.cost_credits))),

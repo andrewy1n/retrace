@@ -262,9 +262,9 @@ order by position
     <Tab label="Overview">
       <div class="rt-facts">
         <div class="rt-fact"><span class="rt-k">Target</span><span class="rt-v">{row.target}</span><span class="rt-s">{row.kind === 'cost' ? 'Cost pattern' : 'Failure group'}</span></div>
-        <div class="rt-fact"><span class="rt-k">{example ? 'Sessions' : 'Runs'}</span><span class="rt-v">{row.sessions}</span><span class="rt-s">{example ? `Severity ${row.severity}` : 'Candidate runs'}</span></div>
+        <div class="rt-fact"><span class="rt-k">{example ? 'Sessions' : 'Runs'}</span><span class="rt-v">{row.sessions}</span><span class="rt-s">{example ? `Severity ${row.severity}` : 'Runs with the change'}</span></div>
         <div class="rt-fact"><span class="rt-k">Change</span><span class="rt-v">{CHANGE[row.change_type] ?? row.change_type}</span><span class="rt-s">Rank {rank + 1} of 6</span></div>
-        <div class="rt-fact"><span class="rt-k">Result</span><span class="rt-v">{v.label}</span><span class="rt-s">{final ? (example ? 'Held-out, step 0' : 'Step 0') : diagnosis ? 'Checkpoint forks' : 'No replay yet'}</span></div>
+        <div class="rt-fact"><span class="rt-k">Result</span><span class="rt-v">{v.label}</span><span class="rt-s">{final ? (example ? 'Held-out' : 'Fresh runs') : diagnosis ? 'Checkpoint forks' : 'No replay yet'}</span></div>
       </div>
 
       <h2 class="rt-h2">The change</h2>
@@ -282,10 +282,10 @@ order by position
 
     <Tab label="Evidence">
       {#if final}
-        <h2 class="rt-h2">{example ? 'Held-out result' : 'Step-0 result'}</h2>
+        <h2 class="rt-h2">{example ? 'Held-out result' : 'Results'}</h2>
         <p class="rt-tab-note">{row.setup}.</p>
         <h3 class="rt-h3">{row.target_metric}</h3>
-        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} runs. Control: {share(row.inc_base_k, row.inc_base_n)} runs. A negative difference means the change cuts the behaviour.</p>
+        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} runs. Baseline: {share(row.inc_base_k, row.inc_base_n)} runs. A negative difference means the change cuts the behaviour.</p>
         <ECharts config={incChart} height=110px />
         {#if creditChart}
           <h3 class="rt-h3">Credits per run difference</h3>
@@ -297,7 +297,7 @@ order by position
         <h2 class="rt-h2">Diagnosis only</h2>
         <p class="rt-tab-note">{row.setup}.</p>
         <h3 class="rt-h3">{row.target_metric}</h3>
-        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} forks. Control: {share(row.inc_base_k, row.inc_base_n)} forks. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
+        <p>With the change: {share(row.inc_arm_k, row.inc_arm_n)} forks. Baseline: {share(row.inc_base_k, row.inc_base_n)} forks. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
         <h3 class="rt-h3">Guards</h3>
         {#each guards as g}<p>{g}</p>{:else}<p>Not run.</p>{/each}
       {:else}
@@ -400,10 +400,10 @@ order by position
           <span><i style="border:1.5px dashed #27272a"></i>First edit</span>
         </div>
         <h2 class="rt-h2">All tasks</h2>
-        <p class="rt-tab-note">{row.pairs}. One row per task and arm. A run counts when it has primitives in Tiger.</p>
+        <p class="rt-tab-note">Baseline against with change, one row per task. A run counts when its tool calls were recorded.</p>
         <DataTable data={taskRows} rows=50 emptySet=pass emptyMessage="No run yet.">
           <Column id=task title="Task" />
-          <Column id=arm title="Arm" />
+          <Column id=arm title="Version" />
           <Column id=runs title="Runs" />
           <Column id=signal title="Runs with the behaviour" />
           <Column id=credits title="Credits, mean" fmt=num0 />

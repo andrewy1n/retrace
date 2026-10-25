@@ -42,8 +42,8 @@ export function verdict(p) {
       ? { label: 'Cheaper', tone: 'ok' }
       : { label: 'No clear saving', tone: 'muted' };
   }
-  if (p.ci_low_pp > 0) return { label: 'Beats control', tone: 'ok' };
-  if (p.ci_high_pp < 0) return { label: 'Worse than control', tone: 'bad' };
+  if (p.ci_low_pp > 0) return { label: 'Beats baseline', tone: 'ok' };
+  if (p.ci_high_pp < 0) return { label: 'Worse than baseline', tone: 'bad' };
   return { label: 'No clear difference', tone: 'muted' };
 }
 

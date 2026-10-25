@@ -127,7 +127,7 @@ order by 1
 
 A whole-suite run is a test command with no path argument. These numbers come from primitives.
 
-## Proxies on step-0 runs
+## Checks on full runs
 
 ```sql repo_status
 select job_id as run,
@@ -157,13 +157,13 @@ order by 1
 <BarChart data={repo_status} x=run y=trials series=status type=stacked swapXY=true labels=true yAxisLabels=false yGridlines=false chartAreaHeight=120
   seriesOrder={['0 regressed', 'Regressed', 'No tests found', 'Error']}
   seriesColors={{'0 regressed': '#0ca30c', 'Regressed': '#d03b3b', 'No tests found': '#a1a1aa', 'Error': '#fab219'}}
-  emptySet=pass emptyMessage="No step-0 run has repo-test proxies yet."
+  emptySet=pass emptyMessage="No full run has repo-test results yet."
   title="Repo tests that passed at the start, with the patch" />
 
 <BarChart data={acc_status} x=run y=trials series=status type=stacked swapXY=true labels=true yAxisLabels=false yGridlines=false chartAreaHeight=120
   seriesOrder={['Passes', 'Fails', 'No verdict']}
   seriesColors={{'Passes': '#0ca30c', 'Fails': '#d03b3b', 'No verdict': '#a1a1aa'}}
-  emptySet=pass emptyMessage="No step-0 run has an acceptance check yet."
+  emptySet=pass emptyMessage="No full run has an acceptance check yet."
   title="Acceptance check with the patch" />
 
 The acceptance check counts only when it fails at the start commit. Proxies need no hidden tests, so a production system has them too.
