@@ -9,8 +9,7 @@
 
   const links = [
     { href: '/', label: 'Proposals', match: (p) => p === '/' || p.startsWith('/proposals') },
-    { href: '/runs', label: 'Runs', match: (p) => p.startsWith('/runs') },
-    { href: '/sessions', label: 'Sessions', match: (p) => p.startsWith('/sessions') },
+    { href: '/runs', label: 'Runs', match: (p) => p.startsWith('/runs') || p.startsWith('/sessions') },
     { href: '/monitoring', label: 'Monitoring', match: (p) => p.startsWith('/monitoring') }
   ];
   $: path = $page.url.pathname;

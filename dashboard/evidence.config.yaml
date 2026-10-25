@@ -5,8 +5,8 @@ appearance:
 theme:
   colorPalettes:
     default:
-      light: ["#27272a", "#71717a", "#d4d4d8", "#a1a1aa", "#3f3f46", "#e4e4e7"]
-      dark: ["#e4e4e7", "#a1a1aa", "#52525b", "#71717a", "#d4d4d8", "#3f3f46"]
+      light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
+      dark: ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
   colorScales:
     default:
       light: ["#f4f4f5", "#27272a"]
