@@ -1,0 +1,36 @@
+{
+  "job_id": "final1-heldout-a",
+  "dataset": "swebench_pro",
+  "start": "step0",
+  "task_ids": [
+    "instance_qutebrowser__qutebrowser-99029144b5109bb1b2a53964a7c129e009980cd9-va0fd88aac89cde702ec1ba84877234da33adce8a",
+    "instance_qutebrowser__qutebrowser-0aa57e4f7243024fa4bba8853306691b5dbd77b3-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+    "instance_qutebrowser__qutebrowser-3fd8e12949b8feda401930574facf09dd4180bba",
+    "instance_qutebrowser__qutebrowser-5e0d6dc1483cb3336ea0e3dcbd4fe4aa00fc1742-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271",
+    "instance_qutebrowser__qutebrowser-e57b6e0eeeb656eb2c84d6547d5a0a7333ecee85-v2ef375ac784985212b1805e1d0431dc8f1b3c171",
+    "instance_qutebrowser__qutebrowser-66cfa15c372fa9e613ea5a82d3b03e4609399fb6-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+    "instance_qutebrowser__qutebrowser-1943fa072ec3df5a87e18a23b0916f134c131016-vafb3e8e01b31319c66c4e666b8a3b1d8ba55db24",
+    "instance_navidrome__navidrome-d21932bd1b2379b0ebca2d19e5d8bae91040268a",
+    "instance_navidrome__navidrome-ee21f3957e0de91624427e93c62b8ee390de72e3",
+    "instance_navidrome__navidrome-e12a14a87d392ac70ee4cc8079e3c3e0103dbcb2",
+    "instance_navidrome__navidrome-97434c1789a6444b30aae5ff5aa124a96a88f504",
+    "instance_navidrome__navidrome-8d56ec898e776e7e53e352cb9b25677975787ffc",
+    "instance_navidrome__navidrome-5001518260732e36d9a42fb8d4c054b28afab310",
+    "instance_navidrome__navidrome-6bd4c0f6bfa653e9b8b27cfdc2955762d371d6e9",
+    "instance_future-architect__vuls-878c25bf5a9c9fd88ac32eb843f5636834d5712d",
+    "instance_future-architect__vuls-3f8de0268376e1f0fa6d9d61abb0d9d3d580ea7d",
+    "instance_future-architect__vuls-3c1489e588dacea455ccf4c352a3b1006902e2d4",
+    "instance_future-architect__vuls-61c39637f2f3809e1b5dad05f0c57c799dce1587",
+    "instance_future-architect__vuls-1832b4ee3a20177ad313d806983127cb6e53f5cf",
+    "instance_future-architect__vuls-5af1a227339e46c7abf3f2815e4c636a0c01098e",
+    "instance_future-architect__vuls-f6cc8c263dc00329786fa516049c60d4779c4a07",
+    "instance_future-architect__vuls-f0b3a8b1db98eb1bd32685f1c36c41a99c3452ed"
+  ],
+  "arm": {
+    "kind": "control"
+  },
+  "model": "claude-haiku-5-5",
+  "reruns": 2,
+  "stop_mode": "next_user_turn",
+  "budget_credits": 733333
+}
