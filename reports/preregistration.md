@@ -101,3 +101,12 @@ The final comparison runs arms A and C only, for three reasons:
 - Arm B's `.factory/hooks.json` nests its events under a top-level `hooks` key, unlike every hook format verified on Droid 0.249.0, and it needs `python3` and `$FACTORY_PROJECT_DIR` in the task container. Neither was checked, and repairing it with what arm C's checks taught would no longer make it transcript-only.
 
 The report describes arm B's proposal next to arm C's and makes no claim about their relative effect.
+
+### Amendment 2, 2026-10-24: Gate 4, no acceptance checks in the final run
+
+Made at Gate 4, before any held-out or regression run.
+
+Arm C is frozen as `analysis/proposals/explore-budget` at the content of 855d56d. `FROZEN.md` in that directory lists each file's sha256.
+
+No held-out or regression task has an acceptance check, so `acceptance` and `combined` give no verdict there, as the Proxies table says. The proxy guard is `repo_tests` and `last_test_exit`. Writing 30 checks from the task statements before the run did not fit the time left, and a check written after a task's results would not be frozen before its replay.
+
