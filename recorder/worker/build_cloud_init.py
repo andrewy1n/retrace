@@ -24,6 +24,7 @@ SCRIPTS = [
     ("../capture/hook.sh", "capture/hook.sh"),
     ("../capture/hook.py", "capture/hook.py"),
     ("../capture/trace.py", "capture/trace.py"),
+    ("../capture/primitives.py", "capture/primitives.py"),
 ]
 
 HEADER = """#cloud-config

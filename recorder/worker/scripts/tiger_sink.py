@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Upsert replay results or primitives into Tiger (Postgres). Needs TIGER_DATABASE_URL.
 
-  tiger_sink.py results <dir>
-  tiger_sink.py primitives <dir>
+  tiger_sink.py results <dir|file>...
+  tiger_sink.py primitives <dir|file>...
 """
 import json
 import os
@@ -83,17 +83,17 @@ WRITERS = {"results": write_result, "primitives": write_primitives}
 
 
 def main():
-    if len(sys.argv) != 3 or sys.argv[1] not in WRITERS:
+    if len(sys.argv) < 3 or sys.argv[1] not in WRITERS:
         sys.exit(__doc__)
     url = os.environ.get("TIGER_DATABASE_URL")
     if not url:
         sys.exit("TIGER_DATABASE_URL is not set")
-    kind, folder = sys.argv[1], Path(sys.argv[2])
-    files = sorted(folder.rglob("*.json"))
+    kind, paths = sys.argv[1], [Path(p) for p in sys.argv[2:]]
+    files = sorted(f for p in paths for f in (p.rglob("*.json") if p.is_dir() else [p]))
     with psycopg.connect(url) as conn, conn.cursor() as cur:
         for path in files:
             WRITERS[kind](cur, path)
-    print(f"{kind}: upserted {len(files)} files from {folder}")
+    print(f"{kind}: upserted {len(files)} files")
 
 
 main()

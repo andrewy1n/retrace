@@ -6,6 +6,9 @@
 #
 # Usage: /opt/retrace/grade.sh <job.json> [max_workers=8] [trial]
 # Results: $RETRACE_REPO/runs/results/<job_id>/<task_id>-<step0 or tool_call_id>-<arm>-<trial>.json
+# A step0 trial also gets $RETRACE_REPO/runs/primitives/<job_id>-<task_id>-<trial>.json (capture/primitives.py), upserted to
+# Tiger when TIGER_DATABASE_URL is set. A failed extraction prints a warning and sets exit code 1, and keeps the results.
+# A checkpoint trial gets no primitives: its transcript holds the copied prefix and no session id names it.
 # The harness takes one prediction per instance. A step0 job grades each trial number as one evaluation run.
 # A checkpoint job runs proxies.sh for each (tool_call_id, trial), <max_workers> at once.
 set -euo pipefail
@@ -21,6 +24,22 @@ SUITE="$(jq -r '.dataset // "swebench_verified"' "$JOB")"
 REPO="${RETRACE_REPO:-$ROOT/repo}"
 RUNS="$ROOT/runs/$JOB_ID"
 failed=0
+
+primitives_trial() {
+  local t="$1" task sids=() out="$REPO/runs/primitives" sid
+  for task in $(jq -r '.task_ids[]' "$JOB"); do
+    [[ -f "$RUNS/$task/$t/meta.json" ]] && ! jq -e .failed "$RUNS/$task/$t/meta.json" >/dev/null || continue
+    sid="$JOB_ID-$task-$t"
+    if RETRACE_REPO="$REPO" "$PY" "$ROOT/capture/primitives.py" --sessions "$ROOT/sessions" --out "$out" --session "$sid" >/dev/null; then
+      sids+=("$out/$sid.json")
+    else
+      echo "warning: no primitives for $sid" >&2; failed=1
+    fi
+  done
+  if [[ ${#sids[@]} -gt 0 && -n "${TIGER_DATABASE_URL:-}" ]]; then
+    "$PY" "$ROOT/tiger_sink.py" primitives "${sids[@]}" || failed=1
+  fi
+}
 
 if [[ "$(jq -r .start "$JOB")" == checkpoint ]]; then
   TASK="$(jq -r .task_id "$REPO/runs/traces/$(jq -r .session_id "$JOB").json")"
@@ -60,6 +79,7 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
       [[ -f "$RUNS/$task/$t/meta.json" ]] && echo "$task"
     done | xargs -r -P "$WORKERS" -I{} "$ROOT/grade_pro.sh" {} "$RUNS/{}/$t/patch.diff" "$EVAL_DIR/{}" || failed=1
     step0_proxies "$t"
+    primitives_trial "$t"
     "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || failed=1
     if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
       "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1
@@ -81,6 +101,7 @@ for ((t = 1; t <= $(jq .reruns "$JOB"); t++)); do
     --run_id "t$t-$(date +%Y%m%d%H%M%S)" \
     --report_dir "$EVAL_DIR"
   step0_proxies "$t"
+  primitives_trial "$t"
   "$PY" "$ROOT/retrace_job.py" collect "$JOB" "$t" || { failed=1; continue; }
   if [[ -n "${TIGER_DATABASE_URL:-}" ]]; then
     "$PY" "$ROOT/tiger_sink.py" results "$REPO/runs/results/$JOB_ID" || failed=1

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write runs/primitives/<session-id>.json for every recorded session.
 
-  primitives.py --sessions DIR --out DIR
+  primitives.py --sessions DIR --out DIR [--session ID ...]
 
 Each session directory holds the Droid transcript and settings.json under factory-sessions/*/ and a
 meta.json. A primitive is a deterministic fact about one tool call. The files never hold command text
@@ -422,13 +422,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sessions", required=True)
     ap.add_argument("--out", default=REPO / "runs" / "primitives")
+    ap.add_argument("--session", action="append", help="only this session directory name; repeatable")
     args = ap.parse_args()
 
     schema = json.loads((REPO / "contracts" / "primitives.schema.json").read_text())
     validator = Draft202012Validator(schema)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for session_dir in sorted(Path(args.sessions).iterdir()):
+    root = Path(args.sessions)
+    dirs = [root / name for name in args.session] if args.session else sorted(root.iterdir())
+    for session_dir in dirs:
         if not session_dir.is_dir() or session_dir.name.startswith("trace-check-"):
             continue
         primitives = session_primitives(session_dir)

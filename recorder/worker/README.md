@@ -106,6 +106,7 @@ cd /opt/retrace/repo && git pull
 mkdir -p /opt/retrace/replay && cd recorder/replay
 cp run_checkpoint.sh docker-droid.sh restore.sh fork.mjs package.json package-lock.json /opt/retrace/replay/
 cp ../worker/scripts/{run_job.sh,grade.sh,retrace_job.py,tiger_sink.py,proxies.sh,repo_tests.py} /opt/retrace/
+cp ../capture/primitives.py /opt/retrace/capture/
 cd /opt/retrace/replay && npm ci --omit=dev
 ```
 Then pull the image and run one fork:
@@ -265,7 +266,8 @@ tiger_sink.py primitives /opt/retrace/repo/runs/primitives      # all primitives
 ```
 On the dev machine, set `RETRACE_REPO=$PWD RETRACE_ROOT=$PWD` first, as for `retrace_job.py`.
 
-`grade.sh` runs `tiger_sink.py results` after each successful `collect`. It writes `passed` and `grader` as NULL for a `checkpoint` trial, and `proxies` as jsonb. It skips the step when `TIGER_DATABASE_URL` is unset. Primitives are not sent by `grade.sh`. Run `tiger_sink.py primitives` by hand.
+`grade.sh` runs `tiger_sink.py results` after each successful `collect`. It writes `passed` and `grader` as NULL for a `checkpoint` trial, and `proxies` as jsonb. It skips the step when `TIGER_DATABASE_URL` is unset. 
+For each finished `step0` trial, `grade.sh` also runs `capture/primitives.py` on `/opt/retrace/sessions/<job-id>-<task-id>-<trial>`. It writes `$RETRACE_REPO/runs/primitives/<job-id>-<task-id>-<trial>.json` and, when `TIGER_DATABASE_URL` is set, sends those files with `tiger_sink.py primitives`. A failed extraction prints `warning: no primitives for <session-id>`, makes `grade.sh` exit 1, and keeps the results. A `checkpoint` trial gets no primitives. Its transcript holds the copied prefix, and no session id names it. `remote.sh fetch` copies back the job's `runs/primitives/<job-id>-*.json` and `runs/traces/<job-id>-*.json`. To redo one trial, run `primitives.py --sessions /opt/retrace/sessions --out $RETRACE_REPO/runs/primitives --session <session-id>`.
 
 Each upsert replaces the row with the same key. A primitives session that gets fewer calls on a re-run keeps its old extra call rows, because the role has no delete grant.
 
