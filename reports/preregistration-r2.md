@@ -62,3 +62,15 @@ Discovery round 2 tested 2 candidates. Neither target passes the out-of-task pro
 Found when arm A ran, before any candidate result on these tasks existed. 3 tasks of `splits/pro-heldout2.json` (`vuls-e1fab805`, `vuls-ef2be3d6`, `navidrome-66b74c81`) have Alpine (musl) images. The glibc Droid binary does not start there (`exec /usr/local/bin/droid: no such file or directory`), so no arm can produce a result on them. They leave every comparison, as the Alpine teleport tasks left the pool in round 1. The held-out comparison has 21 tasks: 8 qutebrowser, 7 navidrome, 6 vuls. The decision reads no outcome, since these trials wrote no result.
 
 The 3 Alpine tasks are replaced, before any candidate result on the replacements exists: `splits/pro_heldout2.py select` now skips the images listed in `splits/pro-heldout2-alpine.json` and takes the next gold-passing tasks in the draw order (`navidrome-d8e79431`, `vuls-f6509a53`, `vuls-86b60e14`). The held-out set is again 24 tasks, 8 per repo. All three held-out jobs gain the replacements in `task_ids`, and each arm runs them in a resumed job, so arm A runs them later than its other tasks. All 3 replacement images have `ps`.
+
+### Amendment 3, 2026-10-25: a round-3 candidate on the round-2 arm A
+
+Made after the round-2 held-out and regression results, and before any round-3 candidate run on held-out or regression tasks. Round 3 tests 1 candidate against the round-2 arm A (`r2-heldout-a`, `r2-regression-a`) on the same held-out and regression tasks. Its jobs are `r3-heldout-read-whole-file` and `r3-regression-read-whole-file`. All other rules of this file hold.
+
+| Target | Candidate | Hard signal |
+|---|---|---|
+| `file_rereads` | `analysis/proposals/read-whole-file` | The run has 3 or more `Read` calls of a file that an earlier `Read` call in the session already read, from primitives (`file_rereads` in `recorder/replay/report.py`). The count is reported with it. |
+
+The round-2 results gave one method rule: promote a target only when its estimated credit share in derivation sessions is large. That rule reads credit ratios, not grader output and not held-out sessions. The analysis role chose `file_rereads` (d152e31) from the 21 derivation tasks only, with an estimated share of 17% of derivation credits. It read no held-out or regression session, primitive, or result. The candidate is frozen (`FROZEN.md`) before its held-out and regression runs.
+
+Arm A ran about 2 to 3 hours before the round-3 arms. The report states the gap. The round-3 report names 1 candidate, and the round-2 reports keep their count of 2.
