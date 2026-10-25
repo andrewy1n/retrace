@@ -84,11 +84,27 @@ def large_root_searches(calls):
     return large_root_searches_count(calls) >= 1
 
 
+FILE_REREADS_MIN = 3
+
+
+def file_rereads_count(calls):
+    seen, n = set(), 0
+    for c in calls:
+        if c["tool_name"] == "Read" and c["files"]:
+            n += c["files"][0] in seen
+            seen.add(c["files"][0])
+    return n
+
+
+def file_rereads(calls):
+    return file_rereads_count(calls) >= FILE_REREADS_MIN
+
+
 SIGNALS = {"whole_suite_tests": whole_suite_tests, "skipped_verification": skipped_verification,
            "calls_before_first_edit": calls_before_first_edit, "shell_error_streak": shell_error_streak,
-           "large_root_searches": large_root_searches}
+           "large_root_searches": large_root_searches, "file_rereads": file_rereads}
 COUNTS = {"calls_before_first_edit": calls_before_first_edit_count, "shell_error_streak": shell_error_streak_count,
-          "large_root_searches": large_root_searches_count}
+          "large_root_searches": large_root_searches_count, "file_rereads": file_rereads_count}
 
 
 def wilson(k, n, z=1.96):

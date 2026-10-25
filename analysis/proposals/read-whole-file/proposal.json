@@ -1,0 +1,6 @@
+{
+  "proposal_id": "read-whole-file",
+  "cost_pattern": "file_rereads",
+  "change_type": "guardrail_hook",
+  "path": "analysis/proposals/read-whole-file"
+}

@@ -36,6 +36,15 @@ def large_root_searches(calls):
     return sum(c["command_class"] == "search" and c["files"] == ["."] and large(c) for c in calls)
 
 
+def file_rereads(calls):
+    seen, n = set(), 0
+    for c in calls:
+        if c["tool_name"] == "Read" and c["files"]:
+            n += c["files"][0] in seen
+            seen.add(c["files"][0])
+    return n
+
+
 def calls_after_last_edit(calls):
     edits = [c["position"] for c in calls if c["command_class"] == "edit"]
     return sum(c["position"] > max(edits) for c in calls) if edits else 0
@@ -53,10 +62,12 @@ FEATURES = {
     "calls_before_first_edit": calls_before_first_edit,
     "shell_error_streak": shell_error_streak,
     "large_root_searches": large_root_searches,
+    "file_rereads": file_rereads,
 }
 
 SHELL_ERROR_STREAK_MIN = 3
 LARGE_ROOT_SEARCHES_MIN = 1
+FILE_REREADS_MIN = 3
 
 
 def shell_error_streak_signal(calls):
@@ -69,6 +80,12 @@ def large_root_searches_signal(calls):
     """(holds, count): a search over the whole repo returns over 2,000 tokens at least once."""
     n = large_root_searches(calls)
     return n >= LARGE_ROOT_SEARCHES_MIN, n
+
+
+def file_rereads_signal(calls):
+    """(holds, count): 3 or more Read calls of a file that an earlier Read call read."""
+    n = file_rereads(calls)
+    return n >= FILE_REREADS_MIN, n
 
 
 def features(primitives):

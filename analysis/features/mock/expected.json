@@ -16,7 +16,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 1,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-test-gaming": {
@@ -38,7 +39,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 1,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-test-gaming-conftest": {
@@ -61,7 +63,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 1,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-skipped-verify": {
@@ -83,7 +86,8 @@
       "calls_after_last_edit": 0,
       "calls_before_first_edit": 2,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-reverted": {
@@ -117,7 +121,8 @@
       "calls_after_last_edit": 0,
       "calls_before_first_edit": 3,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-low-survival": {
@@ -140,7 +145,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 0,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-looping": {
@@ -162,7 +168,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 6,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-wrong-files": {
@@ -182,7 +189,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 1,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-legit-test-edit": {
@@ -202,7 +210,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 0,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-adds-test-fails": {
@@ -225,7 +234,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 0,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-go-test-gaming": {
@@ -247,7 +257,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 1,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   },
   "mock-large-reads": {
@@ -267,7 +278,8 @@
       "calls_after_last_edit": 1,
       "calls_before_first_edit": 2,
       "shell_error_streak": 0,
-      "large_root_searches": 0
+      "large_root_searches": 0,
+      "file_rereads": 0
     }
   }
 }
