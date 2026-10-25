@@ -217,6 +217,25 @@ Use `tmux` so runs survive SSH drops. Watch `htop` and `docker stats`. If the bo
 
 Results land in `/opt/retrace/repo/runs/results/`. Commit and push them from the VM, or copy them back with `scp`.
 
+### Held-out and regression run (after Gate 4)
+Start this only after `splits/<group>.json` and both proposal directories are committed. Nobody runs a held-out task before that.
+
+1. Write the five jobs. Set `--reruns` to the number in the pre-registration. Set `--budget` to the credits left, and check the estimate first with `--dry-run`.
+```bash
+recorder/replay/make_jobs.py --splits splits/<group>.json --arm-b analysis/proposals/<b> --arm-c analysis/proposals/<c> \
+  --reruns 2 --prefix final1 --budget 2000000 --dry-run
+recorder/replay/make_jobs.py ...same arguments without --dry-run
+```
+It writes `runs/jobs/final1-heldout-{a,b,c}.json` and `final1-regression-{a,c}.json`. A is `control`. The budget splits in proportion to the trial count of each job. It refuses ids of held-out or regression that are in derivation, a missing proposal directory, and `reruns` below 2. It validates every job. It prints the trial count, the budget per job, and the estimate of credits and hours. Set the budget at least 30% above the credit estimate. A job stops starting trials at its cap, so a budget equal to the mean leaves the last trials of about half the jobs undone.
+2. Commit `runs/jobs/final1-*.json`. `remote.sh submit` stamps each result with `repo_sha` and refuses uncommitted `contracts/` or overlay files.
+3. Start the run in `tmux` on the dev machine:
+```bash
+recorder/replay/run_final.sh final1
+```
+Held-out a, b, c start at once with 3, 3, 2 trials in flight (8 in all, the measured limit). Their `grade.sh` runs share the same limits. When all three have graded, regression a and c start with 4 each. The script checks that the job files and overlays are committed and that no job with the prefix runs, before it submits anything. `run_final.sh final1 --together` starts all five with 2, 2, 2, 1, 1 in flight. Use it when the held-out jobs must not wait for a stage change.
+
+Each job runs its trials in rerun order (all tasks at rerun 1, then rerun 2), so a job that stops at its cap still covers every task. Watch with `remote.sh status`. Fetch each job with `remote.sh fetch <job-id>`. Then write the report with `report.py`.
+
 ## 7. Teardown (stopped instances still bill)
 ```bash
 scp -r root@<IP>:/opt/retrace/repo/runs/results ./results-backup   # grader logs and patches: /opt/retrace/runs
