@@ -39,6 +39,10 @@ Systems that do evaluate their changes, such as DSPy [3], GEPA [4], the Darwin G
 
 ![Replay: rewind a session and fork it](docs/devpost/replay.png)
 
+The system has three parts. A Vultr x86 worker runs Droid in the benchmark images and grades the patches. Git and Tiger Data hold the evidence. Analysis is plain Python feature code, an analysis droid, Droid SDK replay forks, and a shell-hook overlay that ships as a pull request. Analysis and the dashboard read the evidence through roles that cannot see pass/fail.
+
+![Retrace architecture](docs/devpost/architecture.png)
+
 ### The grader stays out of the loop
 
 Features, diagnoses, target choice, and proposal selection never read pass/fail, the gold patch, or the dataset's test lists. They use traces, primitives, snapshots, and the repo's own tests at the start commit. The grader scores only the frozen fix, and only people read that score, in `reports/`.
