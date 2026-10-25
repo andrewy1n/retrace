@@ -8,10 +8,11 @@ Fill every `TBD` before the commit. The commit SHA goes under Contract in the pr
 |---|---|
 | Target | TBD: a failure group (`friction_type` from the chosen ticket) or a cost pattern (a promoted feature) |
 | Splits | `splits/<target>.json` |
-| Model | TBD |
-| Droid version | TBD |
+| Model | `claude-haiku-5-5` |
+| Droid version | 0.249.0 |
 | Reruns per task per arm | TBD (at least 2) |
-| Grader | SWE-bench runner |
+| Dataset | SWE-bench Pro V2 (`swebench_pro`) |
+| Grader | The task's verifier from `scaleapi/SWE-bench_Pro-os` at `66f92766bba642462d4bbe5479e83f91f9211862`: `tests/test.sh` in a fresh container with the patch applied, read from `reward.txt` |
 
 All three arms start fresh from step 0, with the same model, settings, and Droid version. Each arm is frozen before the first held-out run.
 
@@ -34,7 +35,7 @@ The incidence of the targeted behaviour per run on held-out tasks. A hard signal
 
 ## Secondary outcomes
 
-- Pass rate on held-out tasks, from the SWE-bench grader.
+- Pass rate on held-out tasks, from the grader.
 - Pass rate on the regression set. A meaningful drop is TBD (for example, C fails a regression task that A passes in every rerun).
 - Factory credits, paired by task: the per-task difference in mean log credits between arms.
 - Test commands after the last source edit, per run. A change must not cut cost by skipping verification.
