@@ -1,0 +1,17 @@
+{
+  "target": "calls_before_first_edit",
+  "threshold": 12,
+  "sessions": 43,
+  "with_signal": 20,
+  "patterns": {
+    "rereads": 14,
+    "searches": 1,
+    "broad_reads": 3,
+    "runs_first": 0,
+    "mixed": 2
+  },
+  "unexplained": [
+    "pro-baseline1-instance_internetarchive__openlibrary-7c8dc180281491ccaa1b4b43518506323750d1e4-v298a7a812ceed28c4c18355a091f1b268fe56d86-1"
+  ],
+  "unexplained_rule": "costliest quarter of derivation sessions (factory_credits) without the signal"
+}

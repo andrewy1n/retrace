@@ -72,7 +72,7 @@ Write `runs/tickets/<ticket-id>.json` with `ticket_id`, `friction_type`, `severi
 
 Features and diagnoses route work. They are not evidence. Spot-check about ten feature records before a target is selected.
 
-Write diagnoses to `runs/diagnoses/`, citing `tool_call_id`s only, with the list of what stays unexplained. The directory appears with its first file.
+Write diagnoses to `runs/diagnoses/`, citing `tool_call_id`s only, with the list of what stays unexplained. `python analysis/features/diagnose.py` writes one file per derivation control session whose hard signal holds, with the cited calls before the first edit, their kinds, and a pattern (`rereads`, `searches`, `broad_reads`, `runs_first`, or `mixed`). `summary.json` counts the patterns and lists the costliest quarter of derivation sessions without the signal as unexplained. On 2026-10-24, 20 of 43 sessions have the signal, 14 of them `rereads`. In those 14 sessions, 146 of 187 reads before the first edit page through a file with `offset` and `limit`, about 137 lines at a time.
 
 ## Jobs and proposals
 
@@ -94,7 +94,7 @@ analysis/proposals/<id>/.factory/
 analysis/proposals/<id>/AGENTS.md
 ```
 
-`analysis/proposals/<id>/proposal.json` matches `contracts/proposed-change.schema.json` and stays in this repo. It names its target as exactly one of `failure_type` or `cost_pattern`. The lead example is a `.factory/hooks.json` guardrail that runs `.factory/hooks/block_test_edits.py` and blocks test edits. The proposal screen starts from the friction ticket and shows that guardrail. Use the smallest change the replay evidence supports. The leak check rejects task-specific paths, identifiers, error strings, and repo names. Freeze the directory before held-out and regression runs.
+`analysis/proposals/<id>/proposal.json` matches `contracts/proposed-change.schema.json` and stays in this repo. It names its target as exactly one of `failure_type` or `cost_pattern`. The lead example is `analysis/proposals/explore-budget/`: a PreToolUse guardrail in `.factory/hooks.json` that runs `.factory/hooks/explore_budget.sh`. After 10 tool calls with no edit, counted from the session transcript, it blocks one call with exit code 2 and asks for the first edit and larger reads. It fires once per session. `sh analysis/proposals/explore-budget/test_hook.sh` tests it with fake hook inputs. Whether Droid 0.249.0 passes the blocked call's message to the model is unverified. The proposal screen shows that guardrail. Use the smallest change the replay evidence supports. The leak check rejects task-specific paths, identifiers, error strings, and repo names. Freeze the directory before held-out and regression runs.
 
 Held-out comparison is three arms, all fresh from step 0: unmodified Droid, a transcript-only rule, and the replay-derived change. A mid-session hint is diagnosis and stays out of that comparison.
 

