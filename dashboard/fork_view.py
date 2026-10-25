@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 COLUMNS = ["proposal_path", "job_id", "arm", "trial", "checkpoint", "fork_position", "position", "tool_call_id",
-           "tool_name", "command_class", "label", "is_error", "blocked", "in_prefix", "cost_credits"]
+           "tool_name", "command_class", "label", "is_error", "blocked", "in_prefix", "cost_credits", "duration_s", "output_tokens_est", "files"]
 HOOK_BLOCK = re.compile(r"^Error: \[[\w-]+\]")
 
 
@@ -49,7 +49,8 @@ def row(proposal_path, job_id, arm, trial, checkpoint, fork_position, call, in_p
             "tool_name": call["tool_name"], "command_class": call["command_class"],
             "label": call["test_runner"] or call["tool_name"], "is_error": bool(call["is_error"]),
             "blocked": "" if blocked is None else call["tool_call_id"] in blocked, "in_prefix": in_prefix,
-            "cost_credits": credits}
+            "cost_credits": credits, "duration_s": call.get("duration_s"), "output_tokens_est": call.get("output_tokens_est"),
+            "files": ";".join(call.get("files") or [])}
 
 
 def build(root):

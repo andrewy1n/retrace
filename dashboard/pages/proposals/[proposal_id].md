@@ -22,7 +22,8 @@ select * from tiger.proposal_runs
 ```
 
 ```sql rcalls
-select c.session_id, c.position, c.tool_name, c.command_class, coalesce(c.test_runner, c.tool_name) as label
+select c.session_id, c.position, c.tool_name, c.command_class, coalesce(c.test_runner, c.tool_name) as label,
+       c.is_error, c.duration_s, c.output_tokens_est
 from tiger.calls c
 where c.session_id in (select session_id from tiger.proposal_runs)
 order by c.session_id, c.position
@@ -416,8 +417,7 @@ order by position
             {#each taskIds as t}<option value={t}>{t.replace(/^instance_(.+?)-([0-9a-f]{8})[0-9a-f]{32}.*$/, '$1-$2')}</option>{/each}
           </select>
         </label>
-        <BranchGraph at={0} startLabel="Start of the task" branches={viewRuns.map((r) => ({ arm: r.arm, label: (r.arm === 'control' ? 'Baseline' : 'With change') + ', run ' + r.trial, calls: sessions.get(r.session_id), firstEdit: firstEdit(sessions.get(r.session_id)), credits: r.cost_credits }))} />
-        <p class="rt-tab-note">{#each viewRuns as r}<a href="/sessions/{r.session_id}">{r.arm === 'control' ? 'Baseline' : 'With change'}, run {r.trial}: every call →</a>{' '}{/each}</p>
+        <BranchGraph at={0} startLabel="Start of the task" branches={viewRuns.map((r) => ({ arm: r.arm, label: (r.arm === 'control' ? 'Baseline' : 'With change') + ', run ' + r.trial, calls: sessions.get(r.session_id), firstEdit: firstEdit(sessions.get(r.session_id)), credits: r.cost_credits, href: '/sessions/' + r.session_id }))} />
         <h2 class="rt-h2">All tasks</h2>
         <p class="rt-tab-note">Baseline against with change, one row per task. A run counts when its tool calls were recorded.</p>
         <DataTable data={taskRows} rows=50 emptySet=pass emptyMessage="No run yet.">
