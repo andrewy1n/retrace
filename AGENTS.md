@@ -1,13 +1,13 @@
 # Retrace
 
-Harness improvement through replay. Trace features route work. Step-0 replay results are the evidence. Report an intervention under a stated setup, with counts, sample size, and an interval. A small or negative result is reported as such.
+Harness improvement through replay. Trace features route work. The improvement loop uses only signals a production system has. The dataset's grader is for our own verification (see Grader). Step-0 replay results are the evidence. Report an intervention under a stated setup, with counts, sample size, and an interval. A small or negative result is reported as such.
 
 Droid is the primary harness. Claude Code is an optional adapter. `splits/pool.json` holds the task pool.
 
 ## Owners
 
 - Andrew: `recorder/capture`, `recorder/replay`, and `dashboard/`. Writes traces, primitives, and replay results. Runs a job he is given. Owns the Droid SDK rewind and fork, the PostToolUse snapshot hook, `droid exec` runs, primitive extraction from the session JSONL and its Tiger table, Factory credit accounting, held-out and regression runs from step 0, and the dashboard page.
-- Kate: `analysis/labeler` and `analysis/proposals`. Writes features, diagnoses, labels, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results. Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
+- Kate: `analysis/labeler` and `analysis/proposals`. Writes features, diagnoses, labels, friction tickets, replay jobs, and candidate directories. Reads primitives, traces, and results, except grader output (see Grader). Owns feature discovery, diagnosis, the leak check, change generation, and the Tiger schema except the primitives table.
 - `dashboard/` is an Evidence project with a light theme only (`dashboard/README.md` has the run steps). It reads Tiger summaries through `TIGER_DASHBOARD_URL`, local traces, and `runs/reviews/`. It writes nothing. The pull request is the review surface.
 
 `recorder/capture`, `recorder/replay`, `analysis/labeler`, `analysis/proposals`, and `dashboard/` appear with their first source file.
@@ -35,13 +35,14 @@ Do not add a `CLAUDE.md`. Claude Code reads this file when no `CLAUDE.md` is pre
 
 ## Contract
 
-`contracts/` is the live shape. Edit a schema and its fixture in the same change. There is no version field and no numbered schema directory. A `checkpoint` job names `tool_call_id`s. A `step0` job names instance ids of its dataset. Pass/fail is the dataset's grader (`recorder/worker/scripts/grade.sh`).
+`contracts/` is the live shape. Edit a schema and its fixture in the same change. There is no version field and no numbered schema directory. A `checkpoint` job names `tool_call_id`s. A `step0` job names instance ids of its dataset. `passed` is the dataset's grader (`recorder/worker/scripts/grade.sh`). The Grader section limits who reads it.
 
 - Trace. One session in `runs/traces/<session-id>.json`. Each step has `tool_call_id`, `message_id` (the Droid `messageId` that `session.rewind` takes), `tool_name`, and `snapshot_ref`. The step does not include tool input or output. The conversation stays in the Droid session. The session also has `harness_session_id` (the id `resumeSession` accepts) and `task_id`. The demo harness value is `droid`.
 - Friction ticket. `runs/tickets/<ticket-id>.json`. Fields are `ticket_id`, `friction_type`, `severity`, and `session_ids`. The shape matches a Signals ticket so a later Signals or Linear ticket can seed the same file. The stand-in detector is labeled Signals-style and credits Factory Signals for the ideas it borrows.
 - Primitives. One session in `runs/primitives/<session-id>.json`, written by `recorder/capture/primitives.py` from the Droid transcript and `settings.json`. Session fields are `session_id`, `task_id`, `job_id`, `trial`, `harness`, `assistant_turns`, `tool_calls`, `token_usage` (the `tokenUsage` totals, with `factory_credits`), `timed_out`, and `calls`. Each call has `tool_call_id` (matches the trace), `position`, `turn`, `tool_name`, `command_class`, `test_runner`, `path_arg_count` (0 is a whole-suite run), `background`, `duration_s`, `is_error`, `exit_code`, `files`, `output_chars`, `output_tokens_est`, `turns_after`, and `repeats_earlier`. A call has no command text and no tool output. Only classes, counts, and repo paths.
 - Replay job. `runs/jobs/<job-id>.json`. `start` is `checkpoint` or `step0`. A `checkpoint` job has `session_id` and `tool_call_ids`. A `step0` job has `task_ids` and runs each task fresh. A job may have `dataset`: `swebench_verified` (default) or `swebench_pro`. A `checkpoint` job with a `control` or `candidate` arm has `continuation`, the message that continues each fork. Every job has an arm (`control`, hint text, or a proposal path), `model`, reruns, stop mode (`next_user_turn`, `reuse_reply`, `simulated_user`), and a Factory credit budget (`budget_credits`).
-- Replay result. One trial at `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Fields are `job_id`, `task_id`, `session_id` of the trial's trace when one was recorded, the arm kind, `model`, `droid_version`, the stop mode used, `trial`, `passed`, `grader` (`swebench` or `swebench_pro`), `evidence_role`, and `cost_credits` from `tokenUsage.factoryCredits`. A `checkpoint` trial is `diagnosis`, has `tool_call_id`, and is not final evidence. A `step0` trial is `final` and has no `tool_call_id`.
+- Replay result. One trial at `runs/results/<job-id>/<task-id>-<checkpoint>-<arm>-<trial>.json`, where `<checkpoint>` is the `tool_call_id` or `step0`. Fields are `job_id`, `task_id`, `session_id` of the trial's trace when one was recorded, the arm kind, `model`, `droid_version`, the stop mode used, `trial`, `evidence_role`, `cost_credits` from `tokenUsage.factoryCredits`, and `proxies`. A `checkpoint` trial is `diagnosis`, has `tool_call_id`, has no `passed` or `grader`, and is not final evidence. A `step0` trial is `final`, has `passed` and `grader` (`swebench` or `swebench_pro`), and has no `tool_call_id`. `proxies` has `repo_tests` (the repo's own tests at the start commit, chosen from the edited files, run at the start commit and with the patch) and `acceptance` (the task's acceptance check, with its result at the start commit).
+- Acceptance check. `runs/acceptance/<task-id>/check.json`, with each file's content under `runs/acceptance/<task-id>/files/<path>`. Fields are `task_id`, `dataset`, `author`, `inputs` (only `instruction` and `start_repo`), `files`, `command` (exit 0 is pass), and `frozen_at`. It is written from the task statement and the start repo only, and frozen before any replay of the task.
 - Proposed change. `analysis/proposals/<id>/proposal.json`. Fields are `proposal_id`, the target as exactly one of `failure_type` or `cost_pattern` (a feature name from `analysis/AGENTS.md`), `change_type`, `path`, and optional `pr_url` (the pull request that ships it, set once it exists). The runner copies `.factory/` and `AGENTS.md` from that directory onto the task checkout and leaves `proposal.json` in this repo.
 
 Features, diagnoses, and labels belong to Kate. Andrew does not read them. He gets them only as replay jobs. The label shape is in `analysis/AGENTS.md`.
@@ -54,6 +55,16 @@ The harness is the Droid CLI, the model, and the config Droid loads. It has no c
 - Config in the baseline. The only config is the user-level `~/.factory/hooks.json` that the runner writes into each container. It holds the capture hook. The task repo has no `.factory/` and no `AGENTS.md`.
 - A change is an overlay. `analysis/proposals/<id>/.factory/` and `AGENTS.md` are copied into the task checkout (`/app` or `/testbed`) before the session starts. The runner adds both paths to `.git/info/exclude`, so they stay out of the graded patch.
 - Shipping a change is a pull request in this repository. It adds `analysis/proposals/<id>/` and the evidence file `reports/<group>.md`. A reader who adopts the change copies the overlay into their own repository.
+
+## Grader
+
+The dataset's grader is the oracle. It is for our own verification only: it shows the impact of a frozen change. The improvement loop runs on signals a production system has, such as traces, primitives, snapshots, the repo's own tests at the start commit, and checks an agent writes from the task statement alone. In production, monitoring and rollback replace the grader.
+
+- Grader output never reaches the loop. Labels, target choice, checkpoint diagnosis, hints, and proposal selection do not read `passed`, the gold patch, the test patch, or the dataset's test lists. This holds for people as well as agents.
+- The grader scores step-0 held-out and regression trials after the candidate is frozen. People read those results in `reports/` and on the dashboard.
+- One frozen run per split. A candidate revised after its held-out or regression results needs new held-out and regression tasks. Otherwise label the result as derived from those tasks.
+- Regression tasks stay out of derivation, like held-out tasks.
+- Freeze proxy definitions before the derivation run. Report their agreement with the grader as a number, and do not tune a proxy against it.
 
 ## Gates
 
@@ -72,7 +83,8 @@ If the biggest failure group is too small to split, widen the task pool before w
 - `runs/labels/<session-id>.json`
 - `runs/tickets/<ticket-id>.json`
 - `runs/reviews/<proposal-id>.json`
-- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/primitives`, `runs/jobs`, `runs/results`, `runs/labels`, `runs/tickets`, and `runs/reviews` are world-readable.
+- `runs/acceptance/<task-id>/`
+- The GitHub repository is public from the first push. Files in `runs/traces`, `runs/primitives`, `runs/jobs`, `runs/results`, `runs/labels`, `runs/tickets`, `runs/reviews`, and `runs/acceptance` are world-readable.
 - `runs/private/` is gitignored. Private sessions stay there and are not committed.
 - `splits/` holds derivation, held-out, and regression instance ids.
 - `reports/` holds a frozen comparison, including its count, interval, and Factory credits. `recorder/replay/report.py` writes it from `runs/results/` (arms, Wilson and paired bootstrap intervals, McNemar test, credits). `reports/preregistration.md` is committed before the first derivation run.
@@ -106,6 +118,7 @@ Values stay out of git. These facts were checked on 2026-10-24.
 - Pro cost, measured on `pro-baseline1` (50 of 64 trials, `claude-haiku-5-5`, control arm, all 50 pass): 14,025 credits per trial on average, 10,606 median, 70,057 maximum. Mean per repo: ansible 15,188, openlibrary 15,600, flipt 7,435, teleport 22,398 (5 trials). Verified means are 4,436 (baseline1) and 6,309 (baseline2). A Pro session takes 17 to 34 assistant turns on average per repo, against 13 and 16 on Verified.
 - Fork cost, measured on 12 checkpoint forks of one ansible session (steps 10 and 17 of 43, `claude-haiku-5-5`): 16,426 credits per fork on average, 4,838 minimum, 25,074 maximum. A fork from an early step re-runs most of the task, so it costs about as much as a full Pro trial. A fork from a late step costs less.
 - `run_job.sh` sums `cost_credits` over every finished trial in the job directory and checks that sum only when a trial starts. Trials in flight are not counted. `pro-baseline1` spent 701,253 against a cap of 500,000. Set `budget_credits` above the credits already spent when you re-run a job.
+- `proxies.sh` ran on the worker on 2026-10-24 on four `pro-baseline1` trials, one each from ansible, openlibrary, flipt, and teleport. `repo_tests` selected 1 to 3 test files or packages per trial, found 5 to 113 tests passing at the start commit and 0 regressed, and took 5 to 110 s per trial for both runs. A Python image has `python` on PATH, and a Go image has `go`. The acceptance check gave `fail` at the start commit and `fail` with the patch on one ansible trial, with a throwaway check.
 - Teleport images whose id ends in `-vee9b09fb20c43af7e520f57e9239bbcf46b7113d` are Alpine (musl). The glibc Droid binary fails there with `Error relocating /usr/local/bin/droid: __pthread_key_create: symbol not found`, and the trial writes no result. Three dev tasks of `splits/pro-pool.json` have this suffix. No held-out task has it. One image was checked directly (`teleport-32bcd715`), and the other two failed with the same error.
 - SWE-bench Verified has 500 tasks. The 1 to 4 hour band has 42, and 22 of them are django. `splits/draw_pool.py` and `analysis/labeler/fetch_tasks.py` read it from the Hugging Face datasets-server API.
 - One `read_doc` result for the project doc is about 540 KB, so the Google Docs connector saves it to a file. Use the Google Workspace skill's `docs_index.py` for positions, and send each edit with the latest `revisionId`. The doc has two tabs: the main tab `t.0` and Architecture `t.kt15rr8inhru`.
@@ -114,6 +127,7 @@ Values stay out of git. These facts were checked on 2026-10-24.
 
 These items change code. The rest are in the Unverified section of the project doc.
 
+- The `pass` result of the acceptance check on a real image, and `proxies.sh` on a Verified image. Only a fake `docker` covered them.
 - A fresh session seeded from the Droid transcript when rewind fails. Not implemented. Rewind worked on Droid 0.249.0 with `@factory/droid-sdk` 0.10.0 on 2026-10-24 (see `recorder/AGENTS.md`).
 - A checkpoint fork graded by the SWE-bench grader on a Verified image. A Pro fork ran and passed the Pro verifier on the x86 worker on 2026-10-24 (`runs/results/pro-fork1/`). The Verified fork ran only on an arm64 test image.
 - Whether Pro results from this runner compare to the Scale leaderboard. The agent phase has network access, containers have no CPU or memory cap, and the Droid CLI is not a Scale-reviewed agent.

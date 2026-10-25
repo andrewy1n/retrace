@@ -2,13 +2,30 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "replay-result.schema.json",
   "title": "Replay result",
-  "description": "One trial. The sample size is the number of result files for that job, task, checkpoint, and arm. A diagnosis trial is a mid-session fork and is not final evidence.",
+  "description": "One trial. The sample size is the number of result files for that job, task, checkpoint, and arm. A diagnosis trial is a mid-session fork and is not final evidence. Only a final trial carries the grader result.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["job_id", "task_id", "arm", "model", "droid_version", "stop_mode", "trial", "passed", "grader", "evidence_role", "cost_credits"],
+  "required": [
+    "job_id",
+    "task_id",
+    "arm",
+    "model",
+    "droid_version",
+    "stop_mode",
+    "trial",
+    "evidence_role",
+    "cost_credits"
+  ],
   "properties": {
-    "job_id": { "type": "string", "minLength": 1 },
-    "task_id": { "type": "string", "minLength": 1, "description": "Instance id of the job's dataset." },
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Instance id of the job's dataset."
+    },
     "session_id": {
       "type": "string",
       "minLength": 1,
@@ -19,25 +36,51 @@
       "minLength": 1,
       "description": "Checkpoint of a diagnosis trial. Absent on a final trial."
     },
-    "arm": { "enum": ["control", "hint", "candidate"] },
-    "model": { "type": "string", "minLength": 1, "description": "Model id Droid actually used." },
+    "arm": {
+      "enum": [
+        "control",
+        "hint",
+        "candidate"
+      ]
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Model id Droid actually used."
+    },
     "droid_version": {
       "type": "string",
       "minLength": 1,
       "description": "Output of droid --version on the machine that ran the trial."
     },
     "stop_mode": {
-      "enum": ["next_user_turn", "reuse_reply", "simulated_user"],
+      "enum": [
+        "next_user_turn",
+        "reuse_reply",
+        "simulated_user"
+      ],
       "description": "Mode actually used for this trial."
     },
-    "trial": { "type": "integer", "minimum": 1 },
-    "passed": { "type": "boolean" },
+    "trial": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "The dataset grader's result. Present only on a final trial. The improvement loop never reads it."
+    },
     "grader": {
-      "enum": ["swebench", "swebench_pro"],
-      "description": "swebench is the SWE-bench harness (Verified). swebench_pro is the task's own verifier from the SWE-bench Pro harness."
+      "enum": [
+        "swebench",
+        "swebench_pro"
+      ],
+      "description": "swebench is the SWE-bench harness (Verified). swebench_pro is the task's own verifier from the SWE-bench Pro harness. Present only on a final trial."
     },
     "evidence_role": {
-      "enum": ["diagnosis", "final"],
+      "enum": [
+        "diagnosis",
+        "final"
+      ],
       "description": "diagnosis comes from a checkpoint job, a mid-session fork. final comes from a step0 job: a step-0 replay or a fresh held-out or regression run."
     },
     "cost_credits": {
@@ -48,16 +91,144 @@
     "timed_out": {
       "type": "boolean",
       "description": "True when DROID_TIMEOUT killed the run. cost_credits then comes from the session's settings.json and can miss the last turn."
+    },
+    "proxies": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Signals a production system has, computed on the trial's patch without the dataset's tests, test lists, or gold patch.",
+      "properties": {
+        "repo_tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "selected"
+          ],
+          "description": "The repo's own tests that exist at the start commit, chosen from the files the patch edits. Each runs at the start commit and with the patch applied, with the selected test files kept at their start version.",
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "no_tests",
+                "error"
+              ]
+            },
+            "selected": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Test files (Python) or package directories (Go) that ran."
+            },
+            "passing_at_start": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "regressed": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Tests that pass at the start commit and fail or error with the patch."
+            },
+            "newly_passing": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Tests that fail at the start commit and pass with the patch."
+            },
+            "seconds": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "acceptance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "at_start",
+            "check_sha256"
+          ],
+          "description": "The task's frozen acceptance check (runs/acceptance/<task-id>/). It counts only when at_start is fail.",
+          "properties": {
+            "status": {
+              "enum": [
+                "pass",
+                "fail",
+                "error"
+              ],
+              "description": "Result with the patch applied."
+            },
+            "at_start": {
+              "enum": [
+                "pass",
+                "fail",
+                "error"
+              ],
+              "description": "Result at the start commit."
+            },
+            "check_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "sha256 of the check's check.json."
+            },
+            "seconds": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [
     {
-      "if": { "properties": { "evidence_role": { "const": "diagnosis" } } },
-      "then": { "required": ["tool_call_id"] }
+      "if": {
+        "properties": {
+          "evidence_role": {
+            "const": "diagnosis"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "tool_call_id"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "passed"
+              ]
+            },
+            {
+              "required": [
+                "grader"
+              ]
+            }
+          ]
+        }
+      }
     },
     {
-      "if": { "properties": { "evidence_role": { "const": "final" } } },
-      "then": { "not": { "required": ["tool_call_id"] } }
+      "if": {
+        "properties": {
+          "evidence_role": {
+            "const": "final"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "passed",
+          "grader"
+        ],
+        "not": {
+          "required": [
+            "tool_call_id"
+          ]
+        }
+      }
     }
   ]
 }

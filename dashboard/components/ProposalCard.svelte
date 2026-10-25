@@ -22,13 +22,13 @@
   <p class="rt-summary">{p.summary}</p>
   <div class="rt-metrics">
     <div>
-      <span class="rt-k">Pass rate vs control</span>
+      <span class="rt-k">{diagnosis ? `${p.proxy} vs control` : 'Pass rate vs control'}</span>
       {#if final}
         <span class="rt-v">{signed(p.delta_pp)} pp</span>
         <span class="rt-s">{interval(p.ci_low_pp, p.ci_high_pp)} · {p.arm_k}/{p.arm_n} vs {p.base_k}/{p.base_n}</span>
       {:else if diagnosis}
-        <span class="rt-v">{p.arm_k}/{p.arm_n} vs {p.base_k}/{p.base_n}</span>
-        <span class="rt-s">forks, no interval</span>
+        <span class="rt-v">{p.proxy_arm} vs {p.proxy_base}</span>
+        <span class="rt-s">forks, no pass or fail, no interval</span>
       {:else}
         <span class="rt-v rt-none">Not run</span>
       {/if}

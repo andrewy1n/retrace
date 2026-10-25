@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "acceptance-check.schema.json",
+  "title": "Acceptance check",
+  "description": "One task's acceptance check at runs/acceptance/<task-id>/check.json. It is written from the task statement and the repo at the start commit only, and frozen before any replay of the task. Each file's content is at runs/acceptance/<task-id>/files/<path>.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "dataset",
+    "author",
+    "inputs",
+    "files",
+    "command",
+    "frozen_at"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataset": {
+      "enum": [
+        "swebench_verified",
+        "swebench_pro"
+      ]
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Model id, or person when a person wrote it."
+    },
+    "inputs": {
+      "const": [
+        "instruction",
+        "start_repo"
+      ],
+      "description": "What the author read. No gold patch, test patch, or dataset test lists."
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Repo-relative paths the runner writes into the checkout before it runs the command."
+    },
+    "command": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Run with bash in the repo root. Exit 0 is pass."
+    },
+    "frozen_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

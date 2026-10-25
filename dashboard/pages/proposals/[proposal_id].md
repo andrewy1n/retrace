@@ -28,6 +28,14 @@ where session_id in (
 order by session, position
 ```
 
+```sql forks
+select checkpoint, arm, trial, repo_status, repo_regressed, repo_passing_at_start, acc_status, acc_at_start
+from tiger.result_rows
+where evidence_role = 'diagnosis'
+  and checkpoint in ('toolu_01Pm3ZNrBCDtHNUh83ovCqeC', 'toolu_016dLe3d1iqCZzTGPkUnoaXN')
+order by checkpoint, arm, trial
+```
+
 ```sql strip
 select position, tool_call_id, tool_name, command_class, test_runner, coalesce(test_runner, tool_name) as label
 from tiger.calls
@@ -39,7 +47,7 @@ order by position
 <script>
   import { html as diffToHtml } from 'diff2html';
   import 'diff2html/bundles/css/diff2html.min.css';
-  import { STATUS, CHANGE, has, signed, interval, verdict, intervalChart } from '../../../components/format.js';
+  import { STATUS, CHANGE, has, signed, interval, verdict, intervalChart, repoText, accText } from '../../../components/format.js';
 
   const patch = `--- a/.factory/hooks.json
 +++ b/.factory/hooks.json
@@ -119,19 +127,22 @@ order by position
   const kind = (c) => c.command_class === 'edit' ? 'edit' : c.tool_name === 'Execute' ? 'exec' : 'read';
 
   const arms = [
-    { name: 'Recorded run', what: 'the original session' },
-    { name: 'Control', what: 'fork, no change' },
-    { name: 'Hint', what: 'fork, hint text added' },
-    { name: 'With change', what: 'fork, overlay applied' }
+    { name: 'Recorded run', what: 'the original session', key: null },
+    { name: 'Control', what: 'fork, no change', key: 'control' },
+    { name: 'Hint', what: 'fork, hint text added', key: 'hint' },
+    { name: 'With change', what: 'fork, overlay applied', key: 'candidate' }
   ];
-  const matrix = [
-    { step: 'Step 10', id: 'toolu_01Pm3Z…', cells: [[1], [1, 1], [1, 0], [1, 1]] },
-    { step: 'Step 17', id: 'toolu_016dLe…', cells: [[1], [1, 1], [0, 1], [1, 1]] }
+  const steps = [
+    { step: 'Step 10', id: 'toolu_01Pm3Z…', checkpoint: 'toolu_01Pm3ZNrBCDtHNUh83ovCqeC' },
+    { step: 'Step 17', id: 'toolu_016dLe…', checkpoint: 'toolu_016dLe3d1iqCZzTGPkUnoaXN' }
   ];
-  const forkTotal = (i) => matrix.flatMap((r) => r.cells[i]);
-  const sum = (a) => a.reduce((s, x) => s + x, 0);
-  const totals = arms.map((_, i) => forkTotal(i));
-  const tone = (t) => (sum(t) === t.length ? 'ok' : sum(t) === 0 ? 'bad' : 'mid');
+  $: forkRows = Array.from(forks ?? []);
+  $: cellOf = (checkpoint, key) => forkRows.filter((f) => f.checkpoint === checkpoint && f.arm === key);
+  $: armRows = (key) => forkRows.filter((f) => f.arm === key);
+  const repoUsable = (f) => f.repo_status === 'ok';
+  const accUsable = (f) => f.acc_at_start === 'fail' && f.acc_status !== 'error';
+  const repoClean = (fs) => `${fs.filter((f) => repoUsable(f) && f.repo_regressed === 0).length} of ${fs.filter(repoUsable).length}`;
+  const accPass = (fs) => `${fs.filter((f) => accUsable(f) && f.acc_status === 'pass').length} of ${fs.filter(accUsable).length}`;
 </script>
 
 <style>
@@ -148,11 +159,10 @@ order by position
   .matrix .h { color: #18181b; font-size: 13px; font-weight: 600; }
   .matrix .h small { display: block; color: #71717a; font-size: 11px; font-weight: 400; }
   .key { max-width: 900px; margin: 4px 0 12px; padding: 10px 14px; font-size: 13px; line-height: 1.6; color: #3f3f46; background: #f4f4f5; border-radius: 6px; }
-  .cell { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 4px; font-weight: 600; }
-  .cell.ok { background: #e8f3ea; } .cell.mid { background: #fbf1dc; } .cell.bad { background: #fbe4e4; }
-  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-left: 4px; }
-  .dot.p { background: #16a34a; } .dot.f { background: #dc2626; }
-  .total { font-weight: 600; padding: 6px 12px; }
+  .cell { padding: 10px 12px; border-radius: 4px; background: #f4f4f5; font-size: 12px; line-height: 1.5; }
+  .cell .fork + .fork { margin-top: 6px; padding-top: 6px; border-top: 1px solid #e4e4e7; }
+  .cell.empty { color: #71717a; }
+  .total { font-weight: 600; padding: 6px 12px; font-size: 12px; }
   .note { font-size: 12px; color: #71717a; }
   .tag { font-size: 11px; border: 1px dashed #a1a1aa; border-radius: 3px; padding: 1px 6px; color: #52525b; margin-left: 8px; font-weight: 400; }
 
@@ -226,7 +236,7 @@ order by position
         <p>{has(row.regression) ? `${row.regression}. Good past sessions, including legitimate test edits.` : 'Not run.'}</p>
       {:else if diagnosis}
         <h2 class="rt-h2">Diagnosis only</h2>
-        <p>{row.setup}. With change {row.arm_k}/{row.arm_n}, control {row.base_k}/{row.base_n}. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
+        <p>{row.setup}. Forks with the {row.proxy.toLowerCase()} passing: with change {row.proxy_arm}, control {row.proxy_base}. Forks have no pass or fail. The sample is small, so there is no interval. Forks are not final evidence. Run a held-out step-0 job next.</p>
       {:else}
         <h2 class="rt-h2">No replay yet</h2>
         <p>This proposal has no replay job. A small group uses monitoring plus rollback.</p>
@@ -263,25 +273,39 @@ order by position
         <h2 class="rt-h2">Fork results</h2>
 <div class="key">
   <b>How to read this.</b> Each row is a step where forks started. Each column is an arm.
-  A cell shows how many runs passed out of all runs. Each dot is one run: green passed, red failed.
-  The recorded run is the original session, not a fork. Forks are diagnosis, not final evidence.
+  A fork has no pass or fail. A cell shows two proxies per fork. Repo tests count tests that passed at the start and fail with the patch.
+  The acceptance check counts only when it failed at the start.
+  The recorded run is the original session, a final trial graded by the dataset grader.
 </div>
 <div class="matrix">
   <div></div>
   {#each arms as a}<div class="h">{a.name}<small>{a.what}</small></div>{/each}
-  {#each matrix as r}
+  {#each steps as r}
     <div><b>{r.step}</b><div class="note">{r.id}</div></div>
-    {#each r.cells as t}
-      <div class="cell {tone(t)}">
-        <span>{sum(t)} of {t.length} passed</span>
-        <span>{#each t as x}<span class="dot {x ? 'p' : 'f'}"></span>{/each}</span>
-      </div>
+    {#each arms as a}
+      {#if a.key === null}
+        <div class="cell">Passed</div>
+      {:else if cellOf(r.checkpoint, a.key).length}
+        <div class="cell">
+          {#each cellOf(r.checkpoint, a.key) as f}
+            <div class="fork">{repoText(f)}<br />{accText(f)}</div>
+          {/each}
+        </div>
+      {:else}
+        <div class="cell empty">No fork in Tiger</div>
+      {/if}
     {/each}
   {/each}
   <div class="total">Both steps</div>
-  {#each totals as t}<div class="total">{sum(t)} of {t.length} passed</div>{/each}
+  <div class="total"></div>
+  {#each arms.slice(1) as a}
+    <div class="total">
+      <div>repo tests: {repoClean(armRows(a.key))} with 0 regressed</div>
+      <div>acceptance: {accPass(armRows(a.key))} pass</div>
+    </div>
+  {/each}
 </div>
-<p class="note">12 forks: 2 steps × 3 fork arms × 2 reruns. The recorded run has 1 run per step.</p>
+<p class="note">{forkRows.length} forks in Tiger. The planned run is 12: 2 steps × 3 fork arms × 2 reruns. The recorded run has 1 run per step.</p>
       {:else}
         <p>No replay diagnosis for this proposal.</p>
       {/if}

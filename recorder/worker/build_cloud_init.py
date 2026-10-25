@@ -12,6 +12,8 @@ SCRIPTS = [
     ("scripts/pro_task.sh", "pro_task.sh"),
     ("scripts/retrace_job.py", "retrace_job.py"),
     ("scripts/tiger_sink.py", "tiger_sink.py"),
+    ("scripts/proxies.sh", "proxies.sh"),
+    ("scripts/repo_tests.py", "repo_tests.py"),
     ("../replay/run_checkpoint.sh", "replay/run_checkpoint.sh"),
     ("../replay/docker-droid.sh", "replay/docker-droid.sh"),
     ("../replay/restore.sh", "replay/restore.sh"),
