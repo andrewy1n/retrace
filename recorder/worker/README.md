@@ -233,7 +233,7 @@ It writes `runs/jobs/final1-heldout-{a,c}.json` and `final1-regression-{a,c}.jso
 ```bash
 recorder/replay/run_final.sh final1
 ```
-Held-out a, c start at once with 4 trials in flight each (8 in all, the measured limit). With a held-out b job, a, b, c start with 3, 3, 2. Their `grade.sh` runs share the same limits. When all three have graded, regression a and c start with 4 each. The script checks that the job files and overlays are committed and that no job with the prefix runs, before it submits anything. `run_final.sh final1 --together` starts all five with 2, 2, 2, 1, 1 in flight. Use it when the held-out jobs must not wait for a stage change.
+Held-out a, c start at once with 4 trials in flight each (8 in all, the measured limit). With a held-out b job, a, b, c start with 3, 3, 2. Their `grade.sh` runs share the same limits. When they have graded, regression a and c start with 4 each. The script checks that the job files and overlays are committed and that no job with the prefix runs, before it submits anything. `run_final.sh final1 --together` starts every job at once, with 2, 2, 2, 1, 1 in flight (2 each without held-out b). Use it when the held-out jobs must not wait for a stage change.
 
 Each job runs its trials in rerun order (all tasks at rerun 1, then rerun 2), so a job that stops at its cap still covers every task. Watch with `remote.sh status`. Fetch each job with `remote.sh fetch <job-id>`. Then write the report with `report.py`.
 
